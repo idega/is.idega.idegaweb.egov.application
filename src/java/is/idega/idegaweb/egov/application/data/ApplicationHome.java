@@ -1,5 +1,9 @@
 /*
- * $Id: ApplicationHome.java,v 1.2 2006/01/12 17:19:31 laddi Exp $
+<<<<<<< ApplicationHome.java
+ * $Id: ApplicationHome.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
+=======
+ * $Id: ApplicationHome.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
+>>>>>>> 1.2
  * Created on Jan 12, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -19,10 +23,9 @@ import com.idega.data.IDOHome;
  * <p>
  * TODO laddi Describe Type ApplicationHome
  * </p>
- *  Last modified: $Date: 2006/01/12 17:19:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ApplicationHome extends IDOHome {
 
@@ -44,4 +47,9 @@ public interface ApplicationHome extends IDOHome {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindAllByCategory
 	 */
 	public Collection findAllByCategory(ApplicationCategory category) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindAll
+	 */
+	public Collection findAll() throws FinderException;
 }

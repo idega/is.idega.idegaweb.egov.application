@@ -1,5 +1,9 @@
 /*
- * $Id: ApplicationHomeImpl.java,v 1.2 2006/01/12 17:19:31 laddi Exp $
+<<<<<<< ApplicationHomeImpl.java
+ * $Id: ApplicationHomeImpl.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
+=======
+ * $Id: ApplicationHomeImpl.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
+>>>>>>> 1.2
  * Created on Jan 12, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -19,10 +23,9 @@ import com.idega.data.IDOFactory;
  * <p>
  * TODO laddi Describe Type ApplicationHomeImpl
  * </p>
- *  Last modified: $Date: 2006/01/12 17:19:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 
@@ -55,6 +58,13 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 	public Collection findAllByCategory(ApplicationCategory category) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindAllByCategory(category);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAll() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindAll();
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

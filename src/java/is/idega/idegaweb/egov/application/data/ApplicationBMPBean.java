@@ -1,6 +1,8 @@
 /*
- * $Id: ApplicationBMPBean.java,v 1.2 2006/01/12 17:19:31 laddi Exp $ Created on Jan 12,
- * 2006
+ * <<<<<<< ApplicationBMPBean.java $Id: ApplicationBMPBean.java,v 1.1
+ * 2006/01/12 17:04:20 gimmi Exp $ Created on Jan 12, 2006 ======= $Id:
+ * ApplicationBMPBean.java,v 1.2 2006/01/12 17:19:31 laddi Exp $ Created on Jan
+ * 12, 2006 >>>>>>> 1.2
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  * 
@@ -18,7 +20,7 @@ import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 
-public class ApplicationBMPBean extends GenericEntity  implements Application{
+public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	private static final String TABLE_NAME = "EGOV_APPLICATION";
 	private static final String NAME = "application_name";
@@ -68,11 +70,11 @@ public class ApplicationBMPBean extends GenericEntity  implements Application{
 	public ApplicationCategory getCategory() {
 		return (ApplicationCategory) getColumnValue(CATEGORY);
 	}
-	
+
 	public void setCaseCode(CaseCode caseCode) {
 		setColumn(CASE_CODE, caseCode);
 	}
-	
+
 	public CaseCode getCaseCode() {
 		return (CaseCode) getColumnValue(CASE_CODE);
 	}
@@ -100,7 +102,7 @@ public class ApplicationBMPBean extends GenericEntity  implements Application{
 	public String getUrl() {
 		return getStringColumnValue(URL);
 	}
-	
+
 	public Object ejbFindByCaseCode(CaseCode caseCode) throws FinderException {
 		return ejbFindByCaseCode(caseCode.getCode());
 	}
@@ -118,6 +120,13 @@ public class ApplicationBMPBean extends GenericEntity  implements Application{
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new Column(table, getIDColumnName()));
 		query.addCriteria(new MatchCriteria(new Column(table, CATEGORY), MatchCriteria.EQUALS, category));
+		return this.idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindAll() throws FinderException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new Column(table, getIDColumnName()));
 		return this.idoFindPKsByQuery(query);
 	}
 }
