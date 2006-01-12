@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationHome.java,v 1.1 2006/01/12 17:04:20 gimmi Exp $
+ * $Id: ApplicationHome.java,v 1.2 2006/01/12 17:19:31 laddi Exp $
  * Created on Jan 12, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -17,12 +17,12 @@ import com.idega.data.IDOHome;
 
 /**
  * <p>
- * TODO gimmi Describe Type ApplicationHome
+ * TODO laddi Describe Type ApplicationHome
  * </p>
- *  Last modified: $Date: 2006/01/12 17:04:20 $ by $Author: gimmi $
+ *  Last modified: $Date: 2006/01/12 17:19:31 $ by $Author: laddi $
  * 
- * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface ApplicationHome extends IDOHome {
 
@@ -31,10 +31,14 @@ public interface ApplicationHome extends IDOHome {
 	public Application findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
 
 	/**
-	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindAllByCategoryAndCaseCode
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindByCaseCode
 	 */
-	public Collection findAllByCategoryAndCaseCode(ApplicationCategory category, CaseCode caseCode)
-			throws FinderException;
+	public Application findByCaseCode(CaseCode caseCode) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindByCaseCode
+	 */
+	public Application findByCaseCode(String caseCode) throws FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindAllByCategory

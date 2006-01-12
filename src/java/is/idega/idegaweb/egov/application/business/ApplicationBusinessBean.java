@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.1 2006/01/12 17:11:32 gimmi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.2 2006/01/12 17:19:31 laddi Exp $
  * Created on Jan 12, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -13,7 +13,6 @@ import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
 import is.idega.idegaweb.egov.application.data.ApplicationHome;
-import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.data.IDOLookup;
@@ -21,10 +20,10 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
 
 
-public class ApplicationBusinessBean extends CaseBusinessBean  implements ApplicationBusiness{
+public class ApplicationBusinessBean extends CaseBusinessBean implements ApplicationBusiness{
 
-	public Collection getApplications(ApplicationCategory category, String caseCode) throws FinderException {
-		return getApplicationHome().findAllByCategoryAndCaseCode(category, getCaseCode(caseCode));
+	public Application getApplication(String caseCode) throws FinderException {
+		return getApplicationHome().findByCaseCode(getCaseCode(caseCode));
 	}
 	
 	
@@ -45,6 +44,4 @@ public class ApplicationBusinessBean extends CaseBusinessBean  implements Applic
 			throw new IDORuntimeException(e);
 		}
 	}
-
-
 }

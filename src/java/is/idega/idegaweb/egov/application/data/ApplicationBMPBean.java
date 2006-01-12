@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBMPBean.java,v 1.1 2006/01/12 17:04:20 gimmi Exp $ Created on Jan 12,
+ * $Id: ApplicationBMPBean.java,v 1.2 2006/01/12 17:19:31 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -101,13 +101,16 @@ public class ApplicationBMPBean extends GenericEntity  implements Application{
 		return getStringColumnValue(URL);
 	}
 	
-	public Collection ejbFindAllByCategoryAndCaseCode(ApplicationCategory category, CaseCode caseCode) throws FinderException {
+	public Object ejbFindByCaseCode(CaseCode caseCode) throws FinderException {
+		return ejbFindByCaseCode(caseCode.getCode());
+	}
+
+	public Object ejbFindByCaseCode(String caseCode) throws FinderException {
 		Table table = new Table(this);
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new Column(table, getIDColumnName()));
-		query.addCriteria(new MatchCriteria(new Column(table, CATEGORY), MatchCriteria.EQUALS, category));
 		query.addCriteria(new MatchCriteria(new Column(table, CASE_CODE), MatchCriteria.EQUALS, caseCode));
-		return this.idoFindPKsByQuery(query);
+		return idoFindOnePKByQuery(query);
 	}
 
 	public Collection ejbFindAllByCategory(ApplicationCategory category) throws FinderException {

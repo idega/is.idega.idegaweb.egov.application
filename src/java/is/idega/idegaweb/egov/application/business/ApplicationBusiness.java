@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusiness.java,v 1.1 2006/01/12 17:11:32 gimmi Exp $
+ * $Id: ApplicationBusiness.java,v 1.2 2006/01/12 17:19:31 laddi Exp $
  * Created on Jan 12, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -9,30 +9,28 @@
  */
 package is.idega.idegaweb.egov.application.business;
 
-import is.idega.idegaweb.egov.application.data.ApplicationCategory;
+import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
 import is.idega.idegaweb.egov.application.data.ApplicationHome;
-import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.business.IBOService;
 
 
 /**
  * <p>
- * TODO gimmi Describe Type ApplicationBusiness
+ * TODO laddi Describe Type ApplicationBusiness
  * </p>
- *  Last modified: $Date: 2006/01/12 17:11:32 $ by $Author: gimmi $
+ *  Last modified: $Date: 2006/01/12 17:19:31 $ by $Author: laddi $
  * 
- * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface ApplicationBusiness extends IBOService {
 
 	/**
-	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getApplications
+	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getApplication
 	 */
-	public Collection getApplications(ApplicationCategory category, String caseCode) throws FinderException,
-			java.rmi.RemoteException;
+	public Application getApplication(String caseCode) throws FinderException, java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getApplicationHome

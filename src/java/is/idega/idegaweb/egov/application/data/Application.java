@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.1 2006/01/12 17:04:20 gimmi Exp $
+ * $Id: Application.java,v 1.2 2006/01/12 17:19:31 laddi Exp $
  * Created on Jan 12, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -15,12 +15,12 @@ import com.idega.data.IDOEntity;
 
 /**
  * <p>
- * TODO gimmi Describe Type Application
+ * TODO laddi Describe Type Application
  * </p>
- *  Last modified: $Date: 2006/01/12 17:04:20 $ by $Author: gimmi $
+ *  Last modified: $Date: 2006/01/12 17:19:31 $ by $Author: laddi $
  * 
- * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface Application extends IDOEntity {
 
