@@ -1,6 +1,6 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.1 2006/01/13 02:12:56 gimmi Exp $ Created on
- * Jan 13, 2006
+ * $Id: ApplicationCategoryViewer.java,v 1.2 2006/01/13 18:58:47 gimmi Exp $
+ * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  * 
@@ -47,6 +47,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 				l.setStyleClass("applicationCategory");
 				l.add(new Heading1(cat.getName()));
 				Lists appList = new Lists();
+				int counter = 0;
 				try {
 					Collection apps = bus.getApplicationHome().findAllByCategory(cat);
 					Iterator fiter = apps.iterator();
@@ -60,16 +61,21 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 							String url = app.getUrl();
 							if (url != null && !url.trim().equals("")) {
 								li.add(new Link(new Text(app.getName()), url));
-							} else {
+							}
+							else {
 								li.add(new Link(new Text(app.getName())));
 							}
 							appList.add(li);
+							++counter;
 						}
 					}
 				}
 				catch (FinderException f) {
 				}
 				l.add(appList);
+				if (counter == 0) {
+					l.setStyleClass("empty");
+				}
 				mainLayer.add(l);
 			}
 			add(mainLayer);
