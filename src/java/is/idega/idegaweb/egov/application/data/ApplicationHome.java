@@ -1,10 +1,6 @@
 /*
-<<<<<<< ApplicationHome.java
- * $Id: ApplicationHome.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
-=======
- * $Id: ApplicationHome.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
->>>>>>> 1.2
- * Created on Jan 12, 2006
+ * $Id: ApplicationHome.java,v 1.4 2006/01/14 21:17:26 laddi Exp $
+ * Created on Jan 14, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -23,9 +19,10 @@ import com.idega.data.IDOHome;
  * <p>
  * TODO laddi Describe Type ApplicationHome
  * </p>
+ *  Last modified: $Date: 2006/01/14 21:17:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface ApplicationHome extends IDOHome {
 
@@ -52,4 +49,14 @@ public interface ApplicationHome extends IDOHome {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindAll
 	 */
 	public Collection findAll() throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindElectronicApplications
+	 */
+	public Collection findElectronicApplications() throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindMostClicked
+	 */
+	public Collection findMostClicked(int numberOfEntries) throws FinderException;
 }

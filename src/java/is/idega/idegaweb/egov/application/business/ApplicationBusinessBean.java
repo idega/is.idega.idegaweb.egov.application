@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.4 2006/01/13 02:11:50 gimmi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.5 2006/01/14 21:17:26 laddi Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,7 @@ import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
 import is.idega.idegaweb.egov.application.data.ApplicationHome;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -36,8 +37,43 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	public Application getApplication(String caseCode) throws FinderException {
 		return getApplicationHome().findByCaseCode(getCaseCode(caseCode));
 	}
+	
+	public Application getApplication(Object primaryKey) throws FinderException {
+		return getApplicationHome().findByPrimaryKey(primaryKey);
+	}
+	
+	public Collection getMostClickedApplications(int numberOfEntries) {
+		try {
+			return getApplicationHome().findMostClicked(numberOfEntries);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getUserApplications(User user) {
+		Collection list = new ArrayList();
+		try {
+			Age[] ages = getAgesForUserAndChildren(user);
+			Collection applications = getApplicationHome().findElectronicApplications();
+			
+			Iterator iter = applications.iterator();
+			while (iter.hasNext()) {
+				Application application = (Application) iter.next();
+				if (displayApplicationForAges(application, ages)) {
+					list.add(application);
+				}
+			}
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		
+		return list;
+	}
 
-	public Age[] getAgesForUserAndChildren(User user) throws RemoteException {
+	public Age[] getAgesForUserAndChildren(User user) {
 		FamilyLogic famLog = null;
 		try {
 			famLog = (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
@@ -52,19 +88,24 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 			int i = 0;
 			Date date = user.getDateOfBirth();
 			if (date != null) {
-				ages[i++] = new Age(date);
+				ages[i] = new Age(date);
 			}
+			i++;
 			while (iter.hasNext()) {
 				User child = (User) iter.next();
 				date = child.getDateOfBirth();
 				if (date != null) {
-					ages[i++] = new Age(date);
+					ages[i] = new Age(date);
 				}
+				i++;
 			}
 			return ages;
 		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
 		catch (NoChildrenFound e) {
-			e.printStackTrace();
+			//User has no children...
 		}
 		return null;
 	}
@@ -72,10 +113,13 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	public boolean displayApplicationForAges(Application application, Age[] ages) {
 		int from = application.getAgeFrom();
 		int to = application.getAgeTo();
-		int years;
+		if (from < 0 && to < 0) {
+			return true;
+		}
+		
 		for (int i = 0; i < ages.length; i++) {
 			if (ages[i] != null) {
-				years = ages[i].getYears();
+				int years = ages[i].getYears();
 				if (from <= years && to >= years) {
 					return true;
 				}

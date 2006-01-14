@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.1 2006/01/12 20:02:31 gimmi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.2 2006/01/14 21:17:26 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -73,8 +73,8 @@ public class ApplicationCreator extends ApplicationBlock {
 		String name = iwc.getParameter("name");
 		String url = iwc.getParameter("url");
 		String elec = iwc.getParameter("elec");
-		String ageFrom = iwc.getParameter("ageFrom");
-		String ageTo = iwc.getParameter("ageTo");
+		int ageFrom = iwc.isParameterSet("ageFrom") ? Integer.parseInt(iwc.getParameter("ageFrom")) : -1;
+		int ageTo = iwc.isParameterSet("ageTo") ? Integer.parseInt(iwc.getParameter("ageTo")) : -1;
 		String cat = iwc.getParameter("cat");
 		String code = iwc.getParameter("code");
 		if (name != null && !name.trim().equals("")) {
@@ -94,8 +94,8 @@ public class ApplicationCreator extends ApplicationBlock {
 			app.setName(name);
 			app.setUrl(url);
 			app.setElectronic("Y".equalsIgnoreCase(elec));
-			app.setAgeFrom(Integer.parseInt(ageFrom));
-			app.setAgeTo(Integer.parseInt(ageTo));
+			app.setAgeFrom(ageFrom);
+			app.setAgeTo(ageTo);
 			if (code != null && !code.equals("-1")) {
 				app.setCaseCode(getApplicationBusiness(iwc).getCaseCode(code));
 			}
@@ -129,8 +129,8 @@ public class ApplicationCreator extends ApplicationBlock {
 			else {
 				row.createCell().add(getText("-"));
 			}
-			row.createCell().add(getText(Integer.toString(app.getAgeFrom())));
-			row.createCell().add(getText(Integer.toString(app.getAgeTo())));
+			row.createCell().add(getText(app.getAgeFrom() > 0 ? Integer.toString(app.getAgeFrom()) : "-"));
+			row.createCell().add(getText(app.getAgeTo() > 0 ? Integer.toString(app.getAgeTo()) : "-"));
 			row.createCell().add(getText(Boolean.toString(app.getElectronic())));
 			row.createCell().add(getText(app.getUrl()));
 			Link edit = new Link(getText(iwrb.getLocalizedString("edit", "Edit")));
@@ -173,8 +173,8 @@ public class ApplicationCreator extends ApplicationBlock {
 				tName.setContent(app.getName());
 				tUrl.setContent(app.getUrl());
 				tElec.setSelected(app.getElectronic());
-				tFrom.setContent(Integer.toString(app.getAgeFrom()));
-				tTo.setContent(Integer.toString(app.getAgeTo()));
+				tFrom.setContent(app.getAgeFrom() > 0 ? Integer.toString(app.getAgeFrom()) : "");
+				tTo.setContent(app.getAgeFrom() > 0 ? Integer.toString(app.getAgeTo()) : "");
 				tCat.setSelectedElement(app.getCategory().getPrimaryKey().toString());
 				if (app.getCaseCode() != null) {
 					tCode.setSelectedElement(app.getCaseCode().getPrimaryKey().toString());

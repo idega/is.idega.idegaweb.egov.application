@@ -1,10 +1,6 @@
 /*
-<<<<<<< ApplicationHomeImpl.java
- * $Id: ApplicationHomeImpl.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
-=======
- * $Id: ApplicationHomeImpl.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
->>>>>>> 1.2
- * Created on Jan 12, 2006
+ * $Id: ApplicationHomeImpl.java,v 1.4 2006/01/14 21:17:26 laddi Exp $
+ * Created on Jan 14, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -23,9 +19,10 @@ import com.idega.data.IDOFactory;
  * <p>
  * TODO laddi Describe Type ApplicationHomeImpl
  * </p>
+ *  Last modified: $Date: 2006/01/14 21:17:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 
@@ -65,6 +62,20 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 	public Collection findAll() throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findElectronicApplications() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindElectronicApplications();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findMostClicked(int numberOfEntries) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindMostClicked(numberOfEntries);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

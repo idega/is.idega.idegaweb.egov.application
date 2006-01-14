@@ -1,22 +1,26 @@
 /*
- * <<<<<<< Application.java $Id: Application.java 1.1 Jan 12, 2006 gimmi
- * Exp $ ======= $Id: Application.java,v 1.3 2006/01/12 20:01:31 gimmi Exp $
- * >>>>>>> 1.2 Created on Jan 12, 2006
- * 
+ * $Id: Application.java,v 1.4 2006/01/14 21:17:26 laddi Exp $
+ * Created on Jan 14, 2006
+ *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
- * 
- * This software is the proprietary information of Idega hf. Use is subject to
- * license terms.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package is.idega.idegaweb.egov.application.data;
 
 import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOEntity;
 
+
 /**
+ * <p>
+ * TODO laddi Describe Type Application
+ * </p>
+ *  Last modified: $Date: 2006/01/14 21:17:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface Application extends IDOEntity {
 
@@ -39,6 +43,16 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getAgeTo
 	 */
 	public int getAgeTo();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getTimesClicked
+	 */
+	public int getTimesClicked();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setTimesClicked
+	 */
+	public void setTimesClicked(int clicked);
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setCategory

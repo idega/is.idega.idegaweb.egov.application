@@ -17,6 +17,7 @@ import com.idega.block.process.data.CaseCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 
@@ -30,6 +31,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	private static final String ELECTRONIC = "is_electronic";
 	private static final String AGE_FROM = "age_from";
 	private static final String AGE_TO = "age_to";
+	private static final String TIMES_CLICKED = "times_clicked";
 
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -45,6 +47,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(ELECTRONIC, "is electronic application", Boolean.class);
 		addAttribute(AGE_FROM, "age from", Integer.class);
 		addAttribute(AGE_TO, "age to", Integer.class);
+		addAttribute(TIMES_CLICKED, "Time clicked", Integer.class);
 	}
 
 	public void setAgeFrom(int age) {
@@ -61,6 +64,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	public int getAgeTo() {
 		return getIntColumnValue(AGE_TO);
+	}
+	
+	public int getTimesClicked() {
+		return getIntColumnValue(TIMES_CLICKED);
+	}
+	
+	public void setTimesClicked(int clicked) {
+		setColumn(TIMES_CLICKED, clicked);
 	}
 
 	public void setCategory(ApplicationCategory category) {
@@ -127,6 +138,22 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		Table table = new Table(this);
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new Column(table, getIDColumnName()));
+		return this.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindElectronicApplications() throws FinderException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new Column(table, getIDColumnName()));
+		query.addCriteria(new MatchCriteria(new Column(table, ELECTRONIC), MatchCriteria.EQUALS, true));
+		return this.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindMostClicked(int numberOfEntries) throws FinderException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new Column(table, getIDColumnName()));
+		query.addOrder(new Order(new Column(table, TIMES_CLICKED), false));
 		return this.idoFindPKsByQuery(query);
 	}
 }
