@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.5 2006/01/14 21:17:26 laddi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.6 2006/01/15 23:23:54 laddi Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -111,6 +111,10 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	}
 
 	public boolean displayApplicationForAges(Application application, Age[] ages) {
+		if (ages == null) {
+			return false;
+		}
+		
 		int from = application.getAgeFrom();
 		int to = application.getAgeTo();
 		if (from < 0 && to < 0) {
