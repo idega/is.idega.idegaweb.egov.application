@@ -154,6 +154,6 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new Column(table, getIDColumnName()));
 		query.addOrder(new Order(new Column(table, TIMES_CLICKED), false));
-		return this.idoFindPKsByQuery(query);
+		return this.idoFindPKsByQuery(query, numberOfEntries);
 	}
 }
