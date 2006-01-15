@@ -9,8 +9,11 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
+import is.idega.idegaweb.egov.application.business.ApplicationComparator;
 import java.rmi.RemoteException;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import com.idega.business.IBORuntimeException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -31,8 +34,9 @@ public class UserApplications extends ApplicationBlock {
 				Age[] ages = getApplicationBusiness(iwc).getAgesForUserAndChildren(iwc.getCurrentUser());
 				boolean checkAges = (ages != null);
 	
-				Collection applications = getApplicationBusiness(iwc).getUserApplications(iwc.getCurrentUser());
+				List applications = new ArrayList(getApplicationBusiness(iwc).getUserApplications(iwc.getCurrentUser()));
 				if (!applications.isEmpty()) {
+					Collections.sort(applications, new ApplicationComparator(iwc.getCurrentLocale()));
 					Lists list = getApplicationList(iwc, checkAges, applications, ages);
 					if (list.getChildrenCount() > 0) {
 						layer.add(list);

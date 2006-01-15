@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.3 2006/01/14 21:17:25 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.4 2006/01/15 07:37:01 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,9 +10,13 @@
 package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.business.ApplicationCategoryComparator;
+import is.idega.idegaweb.egov.application.business.ApplicationComparator;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import javax.ejb.FinderException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -33,7 +37,9 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 			checkAges = (ages != null);
 		}
 		try {
-			Collection coll = bus.getApplicationCategoryHome().findAllOrderedByName();
+			List coll = new ArrayList(bus.getApplicationCategoryHome().findAllOrderedByName());
+			Collections.sort(coll, new ApplicationCategoryComparator(iwc.getCurrentLocale()));
+			
 			Iterator iter = coll.iterator();
 			Layer mainLayer = new Layer();
 			mainLayer.setId(id);
@@ -43,9 +49,10 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 				l.setStyleClass("applicationCategory");
 				l.add(new Heading1(cat.getName()));
 				try {
-					Collection apps = bus.getApplicationHome().findAllByCategory(cat);
+					List apps = new ArrayList(bus.getApplicationHome().findAllByCategory(cat));
+					Collections.sort(apps, new ApplicationComparator(iwc.getCurrentLocale()));
+					
 					Lists appList = getApplicationList(iwc, checkAges, apps, ages);
-
 					l.add(appList);
 					if (appList.getChildrenCount() > 0) {
 						l.setStyleClass("empty");
