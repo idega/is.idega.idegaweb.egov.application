@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.4 2006/01/15 07:37:01 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.5 2006/01/15 18:53:56 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -54,7 +54,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 					
 					Lists appList = getApplicationList(iwc, checkAges, apps, ages);
 					l.add(appList);
-					if (appList.getChildrenCount() > 0) {
+					if (appList.getChildrenCount() == 0) {
 						l.setStyleClass("empty");
 					}
 				}
