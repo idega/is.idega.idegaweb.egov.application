@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.7 2006/01/16 10:04:13 laddi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.8 2006/01/16 11:44:59 laddi Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -43,7 +43,12 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	}
 	
 	public void updateTimesClicked(Application application) {
-		application.setTimesClicked(application.getTimesClicked() + 1);
+		int timesClicked = application.getTimesClicked() + 1;
+		if (timesClicked == 0) {
+			timesClicked++;
+		}
+		
+		application.setTimesClicked(timesClicked);
 		application.store();
 	}
 	

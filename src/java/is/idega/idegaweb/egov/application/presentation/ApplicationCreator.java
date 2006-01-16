@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.3 2006/01/16 10:04:13 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.4 2006/01/16 11:44:59 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -133,8 +133,8 @@ public class ApplicationCreator extends ApplicationBlock {
 			else {
 				row.createCell().add(getText("-"));
 			}
-			row.createCell().add(getText(app.getAgeFrom() > 0 ? Integer.toString(app.getAgeFrom()) : "-"));
-			row.createCell().add(getText(app.getAgeTo() > 0 ? Integer.toString(app.getAgeTo()) : "-"));
+			row.createCell().add(getText(app.getAgeFrom() > -1 ? Integer.toString(app.getAgeFrom()) : "-"));
+			row.createCell().add(getText(app.getAgeTo() > -1 ? Integer.toString(app.getAgeTo()) : "-"));
 			row.createCell().add(getText(Boolean.toString(app.getElectronic())));
 			row.createCell().add(getText(app.getUrl()));
 			Link edit = new Link(getText(iwrb.getLocalizedString("edit", "Edit")));

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.3 2006/01/16 10:04:13 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.4 2006/01/16 11:44:59 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -48,8 +48,9 @@ public abstract class ApplicationBlock extends Block {
 		if (iwc.isParameterSet(PARAMETER_APPLICATION_PK)) {
 			if (iwc.getParameter(PARAMETER_IDENTIFIER_NAME).equals(getUniqueIdentifier())) {
 				try {
-					Application application = getApplicationBusiness(iwc).getApplication(iwc.getParameter(PARAMETER_APPLICATION_PK));
-					iwc.forwardToURL(page, application.getUrl());
+					Application application = getApplicationBusiness(iwc).getApplication(new Integer(iwc.getParameter(PARAMETER_APPLICATION_PK)));
+					getApplicationBusiness(iwc).updateTimesClicked(application);
+					iwc.forwardToURL(page, application.getUrl(), false);
 					return true;
 				}
 				catch (FinderException fe) {
