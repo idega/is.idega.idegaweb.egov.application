@@ -45,6 +45,30 @@ public abstract class ApplicationForm extends Block {
 		present(iwc);
 	}
 	
+	protected Layer getReceiptLayer(String heading, String body) {
+		return getDisplayLayer(heading, body, "receipt", "receiptImage");
+	}
+	
+	protected Layer getStopLayer(String heading, String body) {
+		return getDisplayLayer(heading, body, "stop", "stopImage");
+	}
+	
+	private Layer getDisplayLayer(String header, String body, String layerClass, String imageClass) {
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass(layerClass);
+		
+		Layer image = new Layer(Layer.DIV);
+		image.setStyleClass(imageClass);
+		layer.add(image);
+		
+		Heading1 heading = new Heading1(header);
+		layer.add(heading);
+		
+		layer.add(new Text(body));
+		
+		return layer;
+	}
+	
 	protected Layer getPersonInfo(IWContext iwc, User user) throws RemoteException {
 		Address address = getUserBusiness(iwc).getUsersMainAddress(user);
 		PostalCode postal = null;
