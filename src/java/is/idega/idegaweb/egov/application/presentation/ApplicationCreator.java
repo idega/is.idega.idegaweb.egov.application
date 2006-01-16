@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.2 2006/01/14 21:17:26 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.3 2006/01/16 10:04:13 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -36,7 +36,11 @@ public class ApplicationCreator extends ApplicationBlock {
 
 	IWResourceBundle iwrb;
 
-	public void main(IWContext iwc) throws Exception {
+	protected String getUniqueIdentifier() {
+		return "applicationCreator";
+	}
+
+	public void present(IWContext iwc) throws Exception {
 		iwrb = super.getResourceBundle(iwc);
 		String action = iwc.getParameter("action");
 		if ("create".equals(action)) {

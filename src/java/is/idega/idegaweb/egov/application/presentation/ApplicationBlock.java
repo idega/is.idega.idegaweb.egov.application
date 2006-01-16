@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.2 2006/01/14 21:17:26 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.3 2006/01/16 10:04:13 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -9,51 +9,58 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.data.Application;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.FinderException;
-import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.data.Application;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWException;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.util.Age;
 
-public class ApplicationBlock extends Block implements IWPageEventListener {
+public abstract class ApplicationBlock extends Block {
 
 	public static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	protected static final String PARAMETER_APPLICATION_PK = "prm_application_pk";
+	protected static final String PARAMETER_IDENTIFIER_NAME = "prm_identifier_name";
 
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
 	}
 	
-	public boolean actionPerformed(IWContext iwc) throws IWException {
+	public void main(IWContext iwc) throws Exception {
+		present(iwc);
+	}
+	
+	protected abstract void present(IWContext iwc) throws Exception;
+	protected abstract String getUniqueIdentifier();
+	
+	protected boolean forward(IWContext iwc, Page page) throws RemoteException {
 		if (iwc.isParameterSet(PARAMETER_APPLICATION_PK)) {
-			try {
-				Application application = getApplicationBusiness(iwc).getApplication(iwc.getParameter(PARAMETER_APPLICATION_PK));
-				application.setTimesClicked(application.getTimesClicked() + 1);
-				application.store();
-			}
-			catch (FinderException fe) {
-				fe.printStackTrace();
-			}
-			catch (RemoteException re) {
-				throw new IBORuntimeException(re);
+			if (iwc.getParameter(PARAMETER_IDENTIFIER_NAME).equals(getUniqueIdentifier())) {
+				try {
+					Application application = getApplicationBusiness(iwc).getApplication(iwc.getParameter(PARAMETER_APPLICATION_PK));
+					iwc.forwardToURL(page, application.getUrl());
+					return true;
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
 			}
 		}
+		
 		return false;
 	}
-
+	
 	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection applications, Age[] ages) {
 		Lists list = new Lists();
 		
@@ -76,9 +83,9 @@ public class ApplicationBlock extends Block implements IWPageEventListener {
 				}
 				String url = application.getUrl();
 				if (url != null && !url.trim().equals("")) {
-					Link link = new Link(new Text(application.getName()), url);
+					Link link = new Link(new Text(application.getName()));
 					link.addParameter(PARAMETER_APPLICATION_PK, application.getPrimaryKey().toString());
-					link.setEventListener(this.getClass());
+					link.addParameter(PARAMETER_IDENTIFIER_NAME, getUniqueIdentifier());
 					li.add(link);
 				}
 				list.add(li);

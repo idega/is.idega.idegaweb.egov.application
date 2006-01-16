@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.6 2006/01/15 23:23:54 laddi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.7 2006/01/16 10:04:13 laddi Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -40,6 +40,11 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	
 	public Application getApplication(Object primaryKey) throws FinderException {
 		return getApplicationHome().findByPrimaryKey(primaryKey);
+	}
+	
+	public void updateTimesClicked(Application application) {
+		application.setTimesClicked(application.getTimesClicked() + 1);
+		application.store();
 	}
 	
 	public Collection getMostClickedApplications(int numberOfEntries) {

@@ -23,30 +23,36 @@ public class ApplicationFavorites extends ApplicationBlock {
 	private String id = "applicationFavoritesViewer";
 	private int iNumberOfShown = 5;
 
-	public void main(IWContext iwc) throws Exception {
-		try {
-			Layer layer = new Layer();
-			layer.setId(id);
+	protected String getUniqueIdentifier() {
+		return "applicationFavorites";
+	}
 
-			Age[] ages = null;
-			boolean checkAges = false;
-			if (iwc.isLoggedOn()) {
-				ages = getApplicationBusiness(iwc).getAgesForUserAndChildren(iwc.getCurrentUser());
-				checkAges = (ages != null);
-			}
-
-			Collection applications = getApplicationBusiness(iwc).getMostClickedApplications(iNumberOfShown);
-			if (!applications.isEmpty()) {
-				Lists list = getApplicationList(iwc, checkAges, applications, ages);
-				if (list.getChildrenCount() > 0) {
-					layer.add(list);
+	public void present(IWContext iwc) throws Exception {
+		if (!forward(iwc, getParentPage())) {
+			try {
+				Layer layer = new Layer();
+				layer.setId(id);
+	
+				Age[] ages = null;
+				boolean checkAges = false;
+				if (iwc.isLoggedOn()) {
+					ages = getApplicationBusiness(iwc).getAgesForUserAndChildren(iwc.getCurrentUser());
+					checkAges = (ages != null);
 				}
+	
+				Collection applications = getApplicationBusiness(iwc).getMostClickedApplications(iNumberOfShown);
+				if (!applications.isEmpty()) {
+					Lists list = getApplicationList(iwc, checkAges, applications, ages);
+					if (list.getChildrenCount() > 0) {
+						layer.add(list);
+					}
+				}
+				
+				add(layer);
 			}
-			
-			add(layer);
-		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
+			catch (RemoteException re) {
+				throw new IBORuntimeException(re);
+			}
 		}
 	}
 	

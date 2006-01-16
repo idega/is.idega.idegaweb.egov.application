@@ -25,8 +25,12 @@ public class UserApplications extends ApplicationBlock {
 
 	private String id = "userApplicationViewer";
 
-	public void main(IWContext iwc) throws Exception {
-		if (iwc.isLoggedOn()) {
+	protected String getUniqueIdentifier() {
+		return "userApplications";
+	}
+
+	public void present(IWContext iwc) throws Exception {
+		if (iwc.isLoggedOn() && !forward(iwc, getParentPage())) {
 			try {
 				Layer layer = new Layer();
 				layer.setId(id);

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.1 2006/01/12 18:52:49 gimmi Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.2 2006/01/16 10:04:13 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -30,9 +30,13 @@ import com.idega.presentation.ui.TextInput;
 
 public class ApplicationCategoryCreator extends ApplicationBlock {
 
+	protected String getUniqueIdentifier() {
+		return "applicationCategoryCreator";
+	}
+
 	IWResourceBundle iwrb;
 
-	public void main(IWContext iwc) throws Exception {
+	public void present(IWContext iwc) throws Exception {
 		iwrb = super.getResourceBundle(iwc);
 		String action = iwc.getParameter("action");
 		if ("create".equals(action)) {
