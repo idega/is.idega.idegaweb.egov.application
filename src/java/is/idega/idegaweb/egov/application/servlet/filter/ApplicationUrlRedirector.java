@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.1 2006/01/17 13:09:12 gimmi Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.2 2006/01/17 13:37:41 gimmi Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -66,7 +66,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			LoginBusinessBean loginBusiness = getLoginBusiness(request);
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
 			
-			String pk = (String) request.getParameterMap().get(ApplicationBlock.PARAMETER_APPLICATION_PK);
+			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
 			IWApplicationContext iwc = getIWMainApplication(request).getIWApplicationContext();
 			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
 			getApplicationBusiness(iwc).updateTimesClicked(application);
