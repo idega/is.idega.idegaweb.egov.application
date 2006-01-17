@@ -37,6 +37,11 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		return TABLE_NAME;
 	}
 
+	public void setDefaultValues() {
+		setTimesClicked(0);
+		super.setDefaultValues();
+	}
+
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(NAME, "name", String.class, 50);
@@ -153,7 +158,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		Table table = new Table(this);
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new Column(table, getIDColumnName()));
-		query.addOrder(new Order(new Column(table, TIMES_CLICKED), true));
+		query.addOrder(new Order(new Column(table, TIMES_CLICKED), false));
 		return this.idoFindPKsByQuery(query, numberOfEntries);
 	}
 }
