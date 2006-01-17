@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.4 2006/01/16 11:44:59 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.5 2006/01/17 11:48:57 gimmi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,9 @@ import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.data.ICApplicationBinding;
+import com.idega.core.data.ICApplicationBindingHome;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -25,6 +28,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
+import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.util.Age;
 
 public abstract class ApplicationBlock extends Block {
@@ -32,6 +36,7 @@ public abstract class ApplicationBlock extends Block {
 	public static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	protected static final String PARAMETER_APPLICATION_PK = "prm_application_pk";
 	protected static final String PARAMETER_IDENTIFIER_NAME = "prm_identifier_name";
+	private static final String BINDING_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
 
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
@@ -50,6 +55,24 @@ public abstract class ApplicationBlock extends Block {
 				try {
 					Application application = getApplicationBusiness(iwc).getApplication(new Integer(iwc.getParameter(PARAMETER_APPLICATION_PK)));
 					getApplicationBusiness(iwc).updateTimesClicked(application);
+					if (application.getElectronic() && !iwc.isLoggedOn()) {
+						try {
+							ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
+							ICApplicationBinding binding = abHome.findByPrimaryKey(BINDING_LOGIN_PAGE_URI);
+							String uri = binding.getValue();
+							if (uri.indexOf("?") == -1) {
+								uri += "?";
+							} else {
+								uri += "&";
+							}
+							uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON+"="+application.getUrl();
+							iwc.forwardToURL(page, uri, false);
+							return true;
+						} catch (FinderException f) {
+							iwc.forwardToURL(page, application.getUrl(), false);
+							return true;
+						}
+					}
 					iwc.forwardToURL(page, application.getUrl(), false);
 					return true;
 				}
