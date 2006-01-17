@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.6 2006/01/16 10:04:13 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.7 2006/01/17 13:09:12 gimmi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -27,51 +27,47 @@ import com.idega.util.Age;
 public class ApplicationCategoryViewer extends ApplicationBlock {
 
 	private String id = "applicationCategoryViewer";
-	
+
 	protected String getUniqueIdentifier() {
 		return "applicationCategoryViewer";
 	}
 
 	public void present(IWContext iwc) throws Exception {
-		if (!forward(iwc, getParentPage())) {
-			ApplicationBusiness bus = getApplicationBusiness(iwc);
-			Age[] ages = null;
-			boolean checkAges = false;
-			if (iwc.isLoggedOn()) {
-				ages = bus.getAgesForUserAndChildren(iwc.getCurrentUser());
-				checkAges = (ages != null);
-			}
-			try {
-				List coll = new ArrayList(bus.getApplicationCategoryHome().findAllOrderedByName());
-				Collections.sort(coll, new ApplicationCategoryComparator(iwc.getCurrentLocale()));
-				
-				Iterator iter = coll.iterator();
-				Layer mainLayer = new Layer();
-				mainLayer.setId(id);
-				while (iter.hasNext()) {
-					ApplicationCategory cat = (ApplicationCategory) iter.next();
-					Layer l = new Layer();
-					l.setStyleClass("applicationCategory");
-					l.add(new Heading1(cat.getName()));
-					try {
-						List apps = new ArrayList(bus.getApplicationHome().findAllByCategory(cat));
-						Collections.sort(apps, new ApplicationComparator(iwc.getCurrentLocale()));
-						
-						Lists appList = getApplicationList(iwc, checkAges, apps, ages);
-						l.add(appList);
-						if (appList.getChildrenCount() == 0) {
-							l.setStyleClass("empty");
-						}
+		ApplicationBusiness bus = getApplicationBusiness(iwc);
+		Age[] ages = null;
+		boolean checkAges = false;
+		if (iwc.isLoggedOn()) {
+			ages = bus.getAgesForUserAndChildren(iwc.getCurrentUser());
+			checkAges = (ages != null);
+		}
+		try {
+			List coll = new ArrayList(bus.getApplicationCategoryHome().findAllOrderedByName());
+			Collections.sort(coll, new ApplicationCategoryComparator(iwc.getCurrentLocale()));
+			Iterator iter = coll.iterator();
+			Layer mainLayer = new Layer();
+			mainLayer.setId(id);
+			while (iter.hasNext()) {
+				ApplicationCategory cat = (ApplicationCategory) iter.next();
+				Layer l = new Layer();
+				l.setStyleClass("applicationCategory");
+				l.add(new Heading1(cat.getName()));
+				try {
+					List apps = new ArrayList(bus.getApplicationHome().findAllByCategory(cat));
+					Collections.sort(apps, new ApplicationComparator(iwc.getCurrentLocale()));
+					Lists appList = getApplicationList(iwc, checkAges, apps, ages);
+					l.add(appList);
+					if (appList.getChildrenCount() == 0) {
+						l.setStyleClass("empty");
 					}
-					catch (FinderException f) {
-					}
-					mainLayer.add(l);
 				}
-				add(mainLayer);
+				catch (FinderException f) {
+				}
+				mainLayer.add(l);
 			}
-			catch (FinderException e) {
-				e.printStackTrace();
-			}
+			add(mainLayer);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
 		}
 	}
 
