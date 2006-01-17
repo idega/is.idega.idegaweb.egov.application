@@ -199,11 +199,11 @@ public abstract class ApplicationForm extends Block {
 		return layer;
 	}
 	
-	protected Layer getReceipt(String heading, String subject, String text) {
-		return getPhasesReceipt(heading, subject, text, -1, -1);
+	protected void addReceipt(String heading, String subject, String text) {
+		addPhasesReceipt(heading, subject, text, -1, -1);
 	}
 
-	protected Layer getPhasesReceipt(String heading, String subject, String text, int phase, int totalPhases) {
+	protected void addPhasesReceipt(String heading, String subject, String text, int phase, int totalPhases) {
 		Layer header = new Layer(Layer.DIV);
 		header.setStyleClass("header");
 		add(header);
@@ -218,19 +218,7 @@ public abstract class ApplicationForm extends Block {
 			header.add(heading1);
 		}
 		
-		Layer layer = new Layer(Layer.DIV);
-		layer.setStyleClass("receipt");
-		
-		Layer image = new Layer(Layer.DIV);
-		image.setStyleClass("receiptImage");
-		layer.add(image);
-		
-		Heading1 heading1 = new Heading1(subject);
-		layer.add(heading1);
-		
-		layer.add(new Text(text));
-		
-		return layer;
+		add(getReceiptLayer(subject, text));
 	}
 		
 	private ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) throws RemoteException {
