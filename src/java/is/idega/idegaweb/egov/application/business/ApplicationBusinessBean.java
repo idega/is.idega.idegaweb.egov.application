@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.8 2006/01/16 11:44:59 laddi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.9 2006/01/19 09:30:46 laddi Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -138,6 +138,29 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 					return true;
 				}
 			}
+		}
+		return false;
+	}
+	
+	public boolean canApplyForApplication(String casecode, User user) {
+		try {
+			Application application = getApplication(casecode);
+			int from = application.getAgeFrom();
+			int to = application.getAgeTo();
+			if (from < 0 && to < 0) {
+				return true;
+			}
+
+			if (user.getDateOfBirth() != null) {
+				Age age = new Age(user.getDateOfBirth());
+				int years = age.getYears();
+				if (from <= years && to >= years) {
+					return true;
+				}
+			}
+		}
+		catch (FinderException fe) {
+			log(fe);
 		}
 		return false;
 	}

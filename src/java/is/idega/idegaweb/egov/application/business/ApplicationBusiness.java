@@ -1,6 +1,6 @@
 /*
- * $Id: ApplicationBusiness.java,v 1.6 2006/01/16 10:04:13 laddi Exp $
- * Created on Jan 16, 2006
+ * $Id: ApplicationBusiness.java,v 1.7 2006/01/19 09:30:46 laddi Exp $
+ * Created on Jan 19, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.util.Age;
  * <p>
  * TODO laddi Describe Type ApplicationBusiness
  * </p>
- *  Last modified: $Date: 2006/01/16 10:04:13 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/01/19 09:30:46 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public interface ApplicationBusiness extends IBOService, CaseBusiness {
 
@@ -65,6 +65,11 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#displayApplicationForAges
 	 */
 	public boolean displayApplicationForAges(Application application, Age[] ages) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#canApplyForApplication
+	 */
+	public boolean canApplyForApplication(String casecode, User user) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getApplicationHome

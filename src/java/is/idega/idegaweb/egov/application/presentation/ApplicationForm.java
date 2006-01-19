@@ -31,6 +31,7 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.business.UserBusiness;
@@ -64,7 +65,9 @@ public abstract class ApplicationForm extends Block {
 		Heading1 heading = new Heading1(header);
 		layer.add(heading);
 		
-		layer.add(new Text(body));
+		Paragraph paragraph = new Paragraph();
+		paragraph.add(new Text(body));
+		layer.add(paragraph);
 		
 		return layer;
 	}
@@ -221,7 +224,7 @@ public abstract class ApplicationForm extends Block {
 		add(getReceiptLayer(subject, text));
 	}
 		
-	private ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) throws RemoteException {
+	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) throws RemoteException {
 		try {
 			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwac, ApplicationBusiness.class);
 		}
