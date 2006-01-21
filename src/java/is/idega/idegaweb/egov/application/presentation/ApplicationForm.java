@@ -29,6 +29,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.text.Heading1;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Paragraph;
@@ -222,6 +223,26 @@ public abstract class ApplicationForm extends Block {
 		}
 		
 		add(getReceiptLayer(subject, text));
+	}
+	
+	protected Link getButtonLink(String text) {
+		Layer all = new Layer(Layer.SPAN);
+		all.setStyleClass("buttonSpan");
+		
+		Layer left = new Layer(Layer.SPAN);
+		left.setStyleClass("left");
+		
+		Layer right = new Layer(Layer.SPAN);
+		right.setStyleClass("right");
+		
+		Layer middle = new Layer(Layer.SPAN);
+		middle.setStyleClass("middle");
+		middle.add(new Text(text));
+		
+		Link link = new Link(all);
+		link.setStyleClass("button");
+		
+		return link;
 	}
 		
 	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) throws RemoteException {

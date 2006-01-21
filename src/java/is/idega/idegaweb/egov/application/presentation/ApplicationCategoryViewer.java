@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.7 2006/01/17 13:09:12 gimmi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.8 2006/01/21 15:51:59 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -64,6 +64,11 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 				}
 				mainLayer.add(l);
 			}
+			
+			Layer clearLayer = new Layer(Layer.DIV);
+			clearLayer.setStyleClass("Clear");
+			mainLayer.add(clearLayer);
+			
 			add(mainLayer);
 		}
 		catch (FinderException e) {
