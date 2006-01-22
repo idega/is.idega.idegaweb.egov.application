@@ -231,13 +231,16 @@ public abstract class ApplicationForm extends Block {
 		
 		Layer left = new Layer(Layer.SPAN);
 		left.setStyleClass("left");
-		
-		Layer right = new Layer(Layer.SPAN);
-		right.setStyleClass("right");
+		all.add(left);
 		
 		Layer middle = new Layer(Layer.SPAN);
 		middle.setStyleClass("middle");
 		middle.add(new Text(text));
+		all.add(middle);
+		
+		Layer right = new Layer(Layer.SPAN);
+		right.setStyleClass("right");
+		all.add(right);
 		
 		Link link = new Link(all);
 		link.setStyleClass("button");
