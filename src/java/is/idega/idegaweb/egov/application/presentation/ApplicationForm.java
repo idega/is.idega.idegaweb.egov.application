@@ -247,6 +247,29 @@ public abstract class ApplicationForm extends Block {
 		
 		return link;
 	}
+	
+	protected Layer getAttentionLayer(String text) {
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass("attention");
+		
+		Layer imageLayer = new Layer(Layer.DIV);
+		imageLayer.setStyleClass("attentionImage");
+		layer.add(imageLayer);
+		
+		Layer textLayer = new Layer(Layer.DIV);
+		textLayer.setStyleClass("attentionText");
+		layer.add(textLayer);
+		
+		Paragraph paragraph = new Paragraph();
+		paragraph.add(new Text(text));
+		textLayer.add(paragraph);
+		
+		Layer clearLayer = new Layer(Layer.DIV);
+		clearLayer.setStyleClass("attentionClear");
+		layer.add(clearLayer);
+		
+		return layer;
+	}
 		
 	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) throws RemoteException {
 		try {
