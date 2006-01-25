@@ -12,10 +12,5 @@
         <filter-name>ApplicationUrlRedirector</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-    <filter-mapping>
-        <filter-name>ApplicationUrlRedirector</filter-name>
-        <url-pattern>*</url-pattern>
-    </filter-mapping>
-    
+
 </web-app>
