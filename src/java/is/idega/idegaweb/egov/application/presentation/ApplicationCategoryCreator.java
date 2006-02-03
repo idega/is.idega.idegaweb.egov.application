@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.2 2006/01/16 10:04:13 laddi Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.3 2006/02/03 13:39:25 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -14,30 +14,31 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.FinderException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
 import com.idega.presentation.TableCell2;
-import com.idega.presentation.TableHeaderRowGroup;
 import com.idega.presentation.TableRow;
-import com.idega.presentation.text.Heading1;
+import com.idega.presentation.TableRowGroup;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 public class ApplicationCategoryCreator extends ApplicationBlock {
 
-	protected String getUniqueIdentifier() {
-		return "applicationCategoryCreator";
-	}
-
-	IWResourceBundle iwrb;
+	private IWResourceBundle iwrb;
+	private IWBundle iwb;
 
 	public void present(IWContext iwc) throws Exception {
-		iwrb = super.getResourceBundle(iwc);
+		iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
+		
 		String action = iwc.getParameter("action");
 		if ("create".equals(action)) {
 			getCategoryCreationForm(iwc, -1);
@@ -96,6 +97,11 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 	 * @throws RemoteException
 	 */
 	private void getCategoryCreationForm(IWContext iwc, int categoryId) throws RemoteException {
+		Form form = new Form();
+		form.setID("applicationCategoryCreator");
+		form.setStyleClass("adminForm");
+		form.addParameter("action", iwc.getParameter("action"));
+		
 		TextInput tName = new TextInput("name");
 		TextInput tDesc = new TextInput("desc");
 		if (categoryId > 0) {
@@ -104,69 +110,137 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 						new Integer(categoryId));
 				tName.setContent(cat.getName());
 				tDesc.setContent(cat.getDescription());
+				form.add(new HiddenInput("id", Integer.toString(categoryId)));
 			}
 			catch (FinderException f) {
 				f.printStackTrace();
 			}
 		}
-		Form form = new Form();
-		Table2 table = new Table2();
-		TableHeaderRowGroup headerRow = table.createHeaderRowGroup();
-		TableRow hRow = headerRow.createRow();
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("Create a category", "Craete a Category")));
-		TableRow row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("name", "Name")));
-		row.createCell().add(tName);
-		row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("description", "Description")));
-		row.createCell().add(tDesc);
-		row = table.createRow();
-		row.createCell();
-		TableCell2 cell = row.createCell();
-		if (categoryId > 0) {
-			cell.add(new HiddenInput("id", Integer.toString(categoryId)));
-		}
-		cell.setHorizontalAlignment("right");
-		cell.add(new SubmitButton(iwrb.getLocalizedString("save", "Save"), "action", "save"));
-		form.add(table);
+
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass("formSection");
+		form.add(layer);
+		
+		Layer formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		Label label = new Label(iwrb.getLocalizedString("name", "Name"), tName);
+		formItem.add(label);
+		formItem.add(tName);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("description", "Description"), tDesc);
+		formItem.add(label);
+		formItem.add(tDesc);
+		layer.add(formItem);
+
+		Layer clearLayer = new Layer(Layer.DIV);
+		clearLayer.setStyleClass("Clear");
+		
+		layer.add(clearLayer);
+		
+		Layer buttonLayer = new Layer(Layer.DIV);
+		buttonLayer.setStyleClass("buttonLayer");
+		form.add(buttonLayer);
+		
+		SubmitButton back = new SubmitButton(iwrb.getLocalizedString("back", "Back"));
+		back.setValueOnClick("action", "list");
+		buttonLayer.add(back);
+		
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"));
+		save.setValueOnClick("action", "save");
+		buttonLayer.add(save);
+
 		add(form);
-		Link create = new Link(iwrb.getLocalizedString("list_categories", "List Categories"));
-		create.addParameter("action", "list");
-		add(create);
 	}
 
 	private void listExisting(IWContext iwc) throws FinderException, RemoteException {
 		Collection categories = getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByName();
+		
+		Form form = new Form();
+		form.setID("applicationCategoryCreator");
+		form.setStyleClass("adminForm");
+		
 		Table2 table = new Table2();
-		TableHeaderRowGroup headerRow = table.createHeaderRowGroup();
-		TableRow hRow = headerRow.createRow();
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("category", "Category")));
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("description", "Description")));
+		table.setWidth("100%");
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setStyleClass("ruler");
+		table.setStyleClass("adminTable");
+		form.add(table);
+		
+		TableRowGroup group = table.createHeaderRowGroup();
+		TableRow row = group.createRow();
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.setStyleClass("category");
+		cell.add(new Text(iwrb.getLocalizedString("category", "Category")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("description");
+		cell.add(new Text(iwrb.getLocalizedString("description", "Description")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("edit");
+		cell.add(Text.getNonBrakingSpace());
+
+		cell = row.createHeaderCell();
+		cell.setStyleClass("remove");
+		cell.setStyleClass("lastColumn");
+		cell.add(Text.getNonBrakingSpace());
+
+		group = table.createBodyRowGroup();
+		int iRow = 1;
+		
 		Iterator iter = categories.iterator();
 		while (iter.hasNext()) {
 			ApplicationCategory cat = (ApplicationCategory) iter.next();
-			TableRow row = table.createRow();
-			row.createCell().add(getText(cat.getName()));
-			row.createCell().add(getText(cat.getDescription()));
-			Link edit = new Link(getText(iwrb.getLocalizedString("edit", "Edit")));
+			row = table.createRow();
+			
+			Link edit = new Link(iwb.getImage("edit.png", iwrb.getLocalizedString("edit", "Edit")));
 			edit.addParameter("action", "edit");
 			edit.addParameter("id", cat.getPrimaryKey().toString());
-			Link delete = new Link(getText(iwrb.getLocalizedString("delete", "Delete")));
+			
+			Link delete = new Link(iwb.getImage("delete.png", iwrb.getLocalizedString("remove", "Remove")));
 			delete.addParameter("action", "delete");
 			delete.addParameter("id", cat.getPrimaryKey().toString());
-			TableCell2 cell = row.createCell();
-			cell.add(edit);
-			cell.add(Text.getNonBrakingSpace());
-			cell.add(delete);
-		}
-		add(table);
-		Link create = new Link(iwrb.getLocalizedString("new_category", "New Category"));
-		create.addParameter("action", "create");
-		add(create);
-	}
 
-	private Text getText(String content) {
-		Text text = new Text(content);
-		return text;
+			if (iRow % 2 == 0) {
+				row.setStyleClass("evenRow");
+			}
+			else {
+				row.setStyleClass("oddRow");
+			}
+
+			cell = row.createCell();
+			cell.setStyleClass("firstColumn");
+			cell.setStyleClass("category");
+			cell.add(new Text(cat.getName()));
+
+			cell = row.createCell();
+			cell.setStyleClass("description");
+			cell.add(new Text(cat.getDescription() != null ? cat.getDescription() : ""));
+
+			cell = row.createCell();
+			cell.setStyleClass("edit");
+			cell.add(edit);
+
+			cell = row.createCell();
+			cell.setStyleClass("lastColumn");
+			cell.setStyleClass("remove");
+			cell.add(delete);
+
+			iRow++;
+		}
+
+		Layer buttonLayer = new Layer(Layer.DIV);
+		buttonLayer.setStyleClass("buttonLayer");
+		form.add(buttonLayer);
+		
+		SubmitButton newLink = new SubmitButton(iwrb.getLocalizedString("new_category", "New Category"), "action", "create");
+		buttonLayer.add(newLink);
+		
+		add(form);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.4 2006/01/16 11:44:59 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.5 2006/02/03 13:39:25 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -16,12 +16,15 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.block.process.data.CaseCode;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
 import com.idega.presentation.TableCell2;
 import com.idega.presentation.TableHeaderRowGroup;
 import com.idega.presentation.TableRow;
+import com.idega.presentation.TableRowGroup;
 import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -34,14 +37,15 @@ import com.idega.presentation.ui.TextInput;
 
 public class ApplicationCreator extends ApplicationBlock {
 
-	IWResourceBundle iwrb;
-
-	protected String getUniqueIdentifier() {
-		return "applicationCreator";
-	}
+	private IWResourceBundle iwrb;
+	private IWBundle iwb;
+	
+	private int urlLength = 50;
 
 	public void present(IWContext iwc) throws Exception {
 		iwrb = super.getResourceBundle(iwc);
+		iwb = getBundle(iwc);
+		
 		String action = iwc.getParameter("action");
 		if ("create".equals(action)) {
 			getApplicationCreationForm(iwc, -1);
@@ -109,49 +113,143 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 
 	private void listExisting(IWContext iwc) throws RemoteException, FinderException {
-		Collection categories = getApplicationBusiness(iwc).getApplicationHome().findAll();
+		Collection applications = getApplicationBusiness(iwc).getApplicationHome().findAll();
+
+		Form form = new Form();
+		form.setID("applicationCreator");
+		form.setStyleClass("adminForm");
+		
 		Table2 table = new Table2();
-		TableHeaderRowGroup headerRow = table.createHeaderRowGroup();
-		TableRow hRow = headerRow.createRow();
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("application", "Application")));
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("category", "Category")));
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("case_code", "CaseCode")));
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("age_from", "Age From")));
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("age_to", "Age To")));
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("electronic", "Electronic")));
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("url", "URL")));
-		Iterator iter = categories.iterator();
+		table.setWidth("100%");
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setStyleClass("ruler");
+		table.setStyleClass("adminTable");
+		form.add(table);
+		
+		TableRowGroup group = table.createHeaderRowGroup();
+		TableRow row = group.createRow();
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.setStyleClass("application");
+		cell.add(new Text(iwrb.getLocalizedString("application", "Application")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("category");
+		cell.add(new Text(iwrb.getLocalizedString("category", "Category")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("caseCode");
+		cell.add(new Text(iwrb.getLocalizedString("case_code", "CaseCode")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("ageFrom");
+		cell.add(new Text(iwrb.getLocalizedString("age_from", "Age From")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("ageTo");
+		cell.add(new Text(iwrb.getLocalizedString("age_to", "Age To")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("electronic");
+		cell.add(new Text(iwrb.getLocalizedString("electronic", "Electronic")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("url");
+		cell.add(new Text(iwrb.getLocalizedString("url", "URL")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("edit");
+		cell.add(Text.getNonBrakingSpace());
+
+		cell = row.createHeaderCell();
+		cell.setStyleClass("remove");
+		cell.setStyleClass("lastColumn");
+		cell.add(Text.getNonBrakingSpace());
+
+		group = table.createBodyRowGroup();
+		int iRow = 1;
+		
+		Iterator iter = applications.iterator();
 		while (iter.hasNext()) {
 			Application app = (Application) iter.next();
 			CaseCode code = app.getCaseCode();
-			TableRow row = table.createRow();
-			row.createCell().add(getText(app.getName()));
-			row.createCell().add(getText(app.getCategory().getName()));
-			if (code != null) {
-				row.createCell().add(getText(code.getCode()));
-			}
-			else {
-				row.createCell().add(getText("-"));
-			}
-			row.createCell().add(getText(app.getAgeFrom() > -1 ? Integer.toString(app.getAgeFrom()) : "-"));
-			row.createCell().add(getText(app.getAgeTo() > -1 ? Integer.toString(app.getAgeTo()) : "-"));
-			row.createCell().add(getText(Boolean.toString(app.getElectronic())));
-			row.createCell().add(getText(app.getUrl()));
-			Link edit = new Link(getText(iwrb.getLocalizedString("edit", "Edit")));
+			
+			row = table.createRow();
+			
+			Link edit = new Link(iwb.getImage("edit.png", iwrb.getLocalizedString("edit", "Edit")));
 			edit.addParameter("action", "edit");
 			edit.addParameter("id", app.getPrimaryKey().toString());
-			Link delete = new Link(getText(iwrb.getLocalizedString("delete", "Delete")));
+			
+			Link delete = new Link(iwb.getImage("delete.png", iwrb.getLocalizedString("remove", "Remove")));
 			delete.addParameter("action", "delete");
 			delete.addParameter("id", app.getPrimaryKey().toString());
-			TableCell2 cell = row.createCell();
+
+			if (iRow % 2 == 0) {
+				row.setStyleClass("evenRow");
+			}
+			else {
+				row.setStyleClass("oddRow");
+			}
+
+			cell = row.createCell();
+			cell.setStyleClass("firstColumn");
+			cell.setStyleClass("application");
+			cell.add(new Text(app.getName()));
+
+			cell = row.createCell();
+			cell.setStyleClass("category");
+			cell.add(new Text(app.getCategory().getName()));
+
+			cell = row.createCell();
+			cell.setStyleClass("caseCode");
+			if (code != null) {
+				row.createCell().add(new Text(code.getCode()));
+			}
+			else {
+				row.createCell().add(new Text("-"));
+			}
+
+			cell = row.createCell();
+			cell.setStyleClass("ageFrom");
+			cell.add(new Text(app.getAgeFrom() > -1 ? Integer.toString(app.getAgeFrom()) : "-"));
+
+			cell = row.createCell();
+			cell.setStyleClass("ageTo");
+			cell.add(new Text(app.getAgeTo() > -1 ? Integer.toString(app.getAgeTo()) : "-"));
+
+			cell = row.createCell();
+			cell.setStyleClass("electronic");
+			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
+
+			String URL = app.getUrl();
+			if (URL.length() > urlLength) {
+				URL = URL.substring(0, urlLength) + "...";
+			}
+			cell = row.createCell();
+			cell.setStyleClass("url");
+			cell.add(new Text(URL));
+
+			cell = row.createCell();
+			cell.setStyleClass("edit");
 			cell.add(edit);
-			cell.add(Text.getNonBrakingSpace());
+
+			cell = row.createCell();
+			cell.setStyleClass("lastColumn");
+			cell.setStyleClass("remove");
 			cell.add(delete);
+
+			iRow++;
 		}
-		add(table);
-		Link create = new Link(iwrb.getLocalizedString("new_application", "New Application"));
-		create.addParameter("action", "create");
-		add(create);
+
+		Layer buttonLayer = new Layer(Layer.DIV);
+		buttonLayer.setStyleClass("buttonLayer");
+		form.add(buttonLayer);
+		
+		SubmitButton newLink = new SubmitButton(iwrb.getLocalizedString("new_application", "New Application"), "action", "create");
+		buttonLayer.add(newLink);
+		
+		add(form);
 	}
 
 	private void getApplicationCreationForm(IWContext iwc, int categoryId) throws RemoteException {
@@ -194,25 +292,25 @@ public class ApplicationCreator extends ApplicationBlock {
 		TableRow hRow = headerRow.createRow();
 		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("create_an_application", "Create an Application")));
 		TableRow row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("name", "Name")));
+		row.createCell().add(new Text(iwrb.getLocalizedString("name", "Name")));
 		row.createCell().add(tName);
 		row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("category", "Category")));
+		row.createCell().add(new Text(iwrb.getLocalizedString("category", "Category")));
 		row.createCell().add(tCat);
 		row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("case_code", "Case Code")));
+		row.createCell().add(new Text(iwrb.getLocalizedString("case_code", "Case Code")));
 		row.createCell().add(tCode);
 		row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("url", "URL")));
+		row.createCell().add(new Text(iwrb.getLocalizedString("url", "URL")));
 		row.createCell().add(tUrl);
 		row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("electronic", "Electronic")));
+		row.createCell().add(new Text(iwrb.getLocalizedString("electronic", "Electronic")));
 		row.createCell().add(tElec);
 		row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("age_from", "Age From")));
+		row.createCell().add(new Text(iwrb.getLocalizedString("age_from", "Age From")));
 		row.createCell().add(tFrom);
 		row = table.createRow();
-		row.createCell().add(getText(iwrb.getLocalizedString("age_to", "Age To")));
+		row.createCell().add(new Text(iwrb.getLocalizedString("age_to", "Age To")));
 		row.createCell().add(tTo);
 		row = table.createRow();
 		row.createCell();
@@ -229,8 +327,8 @@ public class ApplicationCreator extends ApplicationBlock {
 		add(create);
 	}
 
-	private Text getText(String content) {
-		Text text = new Text(content);
-		return text;
+	
+	public void setURLLength(int urlLength) {
+		this.urlLength = urlLength;
 	}
 }
