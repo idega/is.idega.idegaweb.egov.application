@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.5 2006/02/03 13:39:25 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.6 2006/02/03 13:49:40 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -22,16 +22,15 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Table2;
 import com.idega.presentation.TableCell2;
-import com.idega.presentation.TableHeaderRowGroup;
 import com.idega.presentation.TableRow;
 import com.idega.presentation.TableRowGroup;
-import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
@@ -253,78 +252,125 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 
 	private void getApplicationCreationForm(IWContext iwc, int categoryId) throws RemoteException {
-		TextInput tName = new TextInput("name");
-		TextInput tUrl = new TextInput("url");
-		BooleanInput tElec = new BooleanInput("elec");
-		TextInput tFrom = new TextInput("ageFrom");
-		TextInput tTo = new TextInput("ageTo");
-		DropdownMenu tCat = new DropdownMenu("cat");
-		DropdownMenu tCode = new DropdownMenu("code");
+		Form form = new Form();
+		form.setID("applicationCategoryCreator");
+		form.setStyleClass("adminForm");
+		form.addParameter("action", iwc.getParameter("action"));
+		
+		TextInput name = new TextInput("name");
+		TextInput url = new TextInput("url");
+		BooleanInput electronic = new BooleanInput("elec");
+		TextInput ageFrom = new TextInput("ageFrom");
+		TextInput ageTo = new TextInput("ageTo");
+
+		DropdownMenu category = new DropdownMenu("cat");
 		try {
-			tCat.addMenuElements(getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByName());
+			category.addMenuElements(getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByName());
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		tCode.addMenuElementFirst("-1", iwrb.getLocalizedString("no_code", "No Code"));
-		tCode.addMenuElements(getApplicationBusiness(iwc).getCaseCodes());
+		
+		DropdownMenu caseCode = new DropdownMenu("code");
+		caseCode.addMenuElementFirst("-1", iwrb.getLocalizedString("no_code", "No Code"));
+		Collection caseCodes = getApplicationBusiness(iwc).getCaseCodes();
+		Iterator iter = caseCodes.iterator();
+		while (iter.hasNext()) {
+			CaseCode code = (CaseCode) iter.next();
+			caseCode.addMenuElement(code.getPrimaryKey().toString(), code.getDescriptionLocalizedKey() != null ? iwrb.getLocalizedString(code.getDescriptionLocalizedKey(), code.getDescription()) : code.getDescription());
+		}
+
 		if (categoryId > 0) {
 			try {
-				Application app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
+				Application application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
 						new Integer(categoryId));
-				tName.setContent(app.getName());
-				tUrl.setContent(app.getUrl());
-				tElec.setSelected(app.getElectronic());
-				tFrom.setContent(app.getAgeFrom() > 0 ? Integer.toString(app.getAgeFrom()) : "");
-				tTo.setContent(app.getAgeFrom() > 0 ? Integer.toString(app.getAgeTo()) : "");
-				tCat.setSelectedElement(app.getCategory().getPrimaryKey().toString());
-				if (app.getCaseCode() != null) {
-					tCode.setSelectedElement(app.getCaseCode().getPrimaryKey().toString());
+				name.setContent(application.getName());
+				url.setContent(application.getUrl());
+				electronic.setSelected(application.getElectronic());
+				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : "");
+				ageTo.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeTo()) : "");
+				category.setSelectedElement(application.getCategory().getPrimaryKey().toString());
+				if (application.getCaseCode() != null) {
+					caseCode.setSelectedElement(application.getCaseCode().getPrimaryKey().toString());
 				}
+				form.add(new HiddenInput("id", Integer.toString(categoryId)));
 			}
 			catch (FinderException f) {
 				f.printStackTrace();
 			}
 		}
-		Form form = new Form();
-		Table2 table = new Table2();
-		TableHeaderRowGroup headerRow = table.createHeaderRowGroup();
-		TableRow hRow = headerRow.createRow();
-		hRow.createHeaderCell().add(new Heading1(iwrb.getLocalizedString("create_an_application", "Create an Application")));
-		TableRow row = table.createRow();
-		row.createCell().add(new Text(iwrb.getLocalizedString("name", "Name")));
-		row.createCell().add(tName);
-		row = table.createRow();
-		row.createCell().add(new Text(iwrb.getLocalizedString("category", "Category")));
-		row.createCell().add(tCat);
-		row = table.createRow();
-		row.createCell().add(new Text(iwrb.getLocalizedString("case_code", "Case Code")));
-		row.createCell().add(tCode);
-		row = table.createRow();
-		row.createCell().add(new Text(iwrb.getLocalizedString("url", "URL")));
-		row.createCell().add(tUrl);
-		row = table.createRow();
-		row.createCell().add(new Text(iwrb.getLocalizedString("electronic", "Electronic")));
-		row.createCell().add(tElec);
-		row = table.createRow();
-		row.createCell().add(new Text(iwrb.getLocalizedString("age_from", "Age From")));
-		row.createCell().add(tFrom);
-		row = table.createRow();
-		row.createCell().add(new Text(iwrb.getLocalizedString("age_to", "Age To")));
-		row.createCell().add(tTo);
-		row = table.createRow();
-		row.createCell();
-		TableCell2 cell = row.createCell();
-		if (categoryId > 0) {
-			cell.add(new HiddenInput("id", Integer.toString(categoryId)));
-		}
-		cell.setHorizontalAlignment("right");
-		cell.add(new SubmitButton(iwrb.getLocalizedString("save", "Save"), "action", "save"));
-		form.add(table);
+
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass("formSection");
+		form.add(layer);
+		
+		Layer formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		Label label = new Label(iwrb.getLocalizedString("name", "Name"), name);
+		formItem.add(label);
+		formItem.add(name);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("category", "category"), category);
+		formItem.add(label);
+		formItem.add(category);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("case_code", "Case code"), caseCode);
+		formItem.add(label);
+		formItem.add(caseCode);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("url", "url"), url);
+		formItem.add(label);
+		formItem.add(url);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("electronic", "Electronic"), electronic);
+		formItem.add(label);
+		formItem.add(electronic);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("age_from", "Age from"), ageFrom);
+		formItem.add(label);
+		formItem.add(ageFrom);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("age_to", "Age to"), ageTo);
+		formItem.add(label);
+		formItem.add(ageTo);
+		layer.add(formItem);
+
+		Layer clearLayer = new Layer(Layer.DIV);
+		clearLayer.setStyleClass("Clear");
+		
+		layer.add(clearLayer);
+		
+		Layer buttonLayer = new Layer(Layer.DIV);
+		buttonLayer.setStyleClass("buttonLayer");
+		form.add(buttonLayer);
+		
+		SubmitButton back = new SubmitButton(iwrb.getLocalizedString("back", "Back"));
+		back.setValueOnClick("action", "list");
+		buttonLayer.add(back);
+		
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"));
+		save.setValueOnClick("action", "save");
+		buttonLayer.add(save);
+
 		add(form);
-		Link create = new Link(iwrb.getLocalizedString("list_applications", "List Applications"));
-		create.addParameter("action", "list");
-		add(create);
 	}
 
 	
