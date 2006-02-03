@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.3 2006/02/03 13:39:25 laddi Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.4 2006/02/03 14:43:21 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -100,7 +100,6 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		Form form = new Form();
 		form.setID("applicationCategoryCreator");
 		form.setStyleClass("adminForm");
-		form.addParameter("action", iwc.getParameter("action"));
 		
 		TextInput tName = new TextInput("name");
 		TextInput tDesc = new TextInput("desc");
@@ -144,12 +143,10 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton back = new SubmitButton(iwrb.getLocalizedString("back", "Back"));
-		back.setValueOnClick("action", "list");
+		SubmitButton back = new SubmitButton(iwrb.getLocalizedString("back", "Back"), "action", "list");
 		buttonLayer.add(back);
 		
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"));
-		save.setValueOnClick("action", "save");
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"), "action", "save");
 		buttonLayer.add(save);
 
 		add(form);

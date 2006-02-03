@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.6 2006/02/03 13:49:40 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.7 2006/02/03 14:43:21 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -203,10 +203,10 @@ public class ApplicationCreator extends ApplicationBlock {
 			cell = row.createCell();
 			cell.setStyleClass("caseCode");
 			if (code != null) {
-				row.createCell().add(new Text(code.getCode()));
+				cell.add(new Text(code.getCode()));
 			}
 			else {
-				row.createCell().add(new Text("-"));
+				cell.add(new Text("-"));
 			}
 
 			cell = row.createCell();
@@ -255,7 +255,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		Form form = new Form();
 		form.setID("applicationCategoryCreator");
 		form.setStyleClass("adminForm");
-		form.addParameter("action", iwc.getParameter("action"));
 		
 		TextInput name = new TextInput("name");
 		TextInput url = new TextInput("url");
@@ -362,12 +361,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton back = new SubmitButton(iwrb.getLocalizedString("back", "Back"));
-		back.setValueOnClick("action", "list");
+		SubmitButton back = new SubmitButton(iwrb.getLocalizedString("back", "Back"), "action", "list");
 		buttonLayer.add(back);
 		
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"));
-		save.setValueOnClick("action", "save");
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"), "action", "save");
 		buttonLayer.add(save);
 
 		add(form);
