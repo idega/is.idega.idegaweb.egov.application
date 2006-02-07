@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.4 2006/02/03 14:43:21 laddi Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.5 2006/02/07 12:33:11 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -217,7 +217,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 
 			cell = row.createCell();
 			cell.setStyleClass("description");
-			cell.add(new Text(cat.getDescription() != null ? cat.getDescription() : ""));
+			cell.add(new Text(cat.getDescription() != null ? cat.getDescription() : Text.NON_BREAKING_SPACE));
 
 			cell = row.createCell();
 			cell.setStyleClass("edit");

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.7 2006/02/03 14:43:21 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.8 2006/02/07 12:33:11 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -251,9 +251,9 @@ public class ApplicationCreator extends ApplicationBlock {
 		add(form);
 	}
 
-	private void getApplicationCreationForm(IWContext iwc, int categoryId) throws RemoteException {
+	private void getApplicationCreationForm(IWContext iwc, int applicationID) throws RemoteException {
 		Form form = new Form();
-		form.setID("applicationCategoryCreator");
+		form.setID("applicationCreator");
 		form.setStyleClass("adminForm");
 		
 		TextInput name = new TextInput("name");
@@ -279,10 +279,10 @@ public class ApplicationCreator extends ApplicationBlock {
 			caseCode.addMenuElement(code.getPrimaryKey().toString(), code.getDescriptionLocalizedKey() != null ? iwrb.getLocalizedString(code.getDescriptionLocalizedKey(), code.getDescription()) : code.getDescription());
 		}
 
-		if (categoryId > 0) {
+		if (applicationID > 0) {
 			try {
 				Application application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
-						new Integer(categoryId));
+						new Integer(applicationID));
 				name.setContent(application.getName());
 				url.setContent(application.getUrl());
 				electronic.setSelected(application.getElectronic());
@@ -292,7 +292,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				if (application.getCaseCode() != null) {
 					caseCode.setSelectedElement(application.getCaseCode().getPrimaryKey().toString());
 				}
-				form.add(new HiddenInput("id", Integer.toString(categoryId)));
+				form.add(new HiddenInput("id", Integer.toString(applicationID)));
 			}
 			catch (FinderException f) {
 				f.printStackTrace();
