@@ -38,6 +38,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 
 
@@ -141,7 +142,11 @@ public abstract class ApplicationForm extends Block {
 			if (application != null) {
 				if (application.getAgeFrom() > -1 && application.getAgeTo() > -1) {
 					if (element.getDateOfBirth() != null) {
-						Age age = new Age(element.getDateOfBirth());
+						IWTimestamp stamp = new IWTimestamp(element.getDateOfBirth());
+						stamp.setDay(1);
+						stamp.setMonth(1);
+						
+						Age age = new Age(stamp.getDate());
 						addUser = (application.getAgeFrom() <= age.getYears() && application.getAgeTo() >= age.getYears());
 					}
 					else {
