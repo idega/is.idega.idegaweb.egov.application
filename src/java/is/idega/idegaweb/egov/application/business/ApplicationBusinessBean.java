@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.9 2006/01/19 09:30:46 laddi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.10 2006/02/09 06:31:36 laddi Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -31,6 +31,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.IWTimestamp;
 
 public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBusiness, ApplicationBusiness {
 
@@ -152,7 +153,11 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 			}
 
 			if (user.getDateOfBirth() != null) {
-				Age age = new Age(user.getDateOfBirth());
+				IWTimestamp stamp = new IWTimestamp(user.getDateOfBirth());
+				stamp.setDay(1);
+				stamp.setMonth(1);
+				
+				Age age = new Age(stamp.getDate());
 				int years = age.getYears();
 				if (from <= years && to >= years) {
 					return true;
