@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.2 2006/01/17 13:37:41 gimmi Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.3 2006/02/14 22:59:10 tryggvil Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -33,6 +33,7 @@ import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
+import com.idega.user.data.User;
 
 public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
@@ -85,6 +86,12 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 				} catch (FinderException f) {
 					return application.getUrl();
 				}
+			}
+			else if(isLoggedOn){
+				
+				String uri = application.getUrl();
+				uri = IWAuthenticator.getUriParsedWithVariables(request,uri);
+				return uri;
 			}
 			return application.getUrl();
 			
