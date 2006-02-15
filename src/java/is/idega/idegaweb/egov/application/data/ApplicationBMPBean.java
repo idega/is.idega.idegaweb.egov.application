@@ -29,6 +29,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	private static final String CASE_CODE = "case_code";
 	private static final String URL = "application_url";
 	private static final String ELECTRONIC = "is_electronic";
+	private static final String VISIBLE = "is_visible";
 	private static final String AGE_FROM = "age_from";
 	private static final String AGE_TO = "age_to";
 	private static final String TIMES_CLICKED = "times_clicked";
@@ -45,11 +46,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(NAME, "name", String.class, 50);
+		
 		addManyToOneRelationship(CATEGORY, ApplicationCategory.class);
 		addManyToOneRelationship(CASE_CODE, CaseCode.class);
 		setNullable(CASE_CODE, true);
+		
 		addAttribute(URL, "URL", String.class);
 		addAttribute(ELECTRONIC, "is electronic application", Boolean.class);
+		addAttribute(VISIBLE, "is visible", Boolean.class);
 		addAttribute(AGE_FROM, "age from", Integer.class);
 		addAttribute(AGE_TO, "age to", Integer.class);
 		addAttribute(TIMES_CLICKED, "Time clicked", Integer.class);
@@ -100,7 +104,15 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	}
 
 	public boolean getElectronic() {
-		return getBooleanColumnValue(ELECTRONIC);
+		return getBooleanColumnValue(ELECTRONIC, false);
+	}
+	
+	public void setVisible(boolean visible) {
+		setColumn(VISIBLE, visible);
+	}
+	
+	public boolean getVisible() {
+		return getBooleanColumnValue(VISIBLE, true);
 	}
 
 	public void setName(String name) {

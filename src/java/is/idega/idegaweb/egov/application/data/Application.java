@@ -1,6 +1,6 @@
 /*
- * $Id: Application.java,v 1.4 2006/01/14 21:17:26 laddi Exp $
- * Created on Jan 14, 2006
+ * $Id: Application.java,v 1.5 2006/02/15 06:45:38 laddi Exp $
+ * Created on Feb 15, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.data.IDOEntity;
  * <p>
  * TODO laddi Describe Type Application
  * </p>
- *  Last modified: $Date: 2006/01/14 21:17:26 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/02/15 06:45:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface Application extends IDOEntity {
 
@@ -83,6 +83,16 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getElectronic
 	 */
 	public boolean getElectronic();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setVisible
+	 */
+	public void setVisible(boolean visible);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getVisible
+	 */
+	public boolean getVisible();
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setName

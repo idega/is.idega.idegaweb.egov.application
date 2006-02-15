@@ -1,6 +1,6 @@
 /*
- * $Id: ApplicationHomeImpl.java,v 1.4 2006/01/14 21:17:26 laddi Exp $
- * Created on Jan 14, 2006
+ * $Id: ApplicationHomeImpl.java,v 1.5 2006/02/15 06:45:38 laddi Exp $
+ * Created on Feb 15, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -19,10 +19,10 @@ import com.idega.data.IDOFactory;
  * <p>
  * TODO laddi Describe Type ApplicationHomeImpl
  * </p>
- *  Last modified: $Date: 2006/01/14 21:17:26 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/02/15 06:45:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.7 2006/02/07 15:09:45 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.8 2006/02/15 06:45:38 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -57,7 +57,7 @@ public abstract class ApplicationBlock extends Block {
 				throw new IBORuntimeException(re);
 			}
 			
-			if (!checkAges || displayApplication) {
+			if (application.getVisible() && (!checkAges || displayApplication)) {
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");
