@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.9 2006/02/15 06:45:38 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.10 2006/02/16 14:58:45 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.block.process.data.CaseCode;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -110,6 +111,9 @@ public class ApplicationCreator extends ApplicationBlock {
 			}
 			app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
 			app.store();
+
+			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
+			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
 		}
 	}
 

@@ -20,6 +20,24 @@ public class ApplicationFavorites extends ApplicationBlock {
 
 	private String id = "applicationFavoritesViewer";
 	private int iNumberOfShown = 5;
+	public static final String CACHE_KEY = "app_application_favorites";
+
+	public ApplicationFavorites() {
+		setCacheable(getCacheKey(), (20 * 60 * 1000));
+	}
+	
+	public String getCacheKey() {
+		return CACHE_KEY;
+	}
+
+	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
+		if (iwc.isLoggedOn()) {
+			return cacheStatePrefix + "_" + iwc.getCurrentUser().getPrimaryKey().toString();
+		}
+		else {
+			return cacheStatePrefix;
+		}
+	}
 
 	protected String getUniqueIdentifier() {
 		return "applicationFavorites";

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.8 2006/01/21 15:51:59 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.9 2006/02/16 14:58:45 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -27,7 +27,25 @@ import com.idega.util.Age;
 public class ApplicationCategoryViewer extends ApplicationBlock {
 
 	private String id = "applicationCategoryViewer";
+	public static final String CACHE_KEY = "app_application_category_viewer";
 
+	public ApplicationCategoryViewer() {
+		setCacheable(getCacheKey(), (20 * 60 * 1000));
+	}
+	
+	public String getCacheKey() {
+		return CACHE_KEY;
+	}
+
+	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
+		if (iwc.isLoggedOn()) {
+			return cacheStatePrefix + "_" + iwc.getCurrentUser().getPrimaryKey().toString();
+		}
+		else {
+			return cacheStatePrefix;
+		}
+	}
+	
 	protected String getUniqueIdentifier() {
 		return "applicationCategoryViewer";
 	}
