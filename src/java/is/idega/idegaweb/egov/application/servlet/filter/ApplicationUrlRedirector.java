@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.3 2006/02/14 22:59:10 tryggvil Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.4 2006/02/17 09:23:43 laddi Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -33,7 +33,6 @@ import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
-import com.idega.user.data.User;
 
 public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
