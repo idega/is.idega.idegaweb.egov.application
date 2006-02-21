@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.4 2006/02/17 09:23:43 laddi Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.5 2006/02/21 19:24:02 laddi Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -38,7 +38,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
 	private static final String BINDING_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
 
-	public void init(FilterConfig arg0) throws ServletException {
+	public void init(FilterConfig arg0) {
 	}
 
 	public void doFilter(ServletRequest srequest, ServletResponse sresponse, FilterChain chain) throws IOException,

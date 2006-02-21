@@ -276,7 +276,7 @@ public abstract class ApplicationForm extends Block {
 		return layer;
 	}
 		
-	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) throws RemoteException {
+	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) {
 		try {
 			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwac, ApplicationBusiness.class);
 		}
@@ -285,7 +285,7 @@ public abstract class ApplicationForm extends Block {
 		}
 	}
 
-	private FamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) throws RemoteException {
+	private FamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) {
 		try {
 			return (FamilyLogic) IBOLookup.getServiceInstance(iwac, FamilyLogic.class);
 		}
