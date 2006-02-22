@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.8 2006/02/15 06:45:38 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.9 2006/02/22 20:55:02 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -30,8 +30,6 @@ public abstract class ApplicationBlock extends Block {
 	public static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	public static final String PARAMETER_APPLICATION_PK = "prm_app_application_pk";
 	public static final String PARAMETER_IDENTIFIER_NAME = "prm_app_identifier_name";
-	private static final String BINDING_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
-
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
 	}
