@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.9 2006/02/16 14:58:45 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.10 2006/02/24 07:09:23 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -38,7 +38,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 	}
 
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
-		if (iwc.isLoggedOn()) {
+		if (useAgeRestriction(iwc) && iwc.isLoggedOn()) {
 			return cacheStatePrefix + "_" + iwc.getCurrentUser().getPrimaryKey().toString();
 		}
 		else {
@@ -54,7 +54,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		ApplicationBusiness bus = getApplicationBusiness(iwc);
 		Age[] ages = null;
 		boolean checkAges = false;
-		if (iwc.isLoggedOn()) {
+		if (useAgeRestriction(iwc) && iwc.isLoggedOn()) {
 			ages = bus.getAgesForUserAndChildren(iwc.getCurrentUser());
 			checkAges = (ages != null);
 		}

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.9 2006/02/22 20:55:02 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.10 2006/02/24 07:09:23 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -30,12 +30,18 @@ public abstract class ApplicationBlock extends Block {
 	public static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	public static final String PARAMETER_APPLICATION_PK = "prm_app_application_pk";
 	public static final String PARAMETER_IDENTIFIER_NAME = "prm_app_identifier_name";
+	public static final String ATTRIBUTE_USE_AGE_RESTRICTION = "application_use_age_restriction";
+
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
 	}
 	
 	public void main(IWContext iwc) throws Exception {
 		present(iwc);
+	}
+	
+	protected boolean useAgeRestriction(IWContext iwc) {
+		return new Boolean(iwc.getApplicationSettings().getProperty(ATTRIBUTE_USE_AGE_RESTRICTION, Boolean.TRUE.toString())).booleanValue();
 	}
 	
 	protected abstract void present(IWContext iwc) throws Exception;

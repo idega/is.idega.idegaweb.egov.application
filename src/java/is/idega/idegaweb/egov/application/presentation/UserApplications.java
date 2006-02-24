@@ -32,7 +32,7 @@ public class UserApplications extends ApplicationBlock {
 			Layer layer = new Layer();
 			layer.setId(id);
 			Age[] ages = getApplicationBusiness(iwc).getAgesForUserAndChildren(iwc.getCurrentUser());
-			boolean checkAges = (ages != null);
+			boolean checkAges = useAgeRestriction(iwc) && (ages != null);
 			List applications = new ArrayList(getApplicationBusiness(iwc).getUserApplications(iwc.getCurrentUser()));
 			if (!applications.isEmpty()) {
 				Collections.sort(applications, new ApplicationComparator(iwc.getCurrentLocale()));

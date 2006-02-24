@@ -31,7 +31,7 @@ public class ApplicationFavorites extends ApplicationBlock {
 	}
 
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
-		if (iwc.isLoggedOn()) {
+		if (useAgeRestriction(iwc) && iwc.isLoggedOn()) {
 			return cacheStatePrefix + "_" + iwc.getCurrentUser().getPrimaryKey().toString();
 		}
 		else {
@@ -49,7 +49,7 @@ public class ApplicationFavorites extends ApplicationBlock {
 			layer.setId(id);
 			Age[] ages = null;
 			boolean checkAges = false;
-			if (iwc.isLoggedOn()) {
+			if (useAgeRestriction(iwc) && iwc.isLoggedOn()) {
 				ages = getApplicationBusiness(iwc).getAgesForUserAndChildren(iwc.getCurrentUser());
 				checkAges = (ages != null);
 			}
