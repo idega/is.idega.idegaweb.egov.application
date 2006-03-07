@@ -155,6 +155,10 @@ public abstract class ApplicationForm extends Block {
 				}
 			}
 			
+			if (!addUser && addOveragedUser(iwc, user)) {
+				addUser = true;
+			}
+			
 			if (addUser) {
 				menu.addMenuElement(element.getPrimaryKey().toString(), element.getName());
 			}
@@ -166,6 +170,10 @@ public abstract class ApplicationForm extends Block {
 		}
 		
 		return menu;
+	}
+	
+	protected boolean addOveragedUser(IWContext iwc, User user) {
+		return false;
 	}
 	
 	private Layer getPhases(int phase, int totalPhases) {
