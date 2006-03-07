@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.10 2006/02/16 14:58:45 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.11 2006/03/07 16:22:56 gimmi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -86,6 +86,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		int ageTo = iwc.isParameterSet("ageTo") ? Integer.parseInt(iwc.getParameter("ageTo")) : -1;
 		String cat = iwc.getParameter("cat");
 		String code = iwc.getParameter("code");
+		String opensInNew = iwc.getParameter("newin");
 		if (name != null && !name.trim().equals("")) {
 			Application app = null;
 			if (id != null) {
@@ -104,6 +105,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			app.setUrl(url);
 			app.setElectronic("Y".equalsIgnoreCase(elec));
 			app.setVisible("Y".equalsIgnoreCase(visible));
+			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
 			app.setAgeFrom(ageFrom);
 			app.setAgeTo(ageTo);
 			if (code != null && !code.equals("-1")) {
@@ -159,6 +161,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		cell.setStyleClass("electronic");
 		cell.add(new Text(iwrb.getLocalizedString("electronic", "Electronic")));
 		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("new_window");
+		cell.add(new Text(iwrb.getLocalizedString("new_window", "New window")));
+
 		cell = row.createHeaderCell();
 		cell.setStyleClass("url");
 		cell.add(new Text(iwrb.getLocalizedString("url", "URL")));
@@ -227,6 +233,11 @@ public class ApplicationCreator extends ApplicationBlock {
 			cell.setStyleClass("electronic");
 			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
 
+			cell = row.createCell();
+			cell.setStyleClass("new_window");
+			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getOpensInNewWindow()), Boolean.toString(app.getOpensInNewWindow()))));
+
+			
 			String URL = app.getUrl() != null ? app.getUrl() : "";
 			if (URL.length() > urlLength) {
 				URL = URL.substring(0, urlLength) + "...";
@@ -266,6 +277,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		TextInput url = new TextInput("url");
 		BooleanInput electronic = new BooleanInput("elec");
 		BooleanInput visible = new BooleanInput("visible");
+		BooleanInput newin = new BooleanInput("newin");
 		TextInput ageFrom = new TextInput("ageFrom");
 		TextInput ageTo = new TextInput("ageTo");
 
@@ -300,6 +312,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				if (application.getCaseCode() != null) {
 					caseCode.setSelectedElement(application.getCaseCode().getPrimaryKey().toString());
 				}
+				newin.setSelected(application.getOpensInNewWindow());
 				form.add(new HiddenInput("id", Integer.toString(applicationID)));
 			}
 			catch (FinderException f) {
@@ -351,6 +364,13 @@ public class ApplicationCreator extends ApplicationBlock {
 		label = new Label(iwrb.getLocalizedString("visible", "Visible"), visible);
 		formItem.add(label);
 		formItem.add(visible);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("opens_in_new_window", "Opens in a new window"), newin);
+		formItem.add(label);
+		formItem.add(newin);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
