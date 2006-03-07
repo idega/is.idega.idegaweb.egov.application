@@ -1,29 +1,18 @@
-/*
- * $Id: Application.java,v 1.5 2006/02/15 06:45:38 laddi Exp $
- * Created on Feb 15, 2006
- *
- * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package is.idega.idegaweb.egov.application.data;
+
+
 
 import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOEntity;
 
-
 /**
- * <p>
- * TODO laddi Describe Type Application
- * </p>
- *  Last modified: $Date: 2006/02/15 06:45:38 $ by $Author: laddi $
- * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @author gimmi
+ *
  */
 public interface Application extends IDOEntity {
-
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setAgeFrom
 	 */
@@ -113,4 +102,15 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrl
 	 */
 	public String getUrl();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setOpensInNewWindow
+	 */
+	public void setOpensInNewWindow(boolean opensInNew);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getOpensInNewWindow
+	 */
+	public boolean getOpensInNewWindow();
+
 }

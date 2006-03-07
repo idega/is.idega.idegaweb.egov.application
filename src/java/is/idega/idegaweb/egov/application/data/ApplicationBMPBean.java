@@ -33,6 +33,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	private static final String AGE_FROM = "age_from";
 	private static final String AGE_TO = "age_to";
 	private static final String TIMES_CLICKED = "times_clicked";
+	private static final String OPENS_IN_NEW_WINDOW = "opens_in_new_window";
 
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -57,6 +58,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(AGE_FROM, "age from", Integer.class);
 		addAttribute(AGE_TO, "age to", Integer.class);
 		addAttribute(TIMES_CLICKED, "Time clicked", Integer.class);
+		addAttribute(OPENS_IN_NEW_WINDOW, "opens in new window", Boolean.class);
 	}
 
 	public void setAgeFrom(int age) {
@@ -131,6 +133,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		return getStringColumnValue(URL);
 	}
 
+	public void setOpensInNewWindow(boolean opensInNew) {
+		setColumn(OPENS_IN_NEW_WINDOW, opensInNew);
+	}
+	
+	public boolean getOpensInNewWindow() {
+		return getBooleanColumnValue(OPENS_IN_NEW_WINDOW, false);
+	}
+	
 	public Object ejbFindByCaseCode(CaseCode caseCode) throws FinderException {
 		return ejbFindByCaseCode(caseCode.getCode());
 	}
