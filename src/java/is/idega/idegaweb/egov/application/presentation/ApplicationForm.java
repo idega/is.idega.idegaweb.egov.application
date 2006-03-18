@@ -134,6 +134,7 @@ public abstract class ApplicationForm extends Block {
 		}
 		
 		DropdownMenu menu = new DropdownMenu(parameterName);
+		menu.setStyleClass("userSelector");
 		Iterator iter = children.iterator();
 		while (iter.hasNext()) {
 			User element = (User) iter.next();
