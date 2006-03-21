@@ -199,13 +199,17 @@ public abstract class ApplicationForm extends Block {
 	protected Layer getHeader(String text) {
 		return getPhasesHeader(text, -1, -1);
 	}
-	
+
 	protected Layer getPhasesHeader(String text, int phase, int totalPhases) {
+		return getPhasesHeader(text, phase, totalPhases, true);
+	}
+	
+	protected Layer getPhasesHeader(String text, int phase, int totalPhases, boolean showNumberInText) {
 		Layer layer = new Layer(Layer.DIV);
 		layer.setStyleClass("header");
 		
 		if (phase != -1) {
-			Heading1 heading = new Heading1(String.valueOf(phase) + ". " + text);
+			Heading1 heading = new Heading1(showNumberInText ? (String.valueOf(phase) + ". ") : "" + text);
 			layer.add(heading);
 			layer.add(getPhases(phase, totalPhases));
 		}
