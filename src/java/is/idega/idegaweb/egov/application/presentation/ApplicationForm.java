@@ -226,12 +226,16 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected void addPhasesReceipt(String heading, String subject, String text, int phase, int totalPhases) {
+		addPhasesReceipt(heading, subject, text, phase, totalPhases, true);
+	}
+		
+	protected void addPhasesReceipt(String heading, String subject, String text, int phase, int totalPhases, boolean showNumberInText) {
 		Layer header = new Layer(Layer.DIV);
 		header.setStyleClass("header");
 		add(header);
 		
 		if (phase != -1) {
-			Heading1 heading1 = new Heading1(String.valueOf(phase) + ". " + heading);
+			Heading1 heading1 = new Heading1(showNumberInText ? (String.valueOf(phase) + ". ") : "" + heading);
 			header.add(heading1);
 			header.add(getPhases(phase, totalPhases));
 		}
