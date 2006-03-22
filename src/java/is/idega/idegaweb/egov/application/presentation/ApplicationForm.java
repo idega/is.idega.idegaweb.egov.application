@@ -209,7 +209,7 @@ public abstract class ApplicationForm extends Block {
 		layer.setStyleClass("header");
 		
 		if (phase != -1) {
-			Heading1 heading = new Heading1(showNumberInText ? (String.valueOf(phase) + ". ") : "" + text);
+			Heading1 heading = new Heading1((showNumberInText ? (String.valueOf(phase) + ". ") : "") + text);
 			layer.add(heading);
 			layer.add(getPhases(phase, totalPhases));
 		}
@@ -235,7 +235,7 @@ public abstract class ApplicationForm extends Block {
 		add(header);
 		
 		if (phase != -1) {
-			Heading1 heading1 = new Heading1(showNumberInText ? (String.valueOf(phase) + ". ") : "" + heading);
+			Heading1 heading1 = new Heading1((showNumberInText ? (String.valueOf(phase) + ". ") : "") + heading);
 			header.add(heading1);
 			header.add(getPhases(phase, totalPhases));
 		}
