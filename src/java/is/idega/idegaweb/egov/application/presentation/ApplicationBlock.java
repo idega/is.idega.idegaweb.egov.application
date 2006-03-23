@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.11 2006/03/07 16:22:56 gimmi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.12 2006/03/23 09:52:21 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -65,6 +65,9 @@ public abstract class ApplicationBlock extends Block {
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");
+				}
+				if (application.getCaseCode() != null) {
+					li.setStyleClass("caseConnected");
 				}
 				String url = application.getUrl();
 				if (url != null && !url.trim().equals("")) {
