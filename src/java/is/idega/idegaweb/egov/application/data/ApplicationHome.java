@@ -1,5 +1,11 @@
-/**
- * 
+/*
+ * $Id: ApplicationHome.java,v 1.7 2006/03/23 10:30:00 laddi Exp $
+ * Created on Mar 23, 2006
+ *
+ * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package is.idega.idegaweb.egov.application.data;
 
@@ -10,15 +16,21 @@ import javax.ejb.FinderException;
 import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOHome;
 
+
 /**
- * @author gimmi
- *
+ * <p>
+ * TODO laddi Describe Type ApplicationHome
+ * </p>
+ *  Last modified: $Date: 2006/03/23 10:30:00 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.7 $
  */
 public interface ApplicationHome extends IDOHome {
+
 	public Application create() throws javax.ejb.CreateException;
 
-	public Application findByPrimaryKey(Object pk)
-			throws javax.ejb.FinderException;
+	public Application findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindByCaseCode
@@ -33,8 +45,7 @@ public interface ApplicationHome extends IDOHome {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindAllByCategory
 	 */
-	public Collection findAllByCategory(ApplicationCategory category)
-			throws FinderException;
+	public Collection findAllByCategory(ApplicationCategory category) throws FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindAll
@@ -49,7 +60,6 @@ public interface ApplicationHome extends IDOHome {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#ejbFindMostClicked
 	 */
-	public Collection findMostClicked(int numberOfEntries)
-			throws FinderException;
+	public Collection findMostClicked(int numberOfEntries) throws FinderException;
 
 }

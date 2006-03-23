@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.12 2006/03/23 09:52:21 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.13 2006/03/23 10:30:00 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -68,6 +68,9 @@ public abstract class ApplicationBlock extends Block {
 				}
 				if (application.getCaseCode() != null) {
 					li.setStyleClass("caseConnected");
+				}
+				if (application.getRequiresLogin()) {
+					li.setStyleClass("requiresLogin");
 				}
 				String url = application.getUrl();
 				if (url != null && !url.trim().equals("")) {

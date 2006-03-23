@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.11 2006/03/07 16:22:56 gimmi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.12 2006/03/23 10:30:00 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -81,6 +81,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		String name = iwc.getParameter("name");
 		String url = iwc.getParameter("url");
 		String elec = iwc.getParameter("elec");
+		String requiresLogin = iwc.getParameter("reqLogin");
 		String visible = iwc.getParameter("visible");
 		int ageFrom = iwc.isParameterSet("ageFrom") ? Integer.parseInt(iwc.getParameter("ageFrom")) : -1;
 		int ageTo = iwc.isParameterSet("ageTo") ? Integer.parseInt(iwc.getParameter("ageTo")) : -1;
@@ -104,6 +105,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			app.setName(name);
 			app.setUrl(url);
 			app.setElectronic("Y".equalsIgnoreCase(elec));
+			app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
 			app.setVisible("Y".equalsIgnoreCase(visible));
 			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
 			app.setAgeFrom(ageFrom);
@@ -160,6 +162,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		cell = row.createHeaderCell();
 		cell.setStyleClass("electronic");
 		cell.add(new Text(iwrb.getLocalizedString("electronic", "Electronic")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("requiresLogin");
+		cell.add(new Text(iwrb.getLocalizedString("requires_login", "Requires login")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("new_window");
@@ -234,6 +240,10 @@ public class ApplicationCreator extends ApplicationBlock {
 			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
 
 			cell = row.createCell();
+			cell.setStyleClass("requiresLogin");
+			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getRequiresLogin()), Boolean.toString(app.getRequiresLogin()))));
+
+			cell = row.createCell();
 			cell.setStyleClass("new_window");
 			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getOpensInNewWindow()), Boolean.toString(app.getOpensInNewWindow()))));
 
@@ -276,6 +286,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		TextInput name = new TextInput("name");
 		TextInput url = new TextInput("url");
 		BooleanInput electronic = new BooleanInput("elec");
+		BooleanInput requiresLogin = new BooleanInput("reqLogin");
 		BooleanInput visible = new BooleanInput("visible");
 		BooleanInput newin = new BooleanInput("newin");
 		TextInput ageFrom = new TextInput("ageFrom");
@@ -305,6 +316,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				name.setContent(application.getName());
 				url.setContent(application.getUrl());
 				electronic.setSelected(application.getElectronic());
+				requiresLogin.setSelected(application.getRequiresLogin());
 				visible.setSelected(application.getVisible());
 				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : "");
 				ageTo.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeTo()) : "");
@@ -357,6 +369,13 @@ public class ApplicationCreator extends ApplicationBlock {
 		label = new Label(iwrb.getLocalizedString("electronic", "Electronic"), electronic);
 		formItem.add(label);
 		formItem.add(electronic);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(iwrb.getLocalizedString("requires_login", "Requires login"), requiresLogin);
+		formItem.add(label);
+		formItem.add(requiresLogin);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);

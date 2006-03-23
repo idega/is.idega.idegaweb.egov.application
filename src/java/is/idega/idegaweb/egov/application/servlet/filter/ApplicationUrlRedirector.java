@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.5 2006/02/21 19:24:02 laddi Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.6 2006/03/23 10:30:00 laddi Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -70,7 +70,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			IWApplicationContext iwc = getIWMainApplication(request).getIWApplicationContext();
 			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
 			getApplicationBusiness(iwc).updateTimesClicked(application);
-			if (application.getElectronic() && !isLoggedOn) {
+			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				try {
 					ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
 					ICApplicationBinding binding = abHome.findByPrimaryKey(BINDING_LOGIN_PAGE_URI);

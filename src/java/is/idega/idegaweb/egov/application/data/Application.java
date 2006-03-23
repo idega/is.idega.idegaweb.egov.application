@@ -1,5 +1,11 @@
-/**
- * 
+/*
+ * $Id: Application.java,v 1.7 2006/03/23 10:30:00 laddi Exp $
+ * Created on Mar 23, 2006
+ *
+ * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package is.idega.idegaweb.egov.application.data;
 
@@ -8,11 +14,18 @@ package is.idega.idegaweb.egov.application.data;
 import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOEntity;
 
+
 /**
- * @author gimmi
- *
+ * <p>
+ * TODO laddi Describe Type Application
+ * </p>
+ *  Last modified: $Date: 2006/03/23 10:30:00 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.7 $
  */
 public interface Application extends IDOEntity {
+
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setAgeFrom
 	 */
@@ -72,6 +85,16 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getElectronic
 	 */
 	public boolean getElectronic();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setRequiresLogin
+	 */
+	public void setRequiresLogin(boolean requiresLogin);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getRequiresLogin
+	 */
+	public boolean getRequiresLogin();
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setVisible

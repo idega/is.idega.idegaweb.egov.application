@@ -16,12 +16,16 @@ iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationCategory
 iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationCreator.name=ApplicationCreator
 iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationFavorites.name=ApplicationFavorites
 iw.component.is.idega.idegaweb.egov.application.presentation.UserApplications.name=UserApplications
+legend.electronic=Electronic
+legend.non_electronic=Non electronic
+legend.requires_login=Electronic and requires login
 list_applications=List Applications
 list_categories=List Categories
 name=Name
 new_application=New Application
 new_category=New Category
 no_code=No Code
+requires_login=Requires login
 remove=Remove
 save=Save
 true=true
