@@ -12,12 +12,13 @@ import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.NoChildrenFound;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.data.Application;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
-import javax.servlet.http.Cookie;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -45,7 +46,7 @@ import com.idega.util.PersonalIDFormatter;
 
 public abstract class ApplicationForm extends Block {
 
-	private static final String COOKIE_NAME = "applicationWindow_";
+	//private static final String COOKIE_NAME = "applicationWindow_";
 
 	private ICPage iPage;
 	private int iWidth = 400;
@@ -58,7 +59,7 @@ public abstract class ApplicationForm extends Block {
 	protected Layer getReceiptLayer(IWContext iwc, String heading, String body) {
 		if (iPage != null) {
 			boolean hasSeenWindow = false;
-			Cookie[] cookies = iwc.getCookies();
+			/*Cookie[] cookies = iwc.getCookies();
 			if (cookies != null) {
 				if (cookies.length > 0) {
 					for (int i = 0; i < cookies.length; i++) {
@@ -68,15 +69,15 @@ public abstract class ApplicationForm extends Block {
 						}
 					}
 				}
-			}
+			}*/
 
 			if (!hasSeenWindow) {
 				getParentPage().setWindowToOpenOnLoad(iPage, iWidth, iHeight);
 
-				Cookie cookie = new Cookie(COOKIE_NAME + iPage.getPrimaryKey().toString(), "true");
+				/*Cookie cookie = new Cookie(COOKIE_NAME + iPage.getPrimaryKey().toString(), "true");
 				cookie.setMaxAge(31 * 24 * 60 * 60);
 				cookie.setPath("/");
-				iwc.addCookies(cookie);
+				iwc.addCookies(cookie);*/
 			}
 		}
 
