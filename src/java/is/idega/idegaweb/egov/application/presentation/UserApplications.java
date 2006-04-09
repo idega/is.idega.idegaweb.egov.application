@@ -30,7 +30,7 @@ public class UserApplications extends ApplicationBlock {
 	public void present(IWContext iwc) throws Exception {
 		try {
 			Layer layer = new Layer();
-			layer.setId(id);
+			layer.setId(this.id);
 			Age[] ages = getApplicationBusiness(iwc).getAgesForUserAndChildren(iwc.getCurrentUser());
 			boolean checkAges = useAgeRestriction(iwc) && (ages != null);
 			List applications = new ArrayList(getApplicationBusiness(iwc).getUserApplications(iwc.getCurrentUser()));

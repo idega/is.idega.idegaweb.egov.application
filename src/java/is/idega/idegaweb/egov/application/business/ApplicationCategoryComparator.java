@@ -20,11 +20,11 @@ public class ApplicationCategoryComparator implements Comparator {
 	private Locale iLocale;
 	
 	public ApplicationCategoryComparator(Locale locale) {
-		iLocale = locale;
+		this.iLocale = locale;
 	}
 	
 	public int compare(Object o1, Object o2) {
-		Collator coll = Collator.getInstance(iLocale);
+		Collator coll = Collator.getInstance(this.iLocale);
 		
 		ApplicationCategory category1 = (ApplicationCategory) o1;
 		ApplicationCategory category2 = (ApplicationCategory) o2;

@@ -57,7 +57,7 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected Layer getReceiptLayer(IWContext iwc, String heading, String body) {
-		if (iPage != null) {
+		if (this.iPage != null) {
 			boolean hasSeenWindow = false;
 			/*Cookie[] cookies = iwc.getCookies();
 			if (cookies != null) {
@@ -72,7 +72,7 @@ public abstract class ApplicationForm extends Block {
 			}*/
 
 			if (!hasSeenWindow) {
-				getParentPage().setWindowToOpenOnLoad(iPage, iWidth, iHeight);
+				getParentPage().setWindowToOpenOnLoad(this.iPage, this.iWidth, this.iHeight);
 
 				/*Cookie cookie = new Cookie(COOKIE_NAME + iPage.getPrimaryKey().toString(), "true");
 				cookie.setMaxAge(31 * 24 * 60 * 60);
@@ -357,12 +357,12 @@ public abstract class ApplicationForm extends Block {
 	protected abstract void present(IWContext iwc);
 	
 	public void setWindowPage(ICPage page) {
-		iPage = page;
+		this.iPage = page;
 	}
 
 	public void setWindowPage(ICPage page, int width, int height) {
-		iPage = page;
-		iWidth = width;
-		iHeight = height;
+		this.iPage = page;
+		this.iWidth = width;
+		this.iHeight = height;
 	}
 }

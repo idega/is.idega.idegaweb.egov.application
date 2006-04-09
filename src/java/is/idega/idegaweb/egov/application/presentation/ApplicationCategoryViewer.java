@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.10 2006/02/24 07:09:23 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.11 2006/04/09 11:58:59 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -63,7 +63,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 			Collections.sort(coll, new ApplicationCategoryComparator(iwc.getCurrentLocale()));
 			Iterator iter = coll.iterator();
 			Layer mainLayer = new Layer();
-			mainLayer.setId(id);
+			mainLayer.setId(this.id);
 			while (iter.hasNext()) {
 				ApplicationCategory cat = (ApplicationCategory) iter.next();
 				Layer l = new Layer();

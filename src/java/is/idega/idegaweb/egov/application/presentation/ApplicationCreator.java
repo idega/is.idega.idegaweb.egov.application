@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.12 2006/03/23 10:30:00 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.13 2006/04/09 11:58:59 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -43,8 +43,8 @@ public class ApplicationCreator extends ApplicationBlock {
 	private int urlLength = 50;
 
 	public void present(IWContext iwc) throws Exception {
-		iwrb = super.getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+		this.iwrb = super.getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
 		
 		String action = iwc.getParameter("action");
 		if ("create".equals(action)) {
@@ -141,39 +141,39 @@ public class ApplicationCreator extends ApplicationBlock {
 		TableCell2 cell = row.createHeaderCell();
 		cell.setStyleClass("firstColumn");
 		cell.setStyleClass("application");
-		cell.add(new Text(iwrb.getLocalizedString("application", "Application")));
+		cell.add(new Text(this.iwrb.getLocalizedString("application", "Application")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("category");
-		cell.add(new Text(iwrb.getLocalizedString("category", "Category")));
+		cell.add(new Text(this.iwrb.getLocalizedString("category", "Category")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("caseCode");
-		cell.add(new Text(iwrb.getLocalizedString("case_code", "CaseCode")));
+		cell.add(new Text(this.iwrb.getLocalizedString("case_code", "CaseCode")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("ageFrom");
-		cell.add(new Text(iwrb.getLocalizedString("age_from", "Age From")));
+		cell.add(new Text(this.iwrb.getLocalizedString("age_from", "Age From")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("ageTo");
-		cell.add(new Text(iwrb.getLocalizedString("age_to", "Age To")));
+		cell.add(new Text(this.iwrb.getLocalizedString("age_to", "Age To")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("electronic");
-		cell.add(new Text(iwrb.getLocalizedString("electronic", "Electronic")));
+		cell.add(new Text(this.iwrb.getLocalizedString("electronic", "Electronic")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("requiresLogin");
-		cell.add(new Text(iwrb.getLocalizedString("requires_login", "Requires login")));
+		cell.add(new Text(this.iwrb.getLocalizedString("requires_login", "Requires login")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("new_window");
-		cell.add(new Text(iwrb.getLocalizedString("new_window", "New window")));
+		cell.add(new Text(this.iwrb.getLocalizedString("new_window", "New window")));
 
 		cell = row.createHeaderCell();
 		cell.setStyleClass("url");
-		cell.add(new Text(iwrb.getLocalizedString("url", "URL")));
+		cell.add(new Text(this.iwrb.getLocalizedString("url", "URL")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("edit");
@@ -194,11 +194,11 @@ public class ApplicationCreator extends ApplicationBlock {
 			
 			row = table.createRow();
 			
-			Link edit = new Link(iwb.getImage("edit.png", iwrb.getLocalizedString("edit", "Edit")));
+			Link edit = new Link(this.iwb.getImage("edit.png", this.iwrb.getLocalizedString("edit", "Edit")));
 			edit.addParameter("action", "edit");
 			edit.addParameter("id", app.getPrimaryKey().toString());
 			
-			Link delete = new Link(iwb.getImage("delete.png", iwrb.getLocalizedString("remove", "Remove")));
+			Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
 			delete.addParameter("action", "delete");
 			delete.addParameter("id", app.getPrimaryKey().toString());
 
@@ -237,20 +237,20 @@ public class ApplicationCreator extends ApplicationBlock {
 
 			cell = row.createCell();
 			cell.setStyleClass("electronic");
-			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
+			cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
 
 			cell = row.createCell();
 			cell.setStyleClass("requiresLogin");
-			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getRequiresLogin()), Boolean.toString(app.getRequiresLogin()))));
+			cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getRequiresLogin()), Boolean.toString(app.getRequiresLogin()))));
 
 			cell = row.createCell();
 			cell.setStyleClass("new_window");
-			cell.add(new Text(iwrb.getLocalizedString(Boolean.toString(app.getOpensInNewWindow()), Boolean.toString(app.getOpensInNewWindow()))));
+			cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getOpensInNewWindow()), Boolean.toString(app.getOpensInNewWindow()))));
 
 			
 			String URL = app.getUrl() != null ? app.getUrl() : "";
-			if (URL.length() > urlLength) {
-				URL = URL.substring(0, urlLength) + "...";
+			if (URL.length() > this.urlLength) {
+				URL = URL.substring(0, this.urlLength) + "...";
 			}
 			cell = row.createCell();
 			cell.setStyleClass("url");
@@ -272,7 +272,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton newLink = new SubmitButton(iwrb.getLocalizedString("new_application", "New Application"), "action", "create");
+		SubmitButton newLink = new SubmitButton(this.iwrb.getLocalizedString("new_application", "New Application"), "action", "create");
 		buttonLayer.add(newLink);
 		
 		add(form);
@@ -301,12 +301,12 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 		
 		DropdownMenu caseCode = new DropdownMenu("code");
-		caseCode.addMenuElementFirst("-1", iwrb.getLocalizedString("no_code", "No Code"));
+		caseCode.addMenuElementFirst("-1", this.iwrb.getLocalizedString("no_code", "No Code"));
 		Collection caseCodes = getApplicationBusiness(iwc).getCaseCodes();
 		Iterator iter = caseCodes.iterator();
 		while (iter.hasNext()) {
 			CaseCode code = (CaseCode) iter.next();
-			caseCode.addMenuElement(code.getPrimaryKey().toString(), code.getDescriptionLocalizedKey() != null ? iwrb.getLocalizedString(code.getDescriptionLocalizedKey(), code.getDescription()) : code.getDescription());
+			caseCode.addMenuElement(code.getPrimaryKey().toString(), code.getDescriptionLocalizedKey() != null ? this.iwrb.getLocalizedString(code.getDescriptionLocalizedKey(), code.getDescription()) : code.getDescription());
 		}
 
 		if (applicationID > 0) {
@@ -338,70 +338,70 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Layer formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		Label label = new Label(iwrb.getLocalizedString("name", "Name"), name);
+		Label label = new Label(this.iwrb.getLocalizedString("name", "Name"), name);
 		formItem.add(label);
 		formItem.add(name);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("category", "category"), category);
+		label = new Label(this.iwrb.getLocalizedString("category", "category"), category);
 		formItem.add(label);
 		formItem.add(category);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("case_code", "Case code"), caseCode);
+		label = new Label(this.iwrb.getLocalizedString("case_code", "Case code"), caseCode);
 		formItem.add(label);
 		formItem.add(caseCode);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("url", "url"), url);
+		label = new Label(this.iwrb.getLocalizedString("url", "url"), url);
 		formItem.add(label);
 		formItem.add(url);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("electronic", "Electronic"), electronic);
+		label = new Label(this.iwrb.getLocalizedString("electronic", "Electronic"), electronic);
 		formItem.add(label);
 		formItem.add(electronic);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("requires_login", "Requires login"), requiresLogin);
+		label = new Label(this.iwrb.getLocalizedString("requires_login", "Requires login"), requiresLogin);
 		formItem.add(label);
 		formItem.add(requiresLogin);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("visible", "Visible"), visible);
+		label = new Label(this.iwrb.getLocalizedString("visible", "Visible"), visible);
 		formItem.add(label);
 		formItem.add(visible);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("opens_in_new_window", "Opens in a new window"), newin);
+		label = new Label(this.iwrb.getLocalizedString("opens_in_new_window", "Opens in a new window"), newin);
 		formItem.add(label);
 		formItem.add(newin);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("age_from", "Age from"), ageFrom);
+		label = new Label(this.iwrb.getLocalizedString("age_from", "Age from"), ageFrom);
 		formItem.add(label);
 		formItem.add(ageFrom);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("age_to", "Age to"), ageTo);
+		label = new Label(this.iwrb.getLocalizedString("age_to", "Age to"), ageTo);
 		formItem.add(label);
 		formItem.add(ageTo);
 		layer.add(formItem);
@@ -415,10 +415,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton back = new SubmitButton(iwrb.getLocalizedString("back", "Back"), "action", "list");
+		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "action", "list");
 		buttonLayer.add(back);
 		
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"), "action", "save");
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "action", "save");
 		buttonLayer.add(save);
 
 		add(form);

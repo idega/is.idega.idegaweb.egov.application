@@ -46,14 +46,14 @@ public class ApplicationFavorites extends ApplicationBlock {
 	public void present(IWContext iwc) throws Exception {
 		try {
 			Layer layer = new Layer();
-			layer.setId(id);
+			layer.setId(this.id);
 			Age[] ages = null;
 			boolean checkAges = false;
 			if (useAgeRestriction(iwc) && iwc.isLoggedOn()) {
 				ages = getApplicationBusiness(iwc).getAgesForUserAndChildren(iwc.getCurrentUser());
 				checkAges = (ages != null);
 			}
-			Collection applications = getApplicationBusiness(iwc).getMostClickedApplications(iNumberOfShown);
+			Collection applications = getApplicationBusiness(iwc).getMostClickedApplications(this.iNumberOfShown);
 			if (!applications.isEmpty()) {
 				Lists list = getApplicationList(iwc, checkAges, applications, ages);
 				if (list.getChildrenCount() > 0) {
@@ -73,6 +73,6 @@ public class ApplicationFavorites extends ApplicationBlock {
 	}
 
 	public void setNumberOfShown(int numberOfShown) {
-		iNumberOfShown = numberOfShown;
+		this.iNumberOfShown = numberOfShown;
 	}
 }

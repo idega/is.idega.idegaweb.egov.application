@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.6 2006/02/16 14:58:45 laddi Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.7 2006/04/09 11:58:59 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -37,8 +37,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 	private IWBundle iwb;
 
 	public void present(IWContext iwc) throws Exception {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+		this.iwrb = getResourceBundle(iwc);
+		this.iwb = getBundle(iwc);
 		
 		String action = iwc.getParameter("action");
 		if ("create".equals(action)) {
@@ -126,14 +126,14 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		
 		Layer formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		Label label = new Label(iwrb.getLocalizedString("name", "Name"), tName);
+		Label label = new Label(this.iwrb.getLocalizedString("name", "Name"), tName);
 		formItem.add(label);
 		formItem.add(tName);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(iwrb.getLocalizedString("description", "Description"), tDesc);
+		label = new Label(this.iwrb.getLocalizedString("description", "Description"), tDesc);
 		formItem.add(label);
 		formItem.add(tDesc);
 		layer.add(formItem);
@@ -147,10 +147,10 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton back = new SubmitButton(iwrb.getLocalizedString("back", "Back"), "action", "list");
+		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "action", "list");
 		buttonLayer.add(back);
 		
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"), "action", "save");
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "action", "save");
 		buttonLayer.add(save);
 
 		add(form);
@@ -176,11 +176,11 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		TableCell2 cell = row.createHeaderCell();
 		cell.setStyleClass("firstColumn");
 		cell.setStyleClass("category");
-		cell.add(new Text(iwrb.getLocalizedString("category", "Category")));
+		cell.add(new Text(this.iwrb.getLocalizedString("category", "Category")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("description");
-		cell.add(new Text(iwrb.getLocalizedString("description", "Description")));
+		cell.add(new Text(this.iwrb.getLocalizedString("description", "Description")));
 		
 		cell = row.createHeaderCell();
 		cell.setStyleClass("edit");
@@ -199,11 +199,11 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			ApplicationCategory cat = (ApplicationCategory) iter.next();
 			row = table.createRow();
 			
-			Link edit = new Link(iwb.getImage("edit.png", iwrb.getLocalizedString("edit", "Edit")));
+			Link edit = new Link(this.iwb.getImage("edit.png", this.iwrb.getLocalizedString("edit", "Edit")));
 			edit.addParameter("action", "edit");
 			edit.addParameter("id", cat.getPrimaryKey().toString());
 			
-			Link delete = new Link(iwb.getImage("delete.png", iwrb.getLocalizedString("remove", "Remove")));
+			Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
 			delete.addParameter("action", "delete");
 			delete.addParameter("id", cat.getPrimaryKey().toString());
 
@@ -239,7 +239,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton newLink = new SubmitButton(iwrb.getLocalizedString("new_category", "New Category"), "action", "create");
+		SubmitButton newLink = new SubmitButton(this.iwrb.getLocalizedString("new_category", "New Category"), "action", "create");
 		buttonLayer.add(newLink);
 		
 		add(form);
