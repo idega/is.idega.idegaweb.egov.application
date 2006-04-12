@@ -12,16 +12,16 @@ edit=Breyta
 electronic=Rafr\u00E6n
 false=Nei
 legend.electronic=Ums\u00F3knir send rafr\u00E6nt en ekki er h\u00E6gt a\u00F0 fylgjast me\u00F0 framgangi m\u00E1la \u00ED Rafr\u00E6nu Reykjav\u00EDk.
-legend.non_electronic=Ums\u00F3knarey\u00F0ubla\u00F0 \u00E1 PDF e\u00F0a Word formi, \u00ED sumum tilvikum h\u00E6gt a\u00F0 fylla \u00FAt og senda \u00ED t\u00F6lvup\u00F3sti (<a href\="www.adobe.com/products/acrobat/readstep2.html">s\u00E6kja Adobe Acrobat Reader</a>)
-legend.requires_login=Ums\u00F3kn send rafr\u00E6nt og h\u00E6gt er a\u00F0 fylgjast me\u00F0 framgangi m\u00E1la \u00ED Rafr\u00E6nu Reykjav\u00EDk.
+legend.non_electronic=Ums\u00F3knarey\u00F0ubla\u00F0 \u00E1 PDF e\u00F0a Word formi (<a href\="www.adobe.com/products/acrobat/readstep2.html">s\u00E6kja Adobe Acrobat Reader</a>)
+legend.requires_login=Ums\u00F3kn send rafr\u00E6nt og h\u00E6gt er a\u00F0 fylgjast me\u00F0 framgangi m\u00E1la \u00ED \u00FEj\u00F3nustug\u00E1ttinni
 list_applications=Listi yfir ums\u00F3knir
 list_categories=Listi yfir flokka
 name=Nafn
 new_application=N\u00FD ums\u00F3kn
 new_category=N\u00FDr flokkur
 no_code=Engin tegund
-requires_login=\u00DEarfnast innskr\u00E1ningar
 remove=Ey\u00F0a
+requires_login=\u00DEarfnast innskr\u00E1ningar
 save=Vista
 true=J\u00E1
 url=Sl\u00F3\u00F0
