@@ -26,6 +26,7 @@ new_application=New Application
 new_category=New Category
 new_window=New window
 no_code=No Code
+opens_in_new_window=Opens in a new window
 remove=Remove
 requires_login=Requires login
 save=Save
