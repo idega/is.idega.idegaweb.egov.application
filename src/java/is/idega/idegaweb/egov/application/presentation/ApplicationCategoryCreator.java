@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.7 2006/04/09 11:58:59 laddi Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.8 2006/05/02 08:11:46 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,10 +10,13 @@
 package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
+
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWResourceBundle;
@@ -40,7 +43,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		this.iwrb = getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
 		
-		String action = iwc.getParameter("action");
+		String action = iwc.getParameter("prm_action");
 		if ("create".equals(action)) {
 			getCategoryCreationForm(iwc, -1);
 		}
@@ -147,10 +150,10 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "action", "list");
+		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "prm_action", "list");
 		buttonLayer.add(back);
 		
-		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "action", "save");
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
 		buttonLayer.add(save);
 
 		add(form);
@@ -200,11 +203,11 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			row = table.createRow();
 			
 			Link edit = new Link(this.iwb.getImage("edit.png", this.iwrb.getLocalizedString("edit", "Edit")));
-			edit.addParameter("action", "edit");
+			edit.addParameter("prm_action", "edit");
 			edit.addParameter("id", cat.getPrimaryKey().toString());
 			
 			Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
-			delete.addParameter("action", "delete");
+			delete.addParameter("prm_action", "delete");
 			delete.addParameter("id", cat.getPrimaryKey().toString());
 
 			if (iRow % 2 == 0) {
@@ -239,7 +242,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton newLink = new SubmitButton(this.iwrb.getLocalizedString("new_category", "New Category"), "action", "create");
+		SubmitButton newLink = new SubmitButton(this.iwrb.getLocalizedString("new_category", "New Category"), "prm_action", "create");
 		buttonLayer.add(newLink);
 		
 		add(form);

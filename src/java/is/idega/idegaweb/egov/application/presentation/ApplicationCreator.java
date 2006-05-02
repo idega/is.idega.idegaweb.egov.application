@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.13 2006/04/09 11:58:59 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.14 2006/05/02 08:11:46 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -46,7 +46,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		this.iwrb = super.getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
 		
-		String action = iwc.getParameter("action");
+		String action = iwc.getParameter("prm_action");
 		if ("create".equals(action)) {
 			getApplicationCreationForm(iwc, -1);
 		}
@@ -195,11 +195,11 @@ public class ApplicationCreator extends ApplicationBlock {
 			row = table.createRow();
 			
 			Link edit = new Link(this.iwb.getImage("edit.png", this.iwrb.getLocalizedString("edit", "Edit")));
-			edit.addParameter("action", "edit");
+			edit.addParameter("prm_action", "edit");
 			edit.addParameter("id", app.getPrimaryKey().toString());
 			
 			Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
-			delete.addParameter("action", "delete");
+			delete.addParameter("prm_action", "delete");
 			delete.addParameter("id", app.getPrimaryKey().toString());
 
 			if (iRow % 2 == 0) {
@@ -272,7 +272,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton newLink = new SubmitButton(this.iwrb.getLocalizedString("new_application", "New Application"), "action", "create");
+		SubmitButton newLink = new SubmitButton(this.iwrb.getLocalizedString("new_application", "New Application"), "prm_action", "create");
 		buttonLayer.add(newLink);
 		
 		add(form);
@@ -415,10 +415,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "action", "list");
+		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "prm_action", "list");
 		buttonLayer.add(back);
 		
-		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "action", "save");
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
 		buttonLayer.add(save);
 
 		add(form);
