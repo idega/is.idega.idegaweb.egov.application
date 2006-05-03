@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.13 2006/03/23 10:30:00 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.14 2006/05/03 09:27:36 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -12,6 +12,7 @@ package is.idega.idegaweb.egov.application.presentation;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.data.Application;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import com.idega.business.IBOLookup;
@@ -49,6 +50,7 @@ public abstract class ApplicationBlock extends Block {
 	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection applications, Age[] ages) {
 		Lists list = new Lists();
 		
+		Collection applicationList = new ArrayList();
 		Iterator iter = applications.iterator();
 		while (iter.hasNext()) {
 			Application application = (Application) iter.next();
@@ -81,8 +83,24 @@ public abstract class ApplicationBlock extends Block {
 					}
 					li.add(link);
 				}
-				list.add(li);
+				applicationList.add(li);
 			}
+		}
+		
+		boolean first = true;
+		Iterator iterator = applicationList.iterator();
+		while (iterator.hasNext()) {
+			ListItem element = (ListItem) iterator.next();
+			if (first) {
+				element.setStyleClass("firstChild");
+				first = false;
+			}
+			
+			if (!iter.hasNext()) {
+				element.setStyleClass("lastChild");
+			}
+			
+			list.add(element);
 		}
 		
 		return list;
