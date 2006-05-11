@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
+import javax.faces.component.UIComponent;
 import javax.servlet.http.Cookie;
 
 import com.idega.business.IBOLookup;
@@ -53,9 +54,58 @@ public abstract class ApplicationForm extends Block {
 	private ICPage iWindowPage;
 	private int iWidth = 400;
 	private int iHeight = 400;
+	
+	private boolean iHasErrors = false;
+	private Collection iErrors;
 
 	public void main(IWContext iwc) {
 		present(iwc);
+	}
+	
+	protected void setError(String error) {
+		if (this.iErrors == null) {
+			this.iErrors = new ArrayList();
+		}
+		
+		this.iHasErrors = true;
+		this.iErrors.add(error);
+	}
+	
+	protected boolean hasErrors() {
+		return this.iHasErrors;
+	}
+	
+	/**
+	 * Adds the errors encountered
+	 * @param iwc
+	 * @param errors
+	 */
+	protected void addErrors(IWContext iwc, UIComponent parent) {
+		if (this.iHasErrors) {
+			Layer layer = new Layer(Layer.DIV);
+			layer.setStyleClass("errorLayer");
+			
+			Layer image = new Layer(Layer.DIV);
+			image.setStyleClass("errorImage");
+			layer.add(image);
+			
+			Heading1 heading = new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured", "There was a problem with the following items"));
+			layer.add(heading);
+			
+			Lists list = new Lists();
+			layer.add(list);
+			
+			Iterator iter = this.iErrors.iterator();
+			while (iter.hasNext()) {
+				String element = (String) iter.next();
+				ListItem item = new ListItem();
+				item.add(new Text(element));
+				
+				list.add(item);
+			}
+			
+			parent.getChildren().add(layer);
+		}
 	}
 
 	protected Layer getReceiptLayer(IWContext iwc, String heading, String body) {
