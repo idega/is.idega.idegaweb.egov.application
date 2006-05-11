@@ -59,10 +59,11 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected Layer getReceiptLayer(IWContext iwc, String heading, String body) {
+		addWindowToOpen(iwc, getParentPage());
 		return getDisplayLayer(heading, body, "receipt", "receiptImage");
 	}
 	
-	protected void addWindowToOpen(IWContext iwc, Page page) {
+	private void addWindowToOpen(IWContext iwc, Page page) {
 		if (this.iWindowPage != null) {
 			boolean hasSeenWindow = false;
 			Cookie[] cookies = iwc.getCookies();
