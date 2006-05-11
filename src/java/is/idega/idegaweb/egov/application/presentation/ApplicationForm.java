@@ -50,7 +50,7 @@ public abstract class ApplicationForm extends Block {
 
 	private static final String COOKIE_NAME = "applicationWindow_";
 
-	private ICPage iPage;
+	private ICPage iWindowPage;
 	private int iWidth = 400;
 	private int iHeight = 400;
 
@@ -63,13 +63,13 @@ public abstract class ApplicationForm extends Block {
 	}
 	
 	protected void addWindowToOpen(IWContext iwc, Page page) {
-		if (this.iPage != null) {
+		if (this.iWindowPage != null) {
 			boolean hasSeenWindow = false;
 			Cookie[] cookies = iwc.getCookies();
 			if (cookies != null) {
 				if (cookies.length > 0) {
 					for (int i = 0; i < cookies.length; i++) {
-						if (cookies[i].getName().equals(COOKIE_NAME + this.iPage.getPrimaryKey().toString())) {
+						if (cookies[i].getName().equals(COOKIE_NAME + this.iWindowPage.getPrimaryKey().toString())) {
 							hasSeenWindow = true;
 							continue;
 						}
@@ -78,9 +78,9 @@ public abstract class ApplicationForm extends Block {
 			}
 
 			if (!hasSeenWindow) {
-				page.setWindowToOpenOnLoad(this.iPage, this.iWidth, this.iHeight);
+				page.setWindowToOpenOnLoad(this.iWindowPage, this.iWidth, this.iHeight);
 
-				Cookie cookie = new Cookie(COOKIE_NAME + this.iPage.getPrimaryKey().toString(), "true");
+				Cookie cookie = new Cookie(COOKIE_NAME + this.iWindowPage.getPrimaryKey().toString(), "true");
 				cookie.setMaxAge(24 * 60 * 60);
 				cookie.setPath("/");
 				iwc.addCookies(cookie);
@@ -362,11 +362,11 @@ public abstract class ApplicationForm extends Block {
 	protected abstract void present(IWContext iwc);
 	
 	public void setWindowPage(ICPage page) {
-		this.iPage = page;
+		this.iWindowPage = page;
 	}
 
 	public void setWindowPage(ICPage page, int width, int height) {
-		this.iPage = page;
+		this.iWindowPage = page;
 		this.iWidth = width;
 		this.iHeight = height;
 	}
