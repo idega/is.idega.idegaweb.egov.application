@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
+import javax.servlet.http.Cookie;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -31,6 +32,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
+import com.idega.presentation.Page;
 import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
@@ -46,7 +48,7 @@ import com.idega.util.PersonalIDFormatter;
 
 public abstract class ApplicationForm extends Block {
 
-	//private static final String COOKIE_NAME = "applicationWindow_";
+	private static final String COOKIE_NAME = "applicationWindow_";
 
 	private ICPage iPage;
 	private int iWidth = 400;
@@ -57,31 +59,34 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected Layer getReceiptLayer(IWContext iwc, String heading, String body) {
+		return getDisplayLayer(heading, body, "receipt", "receiptImage");
+	}
+	
+	protected void addWindowToOpen(IWContext iwc, Page page) {
 		if (this.iPage != null) {
 			boolean hasSeenWindow = false;
-			/*Cookie[] cookies = iwc.getCookies();
+			Cookie[] cookies = iwc.getCookies();
 			if (cookies != null) {
 				if (cookies.length > 0) {
 					for (int i = 0; i < cookies.length; i++) {
-						if (cookies[i].getName().equals(COOKIE_NAME + iPage.getPrimaryKey().toString())) {
+						if (cookies[i].getName().equals(COOKIE_NAME + this.iPage.getPrimaryKey().toString())) {
 							hasSeenWindow = true;
 							continue;
 						}
 					}
 				}
-			}*/
+			}
 
 			if (!hasSeenWindow) {
-				getParentPage().setWindowToOpenOnLoad(this.iPage, this.iWidth, this.iHeight);
+				page.setWindowToOpenOnLoad(this.iPage, this.iWidth, this.iHeight);
 
-				/*Cookie cookie = new Cookie(COOKIE_NAME + iPage.getPrimaryKey().toString(), "true");
-				cookie.setMaxAge(31 * 24 * 60 * 60);
+				Cookie cookie = new Cookie(COOKIE_NAME + this.iPage.getPrimaryKey().toString(), "true");
+				cookie.setMaxAge(24 * 60 * 60);
 				cookie.setPath("/");
-				iwc.addCookies(cookie);*/
+				iwc.addCookies(cookie);
 			}
 		}
 
-		return getDisplayLayer(heading, body, "receipt", "receiptImage");
 	}
 
 	protected Layer getStopLayer(String heading, String body) {
