@@ -49,7 +49,10 @@ import com.idega.util.PersonalIDFormatter;
 
 public abstract class ApplicationForm extends Block {
 
+	private static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	private static final String COOKIE_NAME = "applicationWindow_";
+
+	protected static final String PARAMETER_NO_USER = "prm_no_user";
 
 	private ICPage iWindowPage;
 	private int iWidth = 400;
@@ -59,7 +62,15 @@ public abstract class ApplicationForm extends Block {
 	private Collection iErrors;
 
 	public void main(IWContext iwc) {
+		if (iwc.isParameterSet(PARAMETER_NO_USER)) {
+			setError(getResourceBundle(iwc).getLocalizedString("application_error.no_user_selected", "No user selected."));
+		}
+
 		present(iwc);
+	}
+	
+	public String getBundleIdentifier() {
+		return BUNDLE_IDENTIFIER;
 	}
 	
 	protected void setError(String error) {
