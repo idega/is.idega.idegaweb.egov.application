@@ -16,7 +16,9 @@ import is.idega.idegaweb.egov.application.data.Application;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
@@ -59,11 +61,11 @@ public abstract class ApplicationForm extends Block {
 	private int iHeight = 400;
 	
 	private boolean iHasErrors = false;
-	private Collection iErrors;
+	private Map iErrors;
 
 	public void main(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_NO_USER)) {
-			setError(getResourceBundle(iwc).getLocalizedString("application_error.no_user_selected", "No user selected."));
+			setError(PARAMETER_NO_USER, getResourceBundle(iwc).getLocalizedString("application_error.no_user_selected", "No user selected."));
 		}
 
 		present(iwc);
@@ -73,17 +75,24 @@ public abstract class ApplicationForm extends Block {
 		return BUNDLE_IDENTIFIER;
 	}
 	
-	protected void setError(String error) {
+	protected void setError(String parameter, String error) {
 		if (this.iErrors == null) {
-			this.iErrors = new ArrayList();
+			this.iErrors = new HashMap();
 		}
 		
 		this.iHasErrors = true;
-		this.iErrors.add(error);
+		this.iErrors.put(parameter, error);
 	}
 	
 	protected boolean hasErrors() {
 		return this.iHasErrors;
+	}
+	
+	protected boolean hasError(String parameter) {
+		if (hasErrors()) {
+			return this.iErrors.containsKey(parameter);
+		}
+		return false;
 	}
 	
 	/**
@@ -106,7 +115,7 @@ public abstract class ApplicationForm extends Block {
 			Lists list = new Lists();
 			layer.add(list);
 			
-			Iterator iter = this.iErrors.iterator();
+			Iterator iter = this.iErrors.values().iterator();
 			while (iter.hasNext()) {
 				String element = (String) iter.next();
 				ListItem item = new ListItem();
