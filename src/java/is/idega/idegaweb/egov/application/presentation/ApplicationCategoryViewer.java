@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.11 2006/04/09 11:58:59 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.12 2006/05/23 10:28:09 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -26,7 +26,7 @@ import com.idega.util.Age;
 
 public class ApplicationCategoryViewer extends ApplicationBlock {
 
-	private String id = "applicationCategoryViewer";
+	private String layerID = "applicationCategoryViewer";
 	public static final String CACHE_KEY = "app_application_category_viewer";
 
 	public ApplicationCategoryViewer() {
@@ -63,7 +63,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 			Collections.sort(coll, new ApplicationCategoryComparator(iwc.getCurrentLocale()));
 			Iterator iter = coll.iterator();
 			Layer mainLayer = new Layer();
-			mainLayer.setId(this.id);
+			mainLayer.setID(this.layerID);
 			while (iter.hasNext()) {
 				ApplicationCategory cat = (ApplicationCategory) iter.next();
 				Layer l = new Layer();
@@ -94,8 +94,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		}
 	}
 
-	public void setId(String id) {
-		super.setId(id + "_1");
-		this.id = id;
+	public void setLayerID(String id) {
+		this.layerID = id;
 	}
 }

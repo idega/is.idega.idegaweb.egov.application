@@ -21,7 +21,7 @@ import com.idega.util.Age;
 
 public class UserApplications extends ApplicationBlock {
 
-	private String id = "userApplicationViewer";
+	private String layerID = "userApplicationViewer";
 
 	protected String getUniqueIdentifier() {
 		return "userApplications";
@@ -30,7 +30,7 @@ public class UserApplications extends ApplicationBlock {
 	public void present(IWContext iwc) throws Exception {
 		try {
 			Layer layer = new Layer();
-			layer.setId(this.id);
+			layer.setId(this.layerID);
 			Age[] ages = getApplicationBusiness(iwc).getAgesForUserAndChildren(iwc.getCurrentUser());
 			boolean checkAges = useAgeRestriction(iwc) && (ages != null);
 			List applications = new ArrayList(getApplicationBusiness(iwc).getUserApplications(iwc.getCurrentUser()));
@@ -48,8 +48,7 @@ public class UserApplications extends ApplicationBlock {
 		}
 	}
 
-	public void setId(String id) {
-		super.setId(id + "_1");
-		this.id = id;
+	public void setLayerID(String id) {
+		this.layerID = id;
 	}
 }

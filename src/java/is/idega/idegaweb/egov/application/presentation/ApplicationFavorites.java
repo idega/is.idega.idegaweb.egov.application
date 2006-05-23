@@ -18,7 +18,7 @@ import com.idega.util.Age;
 
 public class ApplicationFavorites extends ApplicationBlock {
 
-	private String id = "applicationFavoritesViewer";
+	private String layerID = "applicationFavoritesViewer";
 	private int iNumberOfShown = 5;
 	public static final String CACHE_KEY = "app_application_favorites";
 
@@ -46,7 +46,7 @@ public class ApplicationFavorites extends ApplicationBlock {
 	public void present(IWContext iwc) throws Exception {
 		try {
 			Layer layer = new Layer();
-			layer.setId(this.id);
+			layer.setId(this.layerID);
 			Age[] ages = null;
 			boolean checkAges = false;
 			if (useAgeRestriction(iwc) && iwc.isLoggedOn()) {
@@ -67,9 +67,8 @@ public class ApplicationFavorites extends ApplicationBlock {
 		}
 	}
 
-	public void setId(String id) {
-		super.setId(id + "_1");
-		this.id = id;
+	public void setLayerID(String id) {
+		this.layerID = id;
 	}
 
 	public void setNumberOfShown(int numberOfShown) {
