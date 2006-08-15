@@ -5,6 +5,12 @@
   </properties>
   <body>
   
+   <release version="1.0.2" date="2006-08-15">
+      <action dev="palli" type="update">
+        Changing localization strings.
+      </action>
+    </release>
+
    <release version="1.0.1" date="2006-07-11">
       <action dev="laddi" type="update">
         Declaring new version of block.
