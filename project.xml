@@ -8,15 +8,18 @@
   <currentVersion>1.0.2</currentVersion>
   <inceptionYear>2005</inceptionYear>
   <shortDescription>eGov Citizen</shortDescription>
-
   <versions>
     <version>
       <id>1.0.1</id>
       <name>1.0.1</name>
       <tag>APPLICATION_1_0_1</tag>
     </version>
+    <version>
+      <id>1.0.2</id>
+      <name>1.0.2</name>
+      <tag>APPLICATION_1_0_2</tag>
+    </version>
   </versions>
-
   <branches/>
   <developers>
     <developer>
@@ -27,7 +30,6 @@
       <roles/>
     </developer>
   </developers>
-  
   <dependencies>
     <dependency>
       <groupId>bundles</groupId>
@@ -69,9 +71,7 @@
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
-
   </dependencies>
-
   <build>
     <sourceDirectory>src/java</sourceDirectory>
     <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
@@ -82,5 +82,4 @@
     </unitTest>
   </build>
   <properties/>
-
 </project>
