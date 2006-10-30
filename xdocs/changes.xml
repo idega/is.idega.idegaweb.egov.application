@@ -5,6 +5,12 @@
   </properties>
   <body>
   
+   <release version="1.0.5" date="2006-10-30">
+      <action dev="laddi" type="update">
+        Changed so that when user is null, no information is displayed in personal info layer.
+      </action>
+    </release>
+
    <release version="1.0.4" date="2006-09-27">
       <action dev="laddi" type="update">
         Changing localization strings.

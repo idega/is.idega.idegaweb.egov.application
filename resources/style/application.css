@@ -17,6 +17,10 @@ h1.subHeader {
 	clear: both;
 }
 
+h1.applicationHeading {
+	display: none;	
+}
+
 h1.subHeader.topSubHeader {
 	border-top: 0;
 }

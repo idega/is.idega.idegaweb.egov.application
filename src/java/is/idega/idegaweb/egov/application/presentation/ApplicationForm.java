@@ -183,43 +183,45 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected Layer getPersonInfo(IWContext iwc, User user) throws RemoteException {
-		Address address = getUserBusiness(iwc).getUsersMainAddress(user);
-		PostalCode postal = null;
-		if (address != null) {
-			postal = address.getPostalCode();
-		}
-
 		Layer layer = new Layer(Layer.DIV);
 		layer.setStyleClass("info");
 
-		Layer personInfo = new Layer(Layer.DIV);
-		personInfo.setStyleClass("personInfo");
-		personInfo.setID("name");
-		personInfo.add(new Text(user.getName()));
-		layer.add(personInfo);
-
-		personInfo = new Layer(Layer.DIV);
-		personInfo.setStyleClass("personInfo");
-		personInfo.setID("personalID");
-		personInfo.add(new Text(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())));
-		layer.add(personInfo);
-
-		personInfo = new Layer(Layer.DIV);
-		personInfo.setStyleClass("personInfo");
-		personInfo.setID("address");
-		if (address != null) {
-			personInfo.add(new Text(address.getStreetAddress()));
+		if (user != null) {
+			Address address = getUserBusiness(iwc).getUsersMainAddress(user);
+			PostalCode postal = null;
+			if (address != null) {
+				postal = address.getPostalCode();
+			}
+	
+			Layer personInfo = new Layer(Layer.DIV);
+			personInfo.setStyleClass("personInfo");
+			personInfo.setID("name");
+			personInfo.add(new Text(user.getName()));
+			layer.add(personInfo);
+	
+			personInfo = new Layer(Layer.DIV);
+			personInfo.setStyleClass("personInfo");
+			personInfo.setID("personalID");
+			personInfo.add(new Text(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())));
+			layer.add(personInfo);
+	
+			personInfo = new Layer(Layer.DIV);
+			personInfo.setStyleClass("personInfo");
+			personInfo.setID("address");
+			if (address != null) {
+				personInfo.add(new Text(address.getStreetAddress()));
+			}
+			layer.add(personInfo);
+	
+			personInfo = new Layer(Layer.DIV);
+			personInfo.setStyleClass("personInfo");
+			personInfo.setID("postal");
+			if (postal != null) {
+				personInfo.add(new Text(postal.getPostalAddress()));
+			}
+			layer.add(personInfo);
 		}
-		layer.add(personInfo);
-
-		personInfo = new Layer(Layer.DIV);
-		personInfo.setStyleClass("personInfo");
-		personInfo.setID("postal");
-		if (postal != null) {
-			personInfo.add(new Text(postal.getPostalAddress()));
-		}
-		layer.add(personInfo);
-
+		
 		return layer;
 	}
 
