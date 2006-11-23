@@ -1,0 +1,309 @@
+iframe {
+	border: 0;
+}
+
+/* Headers */
+h1.subHeader {
+	border-top: 1px #000 solid;
+	border-bottom: 1px #000 solid;
+	font-size: 14px;
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 20px;
+	padding-left: 15px;
+	display: block;
+	margin: 0;
+}
+
+h1.subHeader.topSubHeader {
+	border-top: 0;
+}
+
+div.header {
+	border-bottom: 1px #000 solid;
+	padding: 4px 15px;
+	position: relative;
+	margin: 0;
+}
+
+div.header h1 {
+	color: #000;
+	font-size: 14px;
+	margin: 0;
+}
+
+/* Phases */
+div.phases {
+	position: absolute;
+	top: 4px;
+	right: 15px;
+}
+
+div.phases ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+div.phases ul li {
+	padding: 0;
+	margin: 0;
+	float: left;
+	color: #e0e0e0;
+	padding-top: 4px;
+	margin-right: 4px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+div.phases ul li.current {
+	padding: 0;
+	font-size: 16px;
+	color: #000:
+}
+
+div.helperText {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	margin-bottom: 16px;
+}
+
+
+/* Personal info */
+div.info {
+	padding: 13px 15px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	border-bottom: 1px #000 solid;
+}
+
+div.info div#name, div.info div#personalID {
+	font-size: 14px;	
+}
+
+div.info div.helperText {
+	margin-bottom: 16px;
+}
+
+div.info h1 {
+	margin: 0;
+	font-size: 12px;
+}
+
+/* General form styles */
+div.formSection {
+	padding: 13px 15px;	
+}
+
+div.formSection textarea {
+	width: 500px;
+	height: 60px;
+	clear: both;
+}
+
+div.formSection p {
+	clear: both;
+	margin-top: 16px;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+form.citizenForm div.formSection p {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+div.formSection p.agreement {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+div.formItem {
+	clear: both;
+	overflow: hidden;
+	margin-bottom: 8px;
+}
+
+div.formItem.multiValueItem span {
+	width: 25%;
+}
+
+div.formItem span {
+	float: left;
+	margin-bottom: 8px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+div.checkboxSection div.formItem {
+	clear: none;
+}
+
+div.info div.formItem {
+	margin-top: 20px;
+}
+
+div.formItem label {
+	float: left;
+	width: 25%;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #000;
+}
+
+div.info div.formItem label {
+	padding-top: 0;
+}
+
+div.checkboxSection div.formItem label {
+	width: auto;
+	margin-right: 30px;
+	margin-left: 5px;
+}
+
+div.formItem input, div.formItem textarea, div.formItem select {
+	float: left;
+	margin-right: 20px;
+	font-size: 11px;
+}
+
+div.formItem.informationItem label {
+	float: none;
+	width: auto;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+div.formItem.informationItem p {
+	margin-top: 4px;
+}
+
+div.checkboxSection div.formItem input {
+	margin-right: 0;
+}
+
+div.formItem input {
+	width: 166px;
+}
+
+div.formItem select {
+	width: 166px;
+}
+
+div.formItem textarea {
+	width: 352px;
+	height: 80px;
+}
+
+div.formItem input.checkbox {
+	width: auto;
+}
+
+div.formItem input.radiobutton {
+	width: auto;
+}
+
+div.formItem input.button {
+	width: auto;
+}
+
+div.formItem select.secondInput {
+	margin-left: 8px;
+}
+
+div.radioButtonItem label {
+	padding-top: 0;
+}
+
+div.bottom {
+	display: none;
+}
+
+
+/* Receipt */
+
+div.receipt, div.stop {
+	margin: 26px 38px;
+	color: #222222;
+	font-size: 12px;
+	height: 69px;
+}
+
+html>body div.receipt, html>body div.stop {
+	height: auto;
+	min-height: 69px;
+}
+
+div.receiptImage, div.stopImage {
+	width: 48px;
+	height: 68px;
+	float: left;
+	margin-right: 20px;
+	background: url(images/receipt.png) no-repeat;
+}
+
+div.receipt h1, div.stop h1 {
+	font-weight: normal;
+	color: #8D8D8D;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0 0 9px 0;
+}
+
+div.errorLayer {
+	border-bottom: 1px #ccc solid;
+	padding: 10px;
+	height: 68px;
+	background: url(images/error_tiler.gif) repeat-x top left;
+}
+
+html>body div.errorLayer {
+	height: auto;
+	min-height: 68px;
+}
+
+div.errorLayer div.errorImage {
+	width: 48px;
+	height: 68px;
+	background: url(images/error_image.png) no-repeat;
+	float: left;
+	margin-right: 20px;
+}
+
+div.errorLayer h1 {
+	margin: 0;
+	padding: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: #3F3F3E;
+}
+
+div.errorLayer ul {
+	margin: 0;
+	padding: 0;
+	margin-top: 8px;
+	margin-left: 78px;
+	list-style-position: inside;
+}
+
+div.errorLayer ul li {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #3F3F3F;
+	margin-bottom: 3px;
+}
+
+span.required {
+	padding-left: 2px;
+	color: #f00;
+}
+
+/* General */
+.Clear{
+	clear: both;
+	border-top: 1px solid #fff;
+	height: 0;
+	font-size: 0;
+	line-height: 0;
+	visibility: hidden;
+}

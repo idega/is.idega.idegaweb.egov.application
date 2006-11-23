@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.14 2006/05/03 09:27:36 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.15 2006/11/23 08:23:22 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -9,12 +9,15 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
+import is.idega.idegaweb.egov.accounting.business.CitizenBusiness;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.data.Application;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -47,7 +50,7 @@ public abstract class ApplicationBlock extends Block {
 	
 	protected abstract void present(IWContext iwc) throws Exception;
 
-	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection applications, Age[] ages) {
+	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection applications, Age[] ages) throws RemoteException {
 		Lists list = new Lists();
 		
 		Collection applicationList = new ArrayList();
@@ -63,7 +66,7 @@ public abstract class ApplicationBlock extends Block {
 				throw new IBORuntimeException(re);
 			}
 			
-			if (application.getVisible() && (!checkAges || displayApplication)) {
+			if (application.getVisible() && (!checkAges || displayApplication) && !(iwc.isLoggedOn() && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(iwc.getCurrentUser()))) {
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");
@@ -109,6 +112,15 @@ public abstract class ApplicationBlock extends Block {
 	protected ApplicationBusiness getApplicationBusiness(IWContext iwc) {
 		try {
 			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwc, ApplicationBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	protected CitizenBusiness getUserBusiness(IWContext iwc) {
+		try {
+			return (CitizenBusiness) IBOLookup.getServiceInstance(iwc, CitizenBusiness.class);
 		}
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);

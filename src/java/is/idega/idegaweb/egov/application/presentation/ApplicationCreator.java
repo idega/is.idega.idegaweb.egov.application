@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.14 2006/05/02 08:11:46 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.15 2006/11/23 08:23:22 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -88,6 +88,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		String cat = iwc.getParameter("cat");
 		String code = iwc.getParameter("code");
 		String opensInNew = iwc.getParameter("newin");
+		String hiddenFromGuests = iwc.getParameter("hidden");
 		if (name != null && !name.trim().equals("")) {
 			Application app = null;
 			if (id != null) {
@@ -108,6 +109,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
 			app.setVisible("Y".equalsIgnoreCase(visible));
 			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
+			app.setHiddenFromGuests("Y".equalsIgnoreCase(hiddenFromGuests));
 			app.setAgeFrom(ageFrom);
 			app.setAgeTo(ageTo);
 			if (code != null && !code.equals("-1")) {
@@ -289,6 +291,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		BooleanInput requiresLogin = new BooleanInput("reqLogin");
 		BooleanInput visible = new BooleanInput("visible");
 		BooleanInput newin = new BooleanInput("newin");
+		BooleanInput hidden = new BooleanInput("hidden");
 		TextInput ageFrom = new TextInput("ageFrom");
 		TextInput ageTo = new TextInput("ageTo");
 
@@ -390,6 +393,13 @@ public class ApplicationCreator extends ApplicationBlock {
 		label = new Label(this.iwrb.getLocalizedString("opens_in_new_window", "Opens in a new window"), newin);
 		formItem.add(label);
 		formItem.add(newin);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(this.iwrb.getLocalizedString("hidden_from_guests", "Hidden from guests"), hidden);
+		formItem.add(label);
+		formItem.add(hidden);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);

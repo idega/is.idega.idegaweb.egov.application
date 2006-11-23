@@ -1,29 +1,9 @@
-/*
- * $Id: Application.java,v 1.7 2006/03/23 10:30:00 laddi Exp $
- * Created on Mar 23, 2006
- *
- * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- */
 package is.idega.idegaweb.egov.application.data;
-
 
 
 import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOEntity;
 
-
-/**
- * <p>
- * TODO laddi Describe Type Application
- * </p>
- *  Last modified: $Date: 2006/03/23 10:30:00 $ by $Author: laddi $
- * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
- */
 public interface Application extends IDOEntity {
 
 	/**
@@ -136,4 +116,13 @@ public interface Application extends IDOEntity {
 	 */
 	public boolean getOpensInNewWindow();
 
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setHiddenFromGuests
+	 */
+	public void setHiddenFromGuests(boolean hiddenFromGuests);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getHiddenFromGuests
+	 */
+	public boolean getHiddenFromGuests();
 }

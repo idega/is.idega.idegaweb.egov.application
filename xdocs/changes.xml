@@ -1,39 +1,47 @@
 <document>
-  <properties>
-    <title>Application changes</title>
-    <author email="laddi@idega.com">Thorhallur "Laddi" Helgason</author>
-  </properties>
-  <body>
-  
-   <release version="1.0.5" date="2006-10-30">
-      <action dev="laddi" type="update">
-        Changed so that when user is null, no information is displayed in personal info layer.
-      </action>
-    </release>
+	<properties>
+		<title>Application changes</title>
+		<author email="laddi@idega.com">Thorhallur "Laddi" Helgason</author>
+	</properties>
 
-   <release version="1.0.4" date="2006-09-27">
-      <action dev="laddi" type="update">
-        Changing localization strings.
-      </action>
-    </release>
-
-   <release version="1.0.3" date="2006-09-22">
-      <action dev="laddi" type="update">
-        Changing localization strings.
-      </action>
-    </release>
-
-   <release version="1.0.2" date="2006-08-15">
-      <action dev="palli" type="update">
-        Changing localization strings.
-      </action>
-    </release>
-
-   <release version="1.0.1" date="2006-07-11">
-      <action dev="laddi" type="update">
-        Declaring new version of block.
-      </action>
-    </release>
-
-  </body>
+	<body>
+		<release version="1.0.6" date="2006-11-23">
+			<action dev="laddi" type="update">
+				Added support for guest applications.
+			</action>
+			<action dev="laddi" type="update">
+				Added print safe css document for applications.
+			</action>
+		</release>
+	
+		<release version="1.0.5" date="2006-10-30">
+			<action dev="laddi" type="update">
+				Changed so that when user is null, no information is displayed in personal info layer.
+			</action>
+		</release>
+	
+		<release version="1.0.4" date="2006-09-27">
+			<action dev="laddi" type="update">
+				Changing localization strings.
+			</action>
+		</release>
+	
+		<release version="1.0.3" date="2006-09-22">
+			<action dev="laddi" type="update">
+				Changing localization strings.
+			</action>
+		</release>
+	
+		<release version="1.0.2" date="2006-08-15">
+			<action dev="palli" type="update">
+				Changing localization strings.
+			</action>
+		</release>
+	
+		<release version="1.0.1" date="2006-07-11">
+			<action dev="laddi" type="update">
+				Declaring new version of block.
+			</action>
+		</release>
+	</body>
 </document>

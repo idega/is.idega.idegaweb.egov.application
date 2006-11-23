@@ -11,6 +11,7 @@ description=Description
 edit=Edit
 electronic=Electronic
 false=false
+hidden_from_guests=Hidden from guests
 iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationCategoryCreator.name=ApplicationCategoryCreator
 iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationCategoryViewer.name=ApplicationCategoryViewer
 iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationCreator.name=ApplicationCreator

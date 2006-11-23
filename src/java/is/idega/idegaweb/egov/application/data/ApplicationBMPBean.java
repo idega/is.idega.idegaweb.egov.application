@@ -35,6 +35,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	private static final String AGE_TO = "age_to";
 	private static final String TIMES_CLICKED = "times_clicked";
 	private static final String OPENS_IN_NEW_WINDOW = "opens_in_new_window";
+	private static final String HIDDEN_FROM_GUESTS = "hidden_from_guests";
 
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -54,13 +55,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		setNullable(CASE_CODE, true);
 		
 		addAttribute(URL, "URL", String.class);
-		addAttribute(ELECTRONIC, "is electronic application", Boolean.class);
+		addAttribute(ELECTRONIC, "Is electronic application", Boolean.class);
 		addAttribute(REQUIRES_LOGIN, "Requires login", Boolean.class);
-		addAttribute(VISIBLE, "is visible", Boolean.class);
-		addAttribute(AGE_FROM, "age from", Integer.class);
-		addAttribute(AGE_TO, "age to", Integer.class);
+		addAttribute(VISIBLE, "Is visible", Boolean.class);
+		addAttribute(OPENS_IN_NEW_WINDOW, "Opens in new window", Boolean.class);
+		addAttribute(HIDDEN_FROM_GUESTS, "Hidden from guests", Boolean.class);
+		addAttribute(AGE_FROM, "Age from", Integer.class);
+		addAttribute(AGE_TO, "Age to", Integer.class);
 		addAttribute(TIMES_CLICKED, "Time clicked", Integer.class);
-		addAttribute(OPENS_IN_NEW_WINDOW, "opens in new window", Boolean.class);
 	}
 
 	public void setAgeFrom(int age) {
@@ -152,6 +154,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	
 	public boolean getOpensInNewWindow() {
 		return getBooleanColumnValue(OPENS_IN_NEW_WINDOW, false);
+	}
+	
+	public void setHiddenFromGuests(boolean hiddenFromGuests) {
+		setColumn(HIDDEN_FROM_GUESTS, hiddenFromGuests);
+	}
+	
+	public boolean getHiddenFromGuests() {
+		return getBooleanColumnValue(HIDDEN_FROM_GUESTS, false);
 	}
 	
 	public Object ejbFindByCaseCode(CaseCode caseCode) throws FinderException {
