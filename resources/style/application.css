@@ -151,6 +151,10 @@ div.formSection {
 	position: relative;
 }
 
+html>body div.formSection {
+	overflow: hidden;	
+}
+
 div.formSection textarea {
 	width: 500px;
 	height: 60px;
