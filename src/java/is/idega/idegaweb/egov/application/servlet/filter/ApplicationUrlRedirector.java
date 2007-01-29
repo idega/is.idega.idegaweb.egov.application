@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.6 2006/03/23 10:30:00 laddi Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.7 2007/01/29 07:52:16 tryggvil Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Map;
 import javax.ejb.FinderException;
 import javax.servlet.Filter;
@@ -48,7 +49,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 		initializeDefaultDomain(request);
 		boolean doRedirect = getIfDoRedirect(request);
 		if (doRedirect) {
-			String newUrl = getNewRedirectURL(request);
+			String newUrl = getNewRedirectURL(request,response);
 			response.sendRedirect(newUrl);
 		}
 		else {
@@ -61,7 +62,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 		return map.containsKey(ApplicationBlock.PARAMETER_APPLICATION_PK);
 	}
 
-	public String getNewRedirectURL(HttpServletRequest request) {
+	public String getNewRedirectURL(HttpServletRequest request,HttpServletResponse response) {
 		try {
 			LoginBusinessBean loginBusiness = getLoginBusiness(request);
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
@@ -80,7 +81,12 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 					} else {
 						uri += "&";
 					}
-					uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON+"="+application.getUrl();
+					
+					String applUrl = application.getUrl();
+					String encoding = System.getProperty("file.encoding");
+					String applUrlEncoded = URLEncoder.encode(applUrl,encoding);
+
+					uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON+"="+applUrlEncoded;
 					return uri;
 				} catch (FinderException f) {
 					return application.getUrl();
