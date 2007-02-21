@@ -6,6 +6,13 @@
 
 	<body>
 
+		<release version="1.0.8" date="2007-02-21">
+			<action dev="tryggvil" type="fix">
+				Performance optimization in ApplicationUrlRedirector where looking up login page property. Now fetching it
+				correctly from IWMainApplicationSettings
+			</action>
+		</release>
+
 		<release version="1.0.7" date="2007-01-29">
 			<action dev="tryggvil" type="update">
 				Updating parsing of Application URL for redirecting by URL Encoding first. This was needed because of update 

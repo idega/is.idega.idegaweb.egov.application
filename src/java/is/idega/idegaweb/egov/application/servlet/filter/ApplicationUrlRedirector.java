@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.7 2007/01/29 07:52:16 tryggvil Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.8 2007/02/21 11:53:10 tryggvil Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -15,7 +15,6 @@ import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
-import javax.ejb.FinderException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -28,10 +27,9 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
-import com.idega.core.data.ICApplicationBinding;
-import com.idega.core.data.ICApplicationBindingHome;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
 
@@ -68,14 +66,18 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
 			
 			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
-			IWApplicationContext iwc = getIWMainApplication(request).getIWApplicationContext();
+			IWMainApplication iwma = getIWMainApplication(request);
+			IWApplicationContext iwc = iwma.getIWApplicationContext();
 			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
 			getApplicationBusiness(iwc).updateTimesClicked(application);
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
-				try {
-					ICApplicationBindingHome abHome = (ICApplicationBindingHome) IDOLookup.getHome(ICApplicationBinding.class);
-					ICApplicationBinding binding = abHome.findByPrimaryKey(BINDING_LOGIN_PAGE_URI);
-					String uri = binding.getValue();
+				//try {
+					
+					IWMainApplicationSettings settings = iwma.getSettings();
+					
+					String loginPage = settings.getProperty(BINDING_LOGIN_PAGE_URI);
+					
+					String uri = loginPage;
 					if (uri.indexOf("?") == -1) {
 						uri += "?";
 					} else {
@@ -88,9 +90,9 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
 					uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON+"="+applUrlEncoded;
 					return uri;
-				} catch (FinderException f) {
-					return application.getUrl();
-				}
+				//} catch (FinderException f) {
+				//	return application.getUrl();
+				//}
 			}
 			else if(isLoggedOn){
 				
