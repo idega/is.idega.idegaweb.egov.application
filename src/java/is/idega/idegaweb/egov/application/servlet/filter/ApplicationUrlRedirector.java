@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.8 2007/02/21 11:53:10 tryggvil Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.9 2007/02/21 12:50:13 tryggvil Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -35,8 +35,11 @@ import com.idega.servlet.filter.IWAuthenticator;
 
 public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
-	private static final String BINDING_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
-
+	private static final String PROP_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
+	private static final String PROP_UPDATE_TIMES_CLICKED = "egov.application.updateclicks";
+	
+	private static final String PROP_VALUE_UPDATE_TIMES_CLICKED_DISABLED = "disabled";
+	
 	public void init(FilterConfig arg0) {
 	}
 
@@ -69,13 +72,15 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			IWMainApplication iwma = getIWMainApplication(request);
 			IWApplicationContext iwc = iwma.getIWApplicationContext();
 			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
-			getApplicationBusiness(iwc).updateTimesClicked(application);
+			
+			updateTimesClicked(iwma, application);
+			
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				//try {
 					
 					IWMainApplicationSettings settings = iwma.getSettings();
 					
-					String loginPage = settings.getProperty(BINDING_LOGIN_PAGE_URI);
+					String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI);
 					
 					String uri = loginPage;
 					if (uri.indexOf("?") == -1) {
@@ -107,6 +112,34 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			e.printStackTrace();
 		}
 		throw new RuntimeException("Error handling redirect Url");
+	}
+
+	/**
+	 * <p>
+	 * TODO tryggvil describe method updateTimesClicked
+	 * </p>
+	 * @param application
+	 */
+	private void updateTimesClicked(IWMainApplication iwma,Application application) {
+
+		IWApplicationContext iwc = iwma.getIWApplicationContext();
+		String prop = iwma.getSettings().getProperty(PROP_UPDATE_TIMES_CLICKED);
+		boolean updateEveryTime = true;
+		if(prop!=null){
+			if(prop.equals(PROP_VALUE_UPDATE_TIMES_CLICKED_DISABLED)){
+				updateEveryTime=false;
+			}
+		}
+		
+		if(updateEveryTime){
+			try {
+				getApplicationBusiness(iwc).updateTimesClicked(application);
+			}
+			catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void destroy() {
