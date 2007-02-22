@@ -6,6 +6,11 @@
 
 	<body>
 
+		<release version="1.0.10" date="2007-02-22">
+			<action dev="laddi" type="update">
+				Changed so it hidden applications always return false when called on in canApplyForApplication.
+			</action>
+		</release>
 
 		<release version="1.0.9" date="2007-02-21">
 			<action dev="tryggvil" type="fix">
@@ -13,7 +18,6 @@
 				This seems to have been causing database deadlocks (Reykjavik).
 			</action>
 		</release>
-
 
 		<release version="1.0.8" date="2007-02-21">
 			<action dev="tryggvil" type="fix">

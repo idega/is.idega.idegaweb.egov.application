@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.10 2006/02/09 06:31:36 laddi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.11 2007/02/22 09:01:24 laddi Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -146,6 +146,9 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	public boolean canApplyForApplication(String casecode, User user) {
 		try {
 			Application application = getApplication(casecode);
+			if (!application.getVisible()) {
+				return false;
+			}
 			int from = application.getAgeFrom();
 			int to = application.getAgeTo();
 			if (from < 0 && to < 0) {
