@@ -5,11 +5,7 @@
   <comment>
   </comment>
   <projects>
-    <project>com.idega.core</project>
-    <project>com.idega.user</project>
-    <project>com.idega.block.process</project>
-    <project>is.idega.block.family</project>
-    <project>com.idega.block.web2.0</project>
+    <project>is.idega.idegaweb.egov</project>
   </projects>
   <buildSpec>
     <buildCommand>

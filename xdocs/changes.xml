@@ -1,34 +1,47 @@
 <document>
 	<properties>
 		<title>Application changes</title>
-		<author email="laddi@idega.com">Thorhallur "Laddi" Helgason</author>
+		<author email="laddi@idega.com">
+			Thorhallur "Laddi" Helgason
+		</author>
 	</properties>
 
 	<body>
+		<release version="1.0.11" date="2007-03-09">
+			<action dev="palli" type="update">
+				Updating and fixing dependencies to create a new sunnan3
+				application.
+			</action>
+		</release>
 
 		<release version="1.0.10" date="2007-02-22">
 			<action dev="laddi" type="update">
-				Changed so it hidden applications always return false when called on in canApplyForApplication.
+				Changed so it hidden applications always return false
+				when called on in canApplyForApplication.
 			</action>
 		</release>
 
 		<release version="1.0.9" date="2007-02-21">
 			<action dev="tryggvil" type="fix">
-				Added property for disabling updating "Number of times clicked" in the database, for an application every time it is clicked.
-				This seems to have been causing database deadlocks (Reykjavik).
+				Added property for disabling updating "Number of times
+				clicked" in the database, for an application every time
+				it is clicked. This seems to have been causing database
+				deadlocks (Reykjavik).
 			</action>
 		</release>
 
 		<release version="1.0.8" date="2007-02-21">
 			<action dev="tryggvil" type="fix">
-				Performance optimization in ApplicationUrlRedirector where looking up login page property. Now fetching it
+				Performance optimization in ApplicationUrlRedirector
+				where looking up login page property. Now fetching it
 				correctly from IWMainApplicationSettings
 			</action>
 		</release>
 
 		<release version="1.0.7" date="2007-01-29">
 			<action dev="tryggvil" type="update">
-				Updating parsing of Application URL for redirecting by URL Encoding first. This was needed because of update 
+				Updating parsing of Application URL for redirecting by
+				URL Encoding first. This was needed because of update
 				required by VUF Application for Reykjavik.
 			</action>
 		</release>
@@ -41,31 +54,32 @@
 				Added print safe css document for applications.
 			</action>
 		</release>
-	
+
 		<release version="1.0.5" date="2006-10-30">
 			<action dev="laddi" type="update">
-				Changed so that when user is null, no information is displayed in personal info layer.
+				Changed so that when user is null, no information is
+				displayed in personal info layer.
 			</action>
 		</release>
-	
+
 		<release version="1.0.4" date="2006-09-27">
 			<action dev="laddi" type="update">
 				Changing localization strings.
 			</action>
 		</release>
-	
+
 		<release version="1.0.3" date="2006-09-22">
 			<action dev="laddi" type="update">
 				Changing localization strings.
 			</action>
 		</release>
-	
+
 		<release version="1.0.2" date="2006-08-15">
 			<action dev="palli" type="update">
 				Changing localization strings.
 			</action>
 		</release>
-	
+
 		<release version="1.0.1" date="2006-07-11">
 			<action dev="laddi" type="update">
 				Declaring new version of block.
