@@ -34,3 +34,6 @@ save=Save
 true=true
 url=URL
 visible=Visible
+app_type=Application type
+app_type.formbuilder=Formbuilder
+app_type.url=Url

@@ -125,4 +125,8 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getHiddenFromGuests
 	 */
 	public boolean getHiddenFromGuests();
+	
+	public void setAppType(Integer app_type);
+		
+	public Integer getAppType();
 }

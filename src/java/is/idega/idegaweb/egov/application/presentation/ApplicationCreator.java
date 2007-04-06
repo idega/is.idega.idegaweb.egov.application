@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.15 2006/11/23 08:23:22 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.16 2007/04/06 20:25:30 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,12 +10,19 @@
 package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.data.Application;
+
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import com.idega.block.process.data.CaseCode;
+import com.idega.formbuilder.presentation.beans.FormDocument;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWResourceBundle;
@@ -37,16 +44,24 @@ import com.idega.presentation.ui.TextInput;
 
 public class ApplicationCreator extends ApplicationBlock {
 
+	public static final String COMPONENT_TYPE = "ApplicationCreator";
+	public static final String APP_FORM_NAME_PARAM = FormDocument.APP_FORM_NAME_PARAM;
+	public static final String APP_ID_PARAM = FormDocument.APP_ID_PARAM;
+	public static final String FROM_APP_REQ_PARAM = FormDocument.FROM_APP_REQ_PARAM;
+	public static final String FORMBUILDER_REDIRECT_PATH = "/workspace/forms/formbuilder/";
+	
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
 	
 	private int urlLength = 50;
 
 	public void present(IWContext iwc) throws Exception {
+		
 		this.iwrb = super.getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
 		
 		String action = iwc.getParameter("prm_action");
+		
 		if ("create".equals(action)) {
 			getApplicationCreationForm(iwc, -1);
 		}
@@ -77,10 +92,12 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 
 	private void saveApplication(IWContext iwc) throws RemoteException, CreateException, FinderException {
+		
 		String id = iwc.getParameter("id");
 		String name = iwc.getParameter("name");
 		String url = iwc.getParameter("url");
 		String elec = iwc.getParameter("elec");
+		String app_type = iwc.getParameter("appType");
 		String requiresLogin = iwc.getParameter("reqLogin");
 		String visible = iwc.getParameter("visible");
 		int ageFrom = iwc.isParameterSet("ageFrom") ? Integer.parseInt(iwc.getParameter("ageFrom")) : -1;
@@ -94,7 +111,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			if (id != null) {
 				try {
 					app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
-							new Integer(iwc.getParameter("id")));
+							new Integer(id));
 				}
 				catch (FinderException f) {
 					f.printStackTrace();
@@ -106,6 +123,25 @@ public class ApplicationCreator extends ApplicationBlock {
 			app.setName(name);
 			app.setUrl(url);
 			app.setElectronic("Y".equalsIgnoreCase(elec));
+			
+			Integer at = 0;
+			
+			if(app_type != null) {
+				
+				try {
+					at = Integer.parseInt(app_type);
+					
+					if(at == FORMBUILDER_TYPE)
+						app.setElectronic(true);
+					
+					app.setAppType(at);
+					
+				} catch (Exception e) {
+					// TODO: use logger
+					e.printStackTrace();
+				}
+			}
+			
 			app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
 			app.setVisible("Y".equalsIgnoreCase(visible));
 			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
@@ -120,10 +156,33 @@ public class ApplicationCreator extends ApplicationBlock {
 
 			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
 			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
+			
+//			id == null means it's new app
+			if(id == null && at == FORMBUILDER_TYPE && name != null && !name.equals("")) {
+				
+				try {
+					
+					iwc.setSessionAttribute(APP_FORM_NAME_PARAM, name);
+					iwc.setSessionAttribute(APP_ID_PARAM, String.valueOf(app.getPrimaryKey()));
+					iwc.getResponse().sendRedirect(
+							new StringBuilder(FORMBUILDER_REDIRECT_PATH)
+							.append("?")
+							.append(FROM_APP_REQ_PARAM)
+							.append("=1&encParams=1")
+							.toString()
+					);
+					
+				} catch (IOException e) {
+//					TODO: use logger
+					System.out.println("probably some old component was used? and redirect was called when component was actually already been started rendering");
+					e.printStackTrace();
+				}
+			}
 		}
 	}
-
+	
 	private void listExisting(IWContext iwc) throws RemoteException, FinderException {
+		
 		Collection applications = getApplicationBusiness(iwc).getApplicationHome().findAll();
 
 		Form form = new Form();
@@ -162,6 +221,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		cell.add(new Text(this.iwrb.getLocalizedString("age_to", "Age To")));
 		
 		cell = row.createHeaderCell();
+		cell.setStyleClass("appType");
+		cell.add(new Text(this.iwrb.getLocalizedString("appType", "Application type")));
+		
+		cell = row.createHeaderCell();
 		cell.setStyleClass("electronic");
 		cell.add(new Text(this.iwrb.getLocalizedString("electronic", "Electronic")));
 		
@@ -190,6 +253,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		int iRow = 1;
 		
 		Iterator iter = applications.iterator();
+		
 		while (iter.hasNext()) {
 			Application app = (Application) iter.next();
 			CaseCode code = app.getCaseCode();
@@ -203,6 +267,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
 			delete.addParameter("prm_action", "delete");
 			delete.addParameter("id", app.getPrimaryKey().toString());
+			
 
 			if (iRow % 2 == 0) {
 				row.setStyleClass("evenRow");
@@ -237,6 +302,16 @@ public class ApplicationCreator extends ApplicationBlock {
 			cell.setStyleClass("ageTo");
 			cell.add(new Text(app.getAgeTo() > -1 ? Integer.toString(app.getAgeTo()) : "-"));
 
+			cell = row.createCell();
+			cell.setStyleClass("appType");
+			
+			Integer app_type = app.getAppType();
+			
+			if(app_type != null)
+				cell.add(new Text(getAppTypesIdToNameMappings().get(app_type)));
+			else
+				cell.add(new Text(""));
+			
 			cell = row.createCell();
 			cell.setStyleClass("electronic");
 			cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
@@ -279,6 +354,29 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		add(form);
 	}
+	
+	private DropdownMenu getAppTypesMenu() {
+		
+		DropdownMenu menu = new DropdownMenu("appType");
+		SortedMap<Integer, String> mappings = getAppTypesIdToNameMappings();
+		
+		for (Integer app_type_id : mappings.keySet())
+			menu.addMenuElement(app_type_id, mappings.get(app_type_id));
+		
+		return menu;
+	}
+	
+	private static final int FORMBUILDER_TYPE = 1;
+	
+	private SortedMap<Integer, String> getAppTypesIdToNameMappings() {
+		
+//		TODO: discard hardcoding and make it configurable - use ConfigFactory and Config from core
+		SortedMap<Integer, String> mappings = new TreeMap<Integer, String>();
+		mappings.put(FORMBUILDER_TYPE, iwrb.getLocalizedString("app_type.formbuilder", "Formbuilder"));
+		mappings.put(2, iwrb.getLocalizedString("app_type.url", "Url"));
+		
+		return mappings;
+	}
 
 	private void getApplicationCreationForm(IWContext iwc, int applicationID) throws RemoteException {
 		Form form = new Form();
@@ -288,6 +386,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		TextInput name = new TextInput("name");
 		TextInput url = new TextInput("url");
 		BooleanInput electronic = new BooleanInput("elec");
+		DropdownMenu app_types = getAppTypesMenu();
 		BooleanInput requiresLogin = new BooleanInput("reqLogin");
 		BooleanInput visible = new BooleanInput("visible");
 		BooleanInput newin = new BooleanInput("newin");
@@ -319,6 +418,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				name.setContent(application.getName());
 				url.setContent(application.getUrl());
 				electronic.setSelected(application.getElectronic());
+				app_types.setSelectedElement(application.getAppType());
 				requiresLogin.setSelected(application.getRequiresLogin());
 				visible.setSelected(application.getVisible());
 				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : "");
@@ -362,16 +462,23 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(this.iwrb.getLocalizedString("url", "url"), url);
+		label = new Label(this.iwrb.getLocalizedString("app_type", "Application type"), app_types);
 		formItem.add(label);
-		formItem.add(url);
+		formItem.add(app_types);
 		layer.add(formItem);
-
+		
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
 		label = new Label(this.iwrb.getLocalizedString("electronic", "Electronic"), electronic);
 		formItem.add(label);
 		formItem.add(electronic);
+		layer.add(formItem);
+		
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(this.iwrb.getLocalizedString("url", "url"), url);
+		formItem.add(label);
+		formItem.add(url);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
