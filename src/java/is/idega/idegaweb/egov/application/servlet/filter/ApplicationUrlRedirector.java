@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.10 2007/04/10 09:54:06 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.11 2007/04/18 17:31:10 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -47,7 +47,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			ServletException {
 		HttpServletRequest request = (HttpServletRequest) srequest;
 		HttpServletResponse response = (HttpServletResponse) sresponse;
-//		TODO: should this be removed or replaced? initializeDefaultDomain(request);
 		boolean doRedirect = getIfDoRedirect(request);
 		if (doRedirect) {
 			String newUrl = getNewRedirectURL(request,response);
