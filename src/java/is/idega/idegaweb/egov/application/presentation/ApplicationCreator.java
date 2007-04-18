@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.16 2007/04/06 20:25:30 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.17 2007/04/18 17:33:11 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -44,7 +44,6 @@ import com.idega.presentation.ui.TextInput;
 
 public class ApplicationCreator extends ApplicationBlock {
 
-	public static final String COMPONENT_TYPE = "ApplicationCreator";
 	public static final String APP_FORM_NAME_PARAM = FormDocument.APP_FORM_NAME_PARAM;
 	public static final String APP_ID_PARAM = FormDocument.APP_ID_PARAM;
 	public static final String FROM_APP_REQ_PARAM = FormDocument.FROM_APP_REQ_PARAM;
@@ -379,6 +378,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 
 	private void getApplicationCreationForm(IWContext iwc, int applicationID) throws RemoteException {
+		
 		Form form = new Form();
 		form.setID("applicationCreator");
 		form.setStyleClass("adminForm");
@@ -412,6 +412,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 
 		if (applicationID > 0) {
+			
 			try {
 				Application application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
 						new Integer(applicationID));
@@ -434,7 +435,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				f.printStackTrace();
 			}
 		}
-
+		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setStyleClass("formSection");
 		form.add(layer);
@@ -537,7 +538,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
 		buttonLayer.add(save);
-
+		
 		add(form);
 	}
 
