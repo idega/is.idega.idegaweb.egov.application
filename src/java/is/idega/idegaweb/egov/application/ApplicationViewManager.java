@@ -1,5 +1,6 @@
 package is.idega.idegaweb.egov.application;
 
+import is.idega.idegaweb.egov.application.presentation.ApplicationCategoryCreator;
 import is.idega.idegaweb.egov.application.presentation.ApplicationCreator;
 
 import java.util.ArrayList;
@@ -68,12 +69,16 @@ public class ApplicationViewManager implements Singleton  {
 		roles.add(StandardRoles.ROLE_KEY_ADMIN);
 		
 		DefaultViewNode egovNode = new WorkspaceApplicationNode(GROUP_ID, workspace, roles);
-		//devNode.setName("#{localizedStrings['com.idega.developer']['developer']}");
 		
 		WorkspaceClassViewNode applicationsNode = new WorkspaceClassViewNode("egovapp", egovNode);
 		applicationsNode.setName("Applications");
 		applicationsNode.setComponentClass(ApplicationCreator.class);
 		applicationsNode.setMaximizeBlockVertically(true);
+		
+		WorkspaceClassViewNode applicationsCategoriesNode = new WorkspaceClassViewNode("egovappcr", egovNode);
+		applicationsCategoriesNode.setName("Applications categories creator");
+		applicationsCategoriesNode.setComponentClass(ApplicationCategoryCreator.class);
+		applicationsCategoriesNode.setMaximizeBlockVertically(true);
 		
 		return egovNode;
 	}
