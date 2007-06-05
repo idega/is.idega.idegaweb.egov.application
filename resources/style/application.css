@@ -144,6 +144,10 @@ div.info div#personalID {
 	float: right;
 }
 
+div.info div#phone, div.info div#email {
+	float: right;
+}
+
 /* General form styles */
 div.formSection {
 	clear: left;
