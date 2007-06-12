@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.ejb.FinderException;
@@ -60,6 +61,7 @@ public abstract class ApplicationForm extends Block {
 	private int iHeight = 400;
 
 	private boolean iHasErrors = false;
+	private Map iPhaseErrors;
 	private Map iErrors;
 
 	public void main(IWContext iwc) {
@@ -75,16 +77,39 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected void setError(String parameter, String error) {
+		setError(-1, parameter, error);
+	}
+
+	protected void setError(int phase, String parameter, String error) {
 		if (this.iErrors == null) {
-			this.iErrors = new HashMap();
+			this.iErrors = new LinkedHashMap();
 		}
 
 		this.iHasErrors = true;
+		if (phase > 0) {
+			if (iPhaseErrors == null) {
+				iPhaseErrors = new HashMap();
+			}
+			iPhaseErrors.put(new Integer(phase), Boolean.TRUE);
+		}
 		this.iErrors.put(parameter, error);
 	}
 
 	protected boolean hasErrors() {
 		return this.iHasErrors;
+	}
+
+	protected boolean hasErrors(int phase) {
+		if (iPhaseErrors == null) {
+			return false;
+		}
+		else {
+			Boolean hasErrors = (Boolean) iPhaseErrors.get(new Integer(phase));
+			if (hasErrors != null) {
+				return hasErrors.booleanValue();
+			}
+			return false;
+		}
 	}
 
 	protected boolean hasError(String parameter) {
