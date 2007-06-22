@@ -7,6 +7,12 @@
 	</properties>
 
 	<body>
+		<release version="1.0.13" date="2007-06-22">
+			<action dev="laddi" type="update">
+				Added possibility to show contact info when adding user information.
+			</action>
+		</release>
+
 		<release version="1.0.12" date="2007-04-30">
 			<action dev="laddi" type="update">
 				Added possibility to add user information without showing address.

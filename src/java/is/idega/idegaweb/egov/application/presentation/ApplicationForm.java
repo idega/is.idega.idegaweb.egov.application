@@ -28,6 +28,8 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
@@ -43,6 +45,8 @@ import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.user.business.NoEmailFoundException;
+import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
@@ -212,6 +216,10 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected Layer getPersonInfo(IWContext iwc, User user, boolean showAddress) throws RemoteException {
+		return getPersonInfo(iwc, user, showAddress, false);
+	}
+
+	protected Layer getPersonInfo(IWContext iwc, User user, boolean showAddress, boolean showContactInfo) throws RemoteException {
 		Layer layer = new Layer(Layer.DIV);
 		layer.setStyleClass("info");
 
@@ -220,6 +228,22 @@ public abstract class ApplicationForm extends Block {
 			PostalCode postal = null;
 			if (address != null) {
 				postal = address.getPostalCode();
+			}
+			Phone phone = null;
+			Email email = null;
+			if (showContactInfo) {
+				try {
+					phone = getUserBusiness(iwc).getUsersHomePhone(user);
+				}
+				catch (NoPhoneFoundException e) {
+					//No phone found...
+				}
+				try {
+					email = getUserBusiness(iwc).getUsersMainEmail(user);
+				}
+				catch (NoEmailFoundException e) {
+					//No email found...
+				}
 			}
 
 			Layer personInfo = new Layer(Layer.DIV);
@@ -234,6 +258,14 @@ public abstract class ApplicationForm extends Block {
 			personInfo.add(new Text(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())));
 			layer.add(personInfo);
 
+			if (phone != null) {
+				personInfo = new Layer(Layer.DIV);
+				personInfo.setStyleClass("personInfo");
+				personInfo.setID("phone");
+				personInfo.add(new Text(phone.getNumber()));
+				layer.add(personInfo);
+			}
+
 			personInfo = new Layer(Layer.DIV);
 			personInfo.setStyleClass("personInfo");
 			personInfo.setID("address");
@@ -241,6 +273,14 @@ public abstract class ApplicationForm extends Block {
 				personInfo.add(new Text(address.getStreetAddress()));
 			}
 			layer.add(personInfo);
+
+			if (email != null) {
+				personInfo = new Layer(Layer.DIV);
+				personInfo.setStyleClass("personInfo");
+				personInfo.setID("email");
+				personInfo.add(new Text(email.getEmailAddress()));
+				layer.add(personInfo);
+			}
 
 			personInfo = new Layer(Layer.DIV);
 			personInfo.setStyleClass("personInfo");
