@@ -5,7 +5,6 @@
   <comment>
   </comment>
   <projects>
-    <project>is.idega.idegaweb.egov</project>
   </projects>
   <buildSpec>
     <buildCommand>
