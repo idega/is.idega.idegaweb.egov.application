@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.8 2006/05/02 08:11:46 laddi Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.8.2.1 2007/08/19 15:43:36 justinas Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -12,11 +12,17 @@ package is.idega.idegaweb.egov.application.presentation;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.data.ICLocale;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWResourceBundle;
@@ -39,6 +45,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
 
+	private static final String LOCALIZED_NAME_PREFIX = "localizedName";
+	
 	public void present(IWContext iwc) throws Exception {
 		this.iwrb = getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
@@ -54,6 +62,17 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			String id = iwc.getParameter("id");
 			String name = iwc.getParameter("name");
 			String desc = iwc.getParameter("desc");
+			Map localizedNames = new HashMap();
+			List localesInUse = ICLocaleBusiness.listOfLocales(true);
+			
+			for (int i = 0; i < localesInUse.size(); i++){
+//				Locale loc = ((ICLocale)localesInUse.get(i)).getLocaleObject();
+//				String loc = ((ICLocale)localesInUse.get(i)).getLocale();
+				ICLocale loc = (ICLocale)localesInUse.get(i);
+				
+				localizedNames.put(loc, iwc.getParameter(LOCALIZED_NAME_PREFIX+loc));
+				
+			}
 			if (name != null && !name.trim().equals("")) {
 				ApplicationCategory cat = null;
 				if (id != null) {
@@ -70,7 +89,13 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				}
 				cat.setName(name);
 				cat.setDescription(desc);
-				cat.store();
+				try {
+					cat.store();
+					cat.setLocalizedNames(localizedNames);					
+				} catch (RuntimeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
 				IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
@@ -81,6 +106,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			try {
 				ApplicationCategory cat = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(
 						new Integer(iwc.getParameter("id")));
+				
+				cat.removeLocalizedTextEntries();
 				cat.remove();
 			}
 			catch (FinderException f) {
@@ -95,7 +122,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			listExisting(iwc);
 		}
 	}
-
+	
 	/**
 	 * <p>
 	 * TODO gimmi describe method getCategoryCreationForm
@@ -108,21 +135,37 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		form.setID("applicationCategoryCreator");
 		form.setStyleClass("adminForm");
 		
+		List localesInUse = ICLocaleBusiness.listOfLocales(true);
+		List localizedNames = new ArrayList();
+		
 		TextInput tName = new TextInput("name");
 		TextInput tDesc = new TextInput("desc");
 		if (categoryId > 0) {
 			try {
 				ApplicationCategory cat = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(
 						new Integer(categoryId));
-				tName.setContent(cat.getName());
+//				tName.setContent(cat.getName());
+				tName.setContent(cat.getDefaultName());
 				tDesc.setContent(cat.getDescription());
 				form.add(new HiddenInput("id", Integer.toString(categoryId)));
+				
+				for (int i = 0; i < localesInUse.size(); i++) {
+					TextInput localizedName = new TextInput(LOCALIZED_NAME_PREFIX+localesInUse.get(i).toString());
+
+					localizedName.setContent(cat.getLocalizedName(((ICLocale)localesInUse.get(i)).getLocaleID()));
+					localizedNames.add(localizedName);
+				}				
 			}
 			catch (FinderException f) {
 				f.printStackTrace();
 			}
 		}
-
+		else{
+			for (int i = 0; i < localesInUse.size(); i++) {
+				TextInput localizedName = new TextInput(LOCALIZED_NAME_PREFIX+localesInUse.get(i).toString());
+				localizedNames.add(localizedName);
+			}
+		}
 		Layer layer = new Layer(Layer.DIV);
 		layer.setStyleClass("formSection");
 		form.add(layer);
@@ -134,6 +177,15 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		formItem.add(tName);
 		layer.add(formItem);
 
+		for (int i = 0; i < localizedNames.size(); i++) {
+			formItem = new Layer(Layer.DIV);
+			formItem.setStyleClass("formItem");
+			label = new Label(this.iwrb.getLocalizedString("name", "Name")+"("+localesInUse.get(i).toString()+")", (TextInput)localizedNames.get(i));
+			formItem.add(label);
+			formItem.add(localizedNames.get(i));
+			layer.add(formItem);			
+		}		
+		
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
 		label = new Label(this.iwrb.getLocalizedString("description", "Description"), tDesc);

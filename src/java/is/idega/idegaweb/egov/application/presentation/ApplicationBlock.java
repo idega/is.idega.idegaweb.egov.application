@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.15 2006/11/23 08:23:22 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.15.2.1 2007/08/19 15:43:16 justinas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -77,9 +77,10 @@ public abstract class ApplicationBlock extends Block {
 				if (application.getRequiresLogin()) {
 					li.setStyleClass("requiresLogin");
 				}
-				String url = application.getUrl();
+				String url = application.getUrlByLocale();
 				if (url != null && !url.trim().equals("")) {
-					Link link = new Link(new Text(application.getName()));
+//					Link link = new Link(new Text(application.getName()));
+					Link link = new Link(new Text(application.getNameByLocale()));					
 					link.addParameter(PARAMETER_APPLICATION_PK, application.getPrimaryKey().toString());
 					if (application.getOpensInNewWindow()) {
 						link.setTarget(Link.TARGET_BLANK_WINDOW);

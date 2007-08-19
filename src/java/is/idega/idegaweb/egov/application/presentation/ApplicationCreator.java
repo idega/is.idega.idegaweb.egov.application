@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.17 2007/04/18 17:33:11 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.15.2.1 2007/08/19 15:44:08 justinas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -11,18 +11,20 @@ package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.data.Application;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.process.data.CaseCode;
-import com.idega.formbuilder.presentation.beans.FormDocument;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.data.ICLocale;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWResourceBundle;
@@ -44,23 +46,19 @@ import com.idega.presentation.ui.TextInput;
 
 public class ApplicationCreator extends ApplicationBlock {
 
-	public static final String APP_FORM_NAME_PARAM = FormDocument.APP_FORM_NAME_PARAM;
-	public static final String APP_ID_PARAM = FormDocument.APP_ID_PARAM;
-	public static final String FROM_APP_REQ_PARAM = FormDocument.FROM_APP_REQ_PARAM;
-	public static final String FORMBUILDER_REDIRECT_PATH = "/workspace/forms/formbuilder/";
-	
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
 	
 	private int urlLength = 50;
 
+	private static final String LOCALIZED_NAME_PREFIX = "localizedName";
+	private static final String LOCALIZED_URL_PREFIX = "localizedUrl";
+	
 	public void present(IWContext iwc) throws Exception {
-		
 		this.iwrb = super.getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
 		
 		String action = iwc.getParameter("prm_action");
-		
 		if ("create".equals(action)) {
 			getApplicationCreationForm(iwc, -1);
 		}
@@ -75,6 +73,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			try {
 				Application app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
 						new Integer(iwc.getParameter("id")));
+				app.removeLocalizedEntries();
 				app.remove();
 			}
 			catch (FinderException f) {
@@ -91,12 +90,14 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 
 	private void saveApplication(IWContext iwc) throws RemoteException, CreateException, FinderException {
+//		iwc.getpara
+		
+		boolean isNewApplication = false;
 		
 		String id = iwc.getParameter("id");
 		String name = iwc.getParameter("name");
 		String url = iwc.getParameter("url");
 		String elec = iwc.getParameter("elec");
-		String app_type = iwc.getParameter("appType");
 		String requiresLogin = iwc.getParameter("reqLogin");
 		String visible = iwc.getParameter("visible");
 		int ageFrom = iwc.isParameterSet("ageFrom") ? Integer.parseInt(iwc.getParameter("ageFrom")) : -1;
@@ -105,42 +106,42 @@ public class ApplicationCreator extends ApplicationBlock {
 		String code = iwc.getParameter("code");
 		String opensInNew = iwc.getParameter("newin");
 		String hiddenFromGuests = iwc.getParameter("hidden");
+		
+//		Enumeration parameterNames = iwc.getParameterNames();
+		Map localizedNames = new HashMap();
+		Map localizedUrls = new HashMap();
+		
+		List localesInUse = ICLocaleBusiness.listOfLocales(true);
+		
+		for (int i = 0; i < localesInUse.size(); i++){
+//			Locale loc = ((ICLocale)localesInUse.get(i)).getLocaleObject();
+//			String loc = ((ICLocale)localesInUse.get(i)).getLocale();
+			ICLocale loc = (ICLocale)localesInUse.get(i);
+System.out.println(loc+" "+iwc.getParameter(LOCALIZED_NAME_PREFIX+loc));
+			localizedNames.put(loc, iwc.getParameter(LOCALIZED_NAME_PREFIX+loc));
+			localizedUrls.put(loc, iwc.getParameter(LOCALIZED_URL_PREFIX+loc));
+			
+		}
+		
 		if (name != null && !name.trim().equals("")) {
 			Application app = null;
 			if (id != null) {
 				try {
+					isNewApplication = false;
 					app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
-							new Integer(id));
+							new Integer(iwc.getParameter("id")));
 				}
 				catch (FinderException f) {
 					f.printStackTrace();
 				}
 			}
 			else {
+				isNewApplication = true;
 				app = getApplicationBusiness(iwc).getApplicationHome().create();
 			}
 			app.setName(name);
 			app.setUrl(url);
 			app.setElectronic("Y".equalsIgnoreCase(elec));
-			
-			Integer at = 0;
-			
-			if(app_type != null) {
-				
-				try {
-					at = Integer.parseInt(app_type);
-					
-					if(at == FORMBUILDER_TYPE)
-						app.setElectronic(true);
-					
-					app.setAppType(at);
-					
-				} catch (Exception e) {
-					// TODO: use logger
-					e.printStackTrace();
-				}
-			}
-			
 			app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
 			app.setVisible("Y".equalsIgnoreCase(visible));
 			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
@@ -152,36 +153,15 @@ public class ApplicationCreator extends ApplicationBlock {
 			}
 			app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
 			app.store();
+			app.setLocalizedNames(localizedNames, isNewApplication);
+			app.setLocalizedUrls(localizedUrls, isNewApplication);
 
 			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
 			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
-			
-//			id == null means it's new app
-			if(id == null && at == FORMBUILDER_TYPE && name != null && !name.equals("")) {
-				
-				try {
-					
-					iwc.setSessionAttribute(APP_FORM_NAME_PARAM, name);
-					iwc.setSessionAttribute(APP_ID_PARAM, String.valueOf(app.getPrimaryKey()));
-					iwc.getResponse().sendRedirect(
-							new StringBuilder(FORMBUILDER_REDIRECT_PATH)
-							.append("?")
-							.append(FROM_APP_REQ_PARAM)
-							.append("=1&encParams=1")
-							.toString()
-					);
-					
-				} catch (IOException e) {
-//					TODO: use logger
-					System.out.println("probably some old component was used? and redirect was called when component was actually already been started rendering");
-					e.printStackTrace();
-				}
-			}
 		}
 	}
-	
+
 	private void listExisting(IWContext iwc) throws RemoteException, FinderException {
-		
 		Collection applications = getApplicationBusiness(iwc).getApplicationHome().findAll();
 
 		Form form = new Form();
@@ -220,10 +200,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		cell.add(new Text(this.iwrb.getLocalizedString("age_to", "Age To")));
 		
 		cell = row.createHeaderCell();
-		cell.setStyleClass("appType");
-		cell.add(new Text(this.iwrb.getLocalizedString("appType", "Application type")));
-		
-		cell = row.createHeaderCell();
 		cell.setStyleClass("electronic");
 		cell.add(new Text(this.iwrb.getLocalizedString("electronic", "Electronic")));
 		
@@ -252,7 +228,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		int iRow = 1;
 		
 		Iterator iter = applications.iterator();
-		
 		while (iter.hasNext()) {
 			Application app = (Application) iter.next();
 			CaseCode code = app.getCaseCode();
@@ -266,7 +241,6 @@ public class ApplicationCreator extends ApplicationBlock {
 			Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
 			delete.addParameter("prm_action", "delete");
 			delete.addParameter("id", app.getPrimaryKey().toString());
-			
 
 			if (iRow % 2 == 0) {
 				row.setStyleClass("evenRow");
@@ -278,11 +252,13 @@ public class ApplicationCreator extends ApplicationBlock {
 			cell = row.createCell();
 			cell.setStyleClass("firstColumn");
 			cell.setStyleClass("application");
-			cell.add(new Text(app.getName()));
-
+//			cell.add(new Text(app.getName()));
+			cell.add(new Text(app.getNameByLocale()));
+			
 			cell = row.createCell();
 			cell.setStyleClass("category");
-			cell.add(new Text(app.getCategory().getName()));
+//			cell.add(new Text(app.getCategory().getName()));
+			cell.add(new Text(app.getCategory().getLocalizedName()));
 
 			cell = row.createCell();
 			cell.setStyleClass("caseCode");
@@ -301,16 +277,6 @@ public class ApplicationCreator extends ApplicationBlock {
 			cell.setStyleClass("ageTo");
 			cell.add(new Text(app.getAgeTo() > -1 ? Integer.toString(app.getAgeTo()) : "-"));
 
-			cell = row.createCell();
-			cell.setStyleClass("appType");
-			
-			Integer app_type = app.getAppType();
-			
-			if(app_type != null)
-				cell.add(new Text(getAppTypesIdToNameMappings().get(app_type)));
-			else
-				cell.add(new Text(""));
-			
 			cell = row.createCell();
 			cell.setStyleClass("electronic");
 			cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
@@ -353,40 +319,35 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		add(form);
 	}
-	
-	private DropdownMenu getAppTypesMenu() {
-		
-		DropdownMenu menu = new DropdownMenu("appType");
-		SortedMap<Integer, String> mappings = getAppTypesIdToNameMappings();
-		
-		for (Integer app_type_id : mappings.keySet())
-			menu.addMenuElement(app_type_id, mappings.get(app_type_id));
-		
-		return menu;
-	}
-	
-	private static final int FORMBUILDER_TYPE = 1;
-	
-	private SortedMap<Integer, String> getAppTypesIdToNameMappings() {
-		
-//		TODO: discard hardcoding and make it configurable - use ConfigFactory and Config from core
-		SortedMap<Integer, String> mappings = new TreeMap<Integer, String>();
-		mappings.put(FORMBUILDER_TYPE, iwrb.getLocalizedString("app_type.formbuilder", "Formbuilder"));
-		mappings.put(2, iwrb.getLocalizedString("app_type.url", "Url"));
-		
-		return mappings;
-	}
 
 	private void getApplicationCreationForm(IWContext iwc, int applicationID) throws RemoteException {
+		
+		List localesInUse = ICLocaleBusiness.listOfLocales(true);
+		
+		List localizedNames = new ArrayList();
+		List localizedUrls = new ArrayList();
 		
 		Form form = new Form();
 		form.setID("applicationCreator");
 		form.setStyleClass("adminForm");
 		
 		TextInput name = new TextInput("name");
+		
+//		for (int i = 0; i < localesInUse.size(); i++) {
+//			TextInput localizedName = new TextInput("name"+localesInUse.get(i).toString());
+//			localizedNames.add(localizedName);
+//			
+////			Layer formItem = new Layer(Layer.DIV);
+////			TextInput localizedName = new TextInput("localizedName");
+////			formItem.setStyleClass("formItem");
+////			Label label = new Label(this.iwrb.getLocalizedString("name"+localesInUse.get(i).toString(), "Name("+localesInUse.get(i).toString()+")"), name);
+////			formItem.add(label);
+////			formItem.add(localizedName);
+////			localizedNames.add(formItem);				
+//		}
+		
 		TextInput url = new TextInput("url");
 		BooleanInput electronic = new BooleanInput("elec");
-		DropdownMenu app_types = getAppTypesMenu();
 		BooleanInput requiresLogin = new BooleanInput("reqLogin");
 		BooleanInput visible = new BooleanInput("visible");
 		BooleanInput newin = new BooleanInput("newin");
@@ -412,14 +373,30 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 
 		if (applicationID > 0) {
-			
 			try {
 				Application application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
 						new Integer(applicationID));
 				name.setContent(application.getName());
+				for (int i = 0; i < localesInUse.size(); i++) {
+					TextInput localizedName = new TextInput(LOCALIZED_NAME_PREFIX+localesInUse.get(i).toString());
+//					localizedName.setContent(application.getNameByLocale(((ICLocale)localesInUse.get(i)).getLocaleObject()));
+					localizedName.setContent(application.getLocalizedName(((ICLocale)localesInUse.get(i)).getLocaleObject()));
+					localizedNames.add(localizedName);
+					
+					TextInput localizedUrl = new TextInput(LOCALIZED_URL_PREFIX+localesInUse.get(i).toString());
+//					localizedUrl.setContent(application.getUrlByLocale(((ICLocale)localesInUse.get(i)).getLocaleObject()));
+					localizedUrl.setContent(application.getLocalizedUrl(((ICLocale)localesInUse.get(i)).getLocaleObject()));
+					localizedUrls.add(localizedUrl);					
+				}
 				url.setContent(application.getUrl());
+//				for (int i = 0; i < localesInUse.size(); i++) {
+//					TextInput localizedUrl = new TextInput(LOCALIZED_URL_PREFIX+localesInUse.get(i).toString());
+////					localizedUrl.setContent(application.getUrlByLocale((Locale)localesInUse.get(i)));
+//					localizedUrl.setContent(application.getUrlByLocale(((ICLocale)localesInUse.get(i)).getLocaleObject()));					
+//					localizedUrls.add(localizedUrl);
+//				}
+				
 				electronic.setSelected(application.getElectronic());
-				app_types.setSelectedElement(application.getAppType());
 				requiresLogin.setSelected(application.getRequiresLogin());
 				visible.setSelected(application.getVisible());
 				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : "");
@@ -435,7 +412,15 @@ public class ApplicationCreator extends ApplicationBlock {
 				f.printStackTrace();
 			}
 		}
-		
+		else{
+			for (int i = 0; i < localesInUse.size(); i++) {
+				TextInput localizedName = new TextInput(LOCALIZED_NAME_PREFIX+localesInUse.get(i).toString());
+				localizedNames.add(localizedName);
+				TextInput localizedUrl = new TextInput(LOCALIZED_URL_PREFIX+localesInUse.get(i).toString());
+				localizedUrls.add(localizedUrl);
+			}
+		}
+
 		Layer layer = new Layer(Layer.DIV);
 		layer.setStyleClass("formSection");
 		form.add(layer);
@@ -447,6 +432,15 @@ public class ApplicationCreator extends ApplicationBlock {
 		formItem.add(name);
 		layer.add(formItem);
 
+		for (int i = 0; i < localizedNames.size(); i++) {
+			formItem = new Layer(Layer.DIV);
+			formItem.setStyleClass("formItem");
+			label = new Label(this.iwrb.getLocalizedString("name", "Name")+"("+localesInUse.get(i).toString()+")", name);
+			formItem.add(label);
+			formItem.add(localizedNames.get(i));
+			layer.add(formItem);			
+		}
+		
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
 		label = new Label(this.iwrb.getLocalizedString("category", "category"), category);
@@ -463,23 +457,25 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(this.iwrb.getLocalizedString("app_type", "Application type"), app_types);
+		label = new Label(this.iwrb.getLocalizedString("url", "url"), url);
 		formItem.add(label);
-		formItem.add(app_types);
+		formItem.add(url);
 		layer.add(formItem);
+
+		for (int i = 0; i < localizedUrls.size(); i++) {
+			formItem = new Layer(Layer.DIV);
+			formItem.setStyleClass("formItem");
+			label = new Label(this.iwrb.getLocalizedString("url", "Url")+"("+localesInUse.get(i).toString()+")", name);
+			formItem.add(label);
+			formItem.add(localizedUrls.get(i));
+			layer.add(formItem);			
+		}
 		
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
 		label = new Label(this.iwrb.getLocalizedString("electronic", "Electronic"), electronic);
 		formItem.add(label);
 		formItem.add(electronic);
-		layer.add(formItem);
-		
-		formItem = new Layer(Layer.DIV);
-		formItem.setStyleClass("formItem");
-		label = new Label(this.iwrb.getLocalizedString("url", "url"), url);
-		formItem.add(label);
-		formItem.add(url);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);
@@ -538,7 +534,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
 		buttonLayer.add(save);
-		
+
 		add(form);
 	}
 

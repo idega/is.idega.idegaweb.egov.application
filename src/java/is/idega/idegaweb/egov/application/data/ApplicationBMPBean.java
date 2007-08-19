@@ -11,18 +11,28 @@
  */
 package is.idega.idegaweb.egov.application.data;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextBMPBean;
+import com.idega.block.text.data.LocalizedTextHome;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.core.localisation.data.ICLocaleBMPBean;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDOStoreException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.Order;
@@ -49,9 +59,11 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	private static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME_LOC_TEXT";
 	private static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
 	private static final String EGOV_APPLICATION_ID = "EGOV_APPLICATION_ID";
-	private static final String HEADLINE = "HEADLINE";
+//	private static final String HEADLINE = "HEADLINE";
 	private static final String TX_LOCALIZED_TEXT = "TX_LOCALIZED_TEXT";
-	private static final String TX_LOCALIZED_ID = "TX_LOCALIZED_ID";
+//	private static final String TX_LOCALIZED_ID = "TX_LOCALIZED_ID";
+	private static final String TX_LOCALIZED_TEXT_ID = "TX_LOCALIZED_TEXT_ID";
+	private static final String IC_LOCALE_ID = "IC_LOCALE_ID";
 	
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -158,29 +170,191 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public void setName(String name) {
 		setColumn(NAME, name);
 	}
-
-	public String getName() {
-		String localizedName = getNameByLocale(); 
-		if(localizedName != null){
-			return localizedName;
+	
+	public String getQueryForMiddleTable(String tableName, int applicationId){
+		return "select * from "+tableName+" where "+EGOV_APPLICATION_ID+"="+applicationId;
+	}
+	
+	public String getQueryForTxLocalizedText(int localeId, Collection localNamesIds){
+		String queryForLocalizedEntry = "select * from "+TX_LOCALIZED_TEXT+" where "+IC_LOCALE_ID+" = "+localeId+" AND (";
+		for (Iterator localNameIdsIterator = localNamesIds.iterator(); localNameIdsIterator.hasNext();) {
+			LocalizedText element = (LocalizedText) localNameIdsIterator.next();
+			if(localNameIdsIterator.hasNext()){
+				queryForLocalizedEntry += TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey()+ " OR ";
+			}
+			else{
+				queryForLocalizedEntry += TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey()+")";
+			}
 		}
-		else {
-			return getStringColumnValue(NAME);
+		return queryForLocalizedEntry;
+	}
+	
+	public void updateLocalizedTextEntry(Object primaryKey, String headline){
+		LocalizedText localizedText = null;
+		try {
+			localizedText = ((LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).findByPrimaryKey(primaryKey);
+		} catch (EJBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		localizedText.setHeadline(headline);
+		localizedText.store();
 	}
 
-	public String getNameOrUrlByLocale(String table){
-		IWContext iwc = IWContext.getInstance();
+	public void insertLocalizedTextEntry(int localeId, String headline, boolean settingNames){
+		if(headline == null || headline.equals("")){
+			return;
+		}
+		LocalizedText localizedText = ((LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+		localizedText.setHeadline(headline);
+		localizedText.setLocaleId(localeId);
+		
+//		String queryForMiddleTable = null;
+//		if(settingNames){
+//			queryForMiddleTable = "insert into "+EGOV_APPLICATION_NAME_LOC_TEXT+" ("+EGOV_APPLICATION_ID+", "+TX_LOCALIZED_TEXT_ID+") values ("+getID()+", "+localizedText.getID()+")";
+//		}
+//		else{
+//			queryForMiddleTable = "insert into "+EGOV_APPLICATION_URL_LOC_TEXT+" ("+EGOV_APPLICATION_ID+", "+TX_LOCALIZED_TEXT_ID+") values ("+getID()+", "+localizedText.getID()+")";			
+//		}
+//		try {
+//			idoExecuteGlobalUpdate(queryForMiddleTable);
+//		} catch (IDOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		
+		try {
+			localizedText.store();
+		} catch (IDOStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String queryForMiddleTable = null;
+		if(settingNames){
+			queryForMiddleTable = "insert into "+EGOV_APPLICATION_NAME_LOC_TEXT+" ("+EGOV_APPLICATION_ID+", "+TX_LOCALIZED_TEXT_ID+") values ("+getID()+", "+localizedText.getID()+")";
+		}
+		else{
+			queryForMiddleTable = "insert into "+EGOV_APPLICATION_URL_LOC_TEXT+" ("+EGOV_APPLICATION_ID+", "+TX_LOCALIZED_TEXT_ID+") values ("+getID()+", "+localizedText.getID()+")";			
+		}
+		try {
+			idoExecuteGlobalUpdate(queryForMiddleTable);
+		} catch (IDOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
 
+	private void saveAllLocalizedEntries(Map localizedEntries, boolean settingNames){
+		if(settingNames){
+			for (Iterator iter = localizedEntries.keySet().iterator(); iter.hasNext();) {
+				ICLocale icLocale = (ICLocale) iter.next();
+				insertLocalizedTextEntry(icLocale.getLocaleID(), (String)localizedEntries.get(icLocale), settingNames);			
+			}
+		}
+		else{
+			for (Iterator iter = localizedEntries.keySet().iterator(); iter.hasNext();) {
+				ICLocale icLocale = (ICLocale) iter.next();
+				insertLocalizedTextEntry(icLocale.getLocaleID(), (String)localizedEntries.get(icLocale), settingNames);			
+			}
+		}
+	}
+	
+	public void setLocalizedUrls(Map localizedEntries, boolean isNewApplication){
+		setLocalizedNamesOrUrls(localizedEntries, isNewApplication, false);
+	}
+	
+	public void setLocalizedNames(Map localizedEntries, boolean isNewApplication){
+		setLocalizedNamesOrUrls(localizedEntries, isNewApplication, true);
+	} 
+	
+	private void setLocalizedNamesOrUrls(Map localizedEntries, boolean isNewApplication, boolean settingNames){
+		if(isNewApplication){	//if we are saving new application there are no localization still
+			saveAllLocalizedEntries(localizedEntries, settingNames);
+		}
+		else{
+//			List possibleColumnValues = new ArrayList();
+//			possibleColumnValues.add(getIDInteger().toString());
+			String queryForLocalizedEntriesIds = null;
+			if(settingNames){
+//				queryForLocalizedEntriesIds = getQueryWithSeveralPossibleColumnValues(EGOV_APPLICATION_NAME_LOC_TEXT, EGOV_APPLICATION_ID, possibleColumnValues);
+				queryForLocalizedEntriesIds = getQueryForMiddleTable(EGOV_APPLICATION_NAME_LOC_TEXT, getID());
+			}
+			else{
+//				queryForLocalizedEntriesIds = getQueryWithSeveralPossibleColumnValues(EGOV_APPLICATION_URL_LOC_TEXT, EGOV_APPLICATION_ID, possibleColumnValues);
+				queryForLocalizedEntriesIds = getQueryForMiddleTable(EGOV_APPLICATION_URL_LOC_TEXT, getID());
+			}
+			
+			Collection localNamesIds = null;
+			try {
+				localNamesIds = idoGetRelatedEntitiesBySQL(LocalizedText.class, queryForLocalizedEntriesIds);
+			} catch (IDORelationshipException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			
+			if(localNamesIds == null || localNamesIds.isEmpty()){
+				//there are no localized text entries for that application
+				saveAllLocalizedEntries(localizedEntries, settingNames);
+			}
+			else{
+				// there are several localized text entries, so we have to check which of them are updated and which are new
+				for (Iterator iter = localizedEntries.keySet().iterator(); iter.hasNext();) {
+					ICLocale icLocale = (ICLocale)iter.next();
+
+					String queryForLocalizedEntry = getQueryForTxLocalizedText(icLocale.getLocaleID(), localNamesIds);
+					Collection localizedEntry = null;
+					try {
+						localizedEntry = idoGetRelatedEntitiesBySQL(LocalizedText.class, queryForLocalizedEntry);
+					} catch (IDORelationshipException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return;
+					}
+					if(localizedEntry == null || localizedEntry.isEmpty()){
+						//insert entry
+						insertLocalizedTextEntry(icLocale.getLocaleID(), (String)localizedEntries.get(icLocale), settingNames);
+					}
+					else{
+						//update entry
+						
+//System.out.println(((LocalizedText)(localizedEntry.toArray()[0])).getHeadline());
+//System.out.println((String)localizedEntries.get(icLocale));
+//						if(!((LocalizedText)(localizedEntry.toArray()[0])).getHeadline().equals((String)localizedEntries.get(icLocale))){
+							// localized text entry has been changed
+							updateLocalizedTextEntry(((LocalizedText)(localizedEntry.toArray()[0])).getPrimaryKey(), (String)localizedEntries.get(icLocale));
+//						}
+					}
+				}
+			}
+		}		
+	}
+	
+	public String getName(){
+		return getStringColumnValue(NAME);
+	}
+
+//	private String getQueryForHeadline(int localeId, int applicationId, String middleTable){
+//		return "select HEADLINE from "+middleTable+", TX_LOCALIZED_TEXT where " +
+//				middleTable+".EGOV_APPLICATION_ID= "+applicationId+" and " +
+//				middleTable+".TX_LOCALIZED_TEXT_ID = TX_LOCALIZED_TEXT.TX_LOCALIZED_TEXT_ID and " +
+//				"IC_LOCALE_ID = "+localeId;
+//	}
+	
+	private String getNameOrUrlByLocale(String table, Locale currentLocale){
 		Collection localNamesIds = null;
-//		Collection localNames = null;
-		Collection locale = null;
 		Collection localizedName = null;
 		
-//		String queryForLocalizedName = null;
-		String queryForLocale = null;
-		String queryForLocalizedNamesHeaders = null;
 		try { //getting ids of entries representing selected headline
+			
 			String sqlQuery = "select * from " + table +" where "+EGOV_APPLICATION_ID+" = "+getID();
 			localNamesIds = idoGetRelatedEntitiesBySQL(LocalizedText.class, sqlQuery);
 			if(localNamesIds == null || localNamesIds.isEmpty())
@@ -190,52 +364,12 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 			e.printStackTrace();
 			return null;
 		}
-//		try{
-//			queryForLocalizedName = "select * from " + TX_LOCALIZED_TEXT +" where ";//+ TX_LOCALIZED_ID+" = "+;					
-//			for (Iterator iter = localNamesIds.iterator(); iter.hasNext();) {
-//				LocalizedTextBMPBean element = (LocalizedTextBMPBean) iter.next();
-//				if(iter.hasNext()){
-//					queryForLocalizedName += element.getIDColumnName()+" = "+element.getID()+ " OR ";
-//				}
-//				else{
-//					queryForLocalizedName += element.getIDColumnName()+" = "+element.getID();
-//				}
-//			}
-//			localNames = idoGetRelatedEntitiesBySQL(LocalizedText.class, queryForLocalizedName);
-//			if(localNames == null || localNames.isEmpty()){
-//				return null;
-//			}
-//		} catch (IDORelationshipException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return null;
-//		}
-		try {	//getting current locale id
-			queryForLocale = "select * from IC_LOCALE where "+ICLocaleBMPBean.getColumnNameLocale()+" = '" + iwc.getLocale()+"'";
-			locale = idoGetRelatedEntitiesBySQL(ICLocale.class, queryForLocale);
-			if(locale == null || locale.isEmpty()){
-				return null;
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			return null;
-		}
+		
 		try { //getting localized headline
-			queryForLocalizedNamesHeaders = "select * from TX_LOCALIZED_TEXT where IC_LOCALE_ID = "+((ICLocale)(locale.toArray()[0])).getPrimaryKey()+" and (";
-//			queryForLocalizedNamesHeaders = "select "+HEADLINE+" from TX_LOCALIZED_TEXT where IC_LOCALE_ID = "+((ICLocale)(locale.toArray()[0])).getPrimaryKey()+" and (";
-			for (Iterator iter = localNamesIds.iterator(); iter.hasNext();) {
-				LocalizedTextBMPBean element = (LocalizedTextBMPBean) iter.next();
-				if(iter.hasNext()){
-					queryForLocalizedNamesHeaders += element.getIDColumnName()+" = "+element.getID()+ " OR ";
-				}
-				else{
-					queryForLocalizedNamesHeaders += element.getIDColumnName()+" = "+element.getID()+")";
-	//					localeBean = element;
-				}
-			}
-			localizedName = idoGetRelatedEntitiesBySQL(LocalizedTextBMPBean.class, queryForLocalizedNamesHeaders);
-			if (localizedName == null) {
+			
+//			queryForLocalizedNamesHeaders = getQueryForTxLocalizedText(ICLocaleBusiness.getLocaleId(currentLocale), localNamesIds);
+			localizedName = idoGetRelatedEntitiesBySQL(LocalizedTextBMPBean.class, getQueryForTxLocalizedText(ICLocaleBusiness.getLocaleId(currentLocale), localNamesIds));
+			if (localizedName == null || localizedName.isEmpty()) {
 				return null;
 			}
 		} catch (Exception e) {
@@ -244,26 +378,64 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 			return null;
 		}
 		return ((LocalizedTextBMPBean)(localizedName.toArray()[0])).getHeadline();
-//		return (String)(localizedName.toArray()[0]);
+	}
+
+	public String getLocalizedName(Locale locale){
+		String localizedName = getNameOrUrlByLocale(EGOV_APPLICATION_NAME_LOC_TEXT, locale);
+		if(localizedName != null){
+			return localizedName;
+		}
+		else {
+			return "";
+		}		
+		
+	}
+	
+	public String getNameByLocale(Locale locale){
+		String localizedName = getNameOrUrlByLocale(EGOV_APPLICATION_NAME_LOC_TEXT, locale);
+		if(localizedName != null){
+			return localizedName;
+		}
+		else {
+			return getStringColumnValue(NAME);
+		}		
 	}
 	
 	public String getNameByLocale(){
-		return getNameOrUrlByLocale(EGOV_APPLICATION_NAME_LOC_TEXT);
+		IWContext iwc = IWContext.getInstance();
+		return getNameByLocale(iwc.getLocale());
 	}
 
 	public String getUrlByLocale(){
-		return getNameOrUrlByLocale(EGOV_APPLICATION_URL_LOC_TEXT);		
+		IWContext iwc = IWContext.getInstance();
+		return getUrlByLocale(iwc.getLocale());
+	}
+
+	public String getUrlByLocale(Locale locale){
+		String localizedName = getNameOrUrlByLocale(EGOV_APPLICATION_URL_LOC_TEXT, locale);
+		if(localizedName != null){
+			return localizedName;
+		}
+		else {
+			return getStringColumnValue(URL);
+		}		
 	}	
+	
+	public String getLocalizedUrl(Locale locale){
+		String localizedName = getNameOrUrlByLocale(EGOV_APPLICATION_URL_LOC_TEXT, locale);
+		if(localizedName != null){
+			return localizedName;
+		}
+		else {
+			return "";
+		}				
+	}
 	
 	public void setUrl(String url) {
 		setColumn(URL, url);
 	}
-
+	
 	public String getUrl() {
-		String urlByLocale = getUrlByLocale();
-		if(urlByLocale != null){
-			return urlByLocale;
-		}
 		return getStringColumnValue(URL);
 	}
 
@@ -325,5 +497,125 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		query.addColumn(new Column(table, getIDColumnName()));
 		query.addOrder(new Order(new Column(table, TIMES_CLICKED), false));
 		return this.idoFindPKsByQuery(query, numberOfEntries);
+	}
+	
+//	private Collection ejbFindLocalizedHeadline(int localeId, int applicationId, String middleTable){
+////		Table table = new Table(this);
+////		SelectQuery query = new SelectQuery(table);
+//		IDOQuery query = idoQuery("select * from "+middleTable+", TX_LOCALIZED_TEXT where " +
+//				middleTable+".EGOV_APPLICATION_ID= "+applicationId+" and " +
+//				middleTable+".TX_LOCALIZED_TEXT_ID = TX_LOCALIZED_TEXT.TX_LOCALIZED_TEXT_ID and " +
+//				"IC_LOCALE_ID = "+localeId);
+////System.out.println("select TX_LOCALIZED_TEXT.HEADLINE from "+middleTable+", TX_LOCALIZED_TEXT where " +
+////				middleTable+".EGOV_APPLICATION_ID= "+applicationId+" and " +
+////				middleTable+".TX_LOCALIZED_TEXT_ID = TX_LOCALIZED_TEXT.TX_LOCALIZED_TEXT_ID and " +
+////				"IC_LOCALE_ID = "+localeId);		
+////		idoQuery(arg0)
+////		query.append(", ")
+////		String[] groups = {", "}
+////		query.
+//		try {
+//			return this.idoFindPKsByQuery(query);
+////			this.getEntityDefinition()
+//		} catch (FinderException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return null;
+//		}
+//		
+//	}
+	
+	private String getQueryForDeletingLocalizedTextEntries(Collection localizedNamesIds, Collection localizedUrlIds){
+		String query = null;
+		
+		if(localizedNamesIds != null && !localizedNamesIds.isEmpty()){
+			query = "delete from "+TX_LOCALIZED_TEXT+" where ";
+		
+			for (Iterator localNameIdsIterator = localizedNamesIds.iterator(); localNameIdsIterator.hasNext();) {
+				LocalizedText element = (LocalizedText) localNameIdsIterator.next();
+				if(localNameIdsIterator.hasNext()){
+					query += TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey()+ " OR ";
+				}
+				else{
+					query += TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey();
+				}
+			}
+			
+			if(localizedUrlIds == null || localizedUrlIds.isEmpty()){
+				return query;
+			}
+			else{
+				query += " OR ";
+			}
+		}
+		if(localizedUrlIds != null && !localizedUrlIds.isEmpty()){
+			if(query == null){
+				query = "delete from "+TX_LOCALIZED_TEXT+" where ";
+			}				
+			for (Iterator localNameIdsIterator = localizedUrlIds.iterator(); localNameIdsIterator.hasNext();) {
+				LocalizedText element = (LocalizedText) localNameIdsIterator.next();
+				if(localNameIdsIterator.hasNext()){
+					query += TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey()+ " OR ";
+				}
+				else{
+					query += TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey();
+				}
+			}
+		}
+		return query;
+	}
+	
+	public boolean removeLocalizedEntries(){
+
+		//remove Ids of localized names
+		Collection localizedNamesIds = null;
+		String query = getQueryForMiddleTable(EGOV_APPLICATION_NAME_LOC_TEXT, getID());
+		try {
+			localizedNamesIds = idoGetRelatedEntitiesBySQL(LocalizedText.class, query);
+		} catch (IDORelationshipException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}		
+		query = "delete from "+EGOV_APPLICATION_NAME_LOC_TEXT+" where "+EGOV_APPLICATION_ID+" = "+getID();
+		try {
+			idoExecuteGlobalUpdate(query);
+		} catch (IDOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		//remove Ids of localized names
+		Collection localizedURLsIds = null;
+		query = getQueryForMiddleTable(EGOV_APPLICATION_URL_LOC_TEXT, getID());
+//		System.out.println(query);				
+		try {
+			localizedURLsIds = idoGetRelatedEntitiesBySQL(LocalizedText.class, query);
+		} catch (IDORelationshipException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}		
+		query = "delete from "+EGOV_APPLICATION_URL_LOC_TEXT+" where "+EGOV_APPLICATION_ID+" = "+getID();
+//		System.out.println(query);		
+		
+		try {
+			idoExecuteGlobalUpdate(query);
+		} catch (IDOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		query = getQueryForDeletingLocalizedTextEntries(localizedNamesIds, localizedURLsIds);
+		System.out.println(query);		
+		try {
+			idoExecuteGlobalUpdate(query);
+		} catch (IDOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}		
+		return true;
 	}
 }

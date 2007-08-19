@@ -1,6 +1,9 @@
 package is.idega.idegaweb.egov.application.data;
 
 
+import java.util.Locale;
+import java.util.Map;
+
 import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOEntity;
 
@@ -92,19 +95,49 @@ public interface Application extends IDOEntity {
 	public void setName(String name);
 
 	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setLocalizedNames
+	 */
+	public void setLocalizedNames(Map localizedNames, boolean isNewApplication);	
+	
+	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getName
 	 */
 	public String getName();
 
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getNameByLocale
+	 */
+	public String getNameByLocale();	
+	
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getNameByLocale
+	 */
+	public String getNameByLocale(Locale locale);	
+	
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setUrl
 	 */
 	public void setUrl(String url);
 
 	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setLocalizedNames
+	 */
+	public void setLocalizedUrls(Map localizedEntries, boolean isNewApplication);
+	
+	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrl
 	 */
 	public String getUrl();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrlByLocale
+	 */
+	public String getUrlByLocale();
+ 
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrlByLocale
+	 */
+	public String getUrlByLocale(Locale locale);
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setOpensInNewWindow
@@ -126,7 +159,10 @@ public interface Application extends IDOEntity {
 	 */
 	public boolean getHiddenFromGuests();
 	
-	public void setAppType(Integer app_type);
-		
-	public Integer getAppType();
+	public boolean removeLocalizedEntries();
+	
+	public String getLocalizedName(Locale locale);
+	
+	public String getLocalizedUrl(Locale locale);
+
 }
