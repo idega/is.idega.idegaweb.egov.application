@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryBMPBean.java,v 1.1.2.1 2007/08/19 15:42:56 justinas Exp $ Created on
+ * $Id: ApplicationCategoryBMPBean.java,v 1.1.2.2 2007/08/20 14:44:22 justinas Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -39,7 +39,6 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 	private static final String TABLE_NAME = "EGOV_APPLICATION_CATEGORY";
 	private static final String NAME = "category_name";
 	private static final String DESCRIPTION = "category_description";
-//	private static final String EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT = "EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT";
 	private static final String EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT = "EGOV_APPLICATION_CATEGORY_NAME";
 //	private static final String EGOV_APPLICATION_CATEGORY_ID = "EGOV_APPLICATION_CATEGORY_ID";
 

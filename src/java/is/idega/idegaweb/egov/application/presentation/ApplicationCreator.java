@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.15.2.1 2007/08/19 15:44:08 justinas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.15.2.2 2007/08/20 14:43:58 justinas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -90,7 +90,6 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 
 	private void saveApplication(IWContext iwc) throws RemoteException, CreateException, FinderException {
-//		iwc.getpara
 		
 		boolean isNewApplication = false;
 		
@@ -333,19 +332,6 @@ System.out.println(loc+" "+iwc.getParameter(LOCALIZED_NAME_PREFIX+loc));
 		
 		TextInput name = new TextInput("name");
 		
-//		for (int i = 0; i < localesInUse.size(); i++) {
-//			TextInput localizedName = new TextInput("name"+localesInUse.get(i).toString());
-//			localizedNames.add(localizedName);
-//			
-////			Layer formItem = new Layer(Layer.DIV);
-////			TextInput localizedName = new TextInput("localizedName");
-////			formItem.setStyleClass("formItem");
-////			Label label = new Label(this.iwrb.getLocalizedString("name"+localesInUse.get(i).toString(), "Name("+localesInUse.get(i).toString()+")"), name);
-////			formItem.add(label);
-////			formItem.add(localizedName);
-////			localizedNames.add(formItem);				
-//		}
-		
 		TextInput url = new TextInput("url");
 		BooleanInput electronic = new BooleanInput("elec");
 		BooleanInput requiresLogin = new BooleanInput("reqLogin");
@@ -389,13 +375,6 @@ System.out.println(loc+" "+iwc.getParameter(LOCALIZED_NAME_PREFIX+loc));
 					localizedUrls.add(localizedUrl);					
 				}
 				url.setContent(application.getUrl());
-//				for (int i = 0; i < localesInUse.size(); i++) {
-//					TextInput localizedUrl = new TextInput(LOCALIZED_URL_PREFIX+localesInUse.get(i).toString());
-////					localizedUrl.setContent(application.getUrlByLocale((Locale)localesInUse.get(i)));
-//					localizedUrl.setContent(application.getUrlByLocale(((ICLocale)localesInUse.get(i)).getLocaleObject()));					
-//					localizedUrls.add(localizedUrl);
-//				}
-				
 				electronic.setSelected(application.getElectronic());
 				requiresLogin.setSelected(application.getRequiresLogin());
 				visible.setSelected(application.getVisible());
