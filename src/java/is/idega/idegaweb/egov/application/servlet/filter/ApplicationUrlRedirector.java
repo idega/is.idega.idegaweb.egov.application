@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.11 2007/04/18 17:31:10 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.9.2.1 2007/08/20 13:35:24 justinas Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -47,6 +47,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			ServletException {
 		HttpServletRequest request = (HttpServletRequest) srequest;
 		HttpServletResponse response = (HttpServletResponse) sresponse;
+		initializeDefaultDomain(request);
 		boolean doRedirect = getIfDoRedirect(request);
 		if (doRedirect) {
 			String newUrl = getNewRedirectURL(request,response);
@@ -88,7 +89,8 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 						uri += "&";
 					}
 					
-					String applUrl = application.getUrl();
+//					String applUrl = application.getUrl();
+					String applUrl = application.getUrlByLocale(iwma.getDefaultLocale());
 					String encoding = System.getProperty("file.encoding");
 					String applUrlEncoded = URLEncoder.encode(applUrl,encoding);
 
@@ -100,11 +102,13 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			}
 			else if(isLoggedOn){
 				
-				String uri = application.getUrl();
+//				String uri = application.getUrl();
+				String uri = application.getUrlByLocale(iwma.getDefaultLocale());
 				uri = IWAuthenticator.getUriParsedWithVariables(request,uri);
 				return uri;
 			}
-			return application.getUrl();
+//			return application.getUrl();
+			return application.getUrlByLocale(iwma.getDefaultLocale());
 			
 		}
 		catch (Exception e) {
