@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.9.2.1 2007/08/20 13:35:24 justinas Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.9.2.2 2007/08/20 14:42:19 justinas Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -12,9 +12,11 @@ package is.idega.idegaweb.egov.application.servlet.filter;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -23,6 +25,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -30,6 +33,7 @@ import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
+import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
 
@@ -72,7 +76,8 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			IWMainApplication iwma = getIWMainApplication(request);
 			IWApplicationContext iwc = iwma.getIWApplicationContext();
 			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
-			
+
+			IWContext iwContext = new IWContext(request, response, request.getSession().getServletContext());
 			updateTimesClicked(iwma, application);
 			
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
@@ -90,7 +95,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 					}
 					
 //					String applUrl = application.getUrl();
-					String applUrl = application.getUrlByLocale(iwma.getDefaultLocale());
+					String applUrl = application.getUrlByLocale(iwContext.getCurrentLocale());
 					String encoding = System.getProperty("file.encoding");
 					String applUrlEncoded = URLEncoder.encode(applUrl,encoding);
 
@@ -103,12 +108,12 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			else if(isLoggedOn){
 				
 //				String uri = application.getUrl();
-				String uri = application.getUrlByLocale(iwma.getDefaultLocale());
+				String uri = application.getUrlByLocale(iwContext.getCurrentLocale());
 				uri = IWAuthenticator.getUriParsedWithVariables(request,uri);
 				return uri;
 			}
 //			return application.getUrl();
-			return application.getUrlByLocale(iwma.getDefaultLocale());
+			return application.getUrlByLocale(iwContext.getCurrentLocale());
 			
 		}
 		catch (Exception e) {
