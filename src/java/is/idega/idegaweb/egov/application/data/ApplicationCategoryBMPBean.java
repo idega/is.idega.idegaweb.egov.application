@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryBMPBean.java,v 1.1.2.2 2007/08/20 14:44:22 justinas Exp $ Created on
+ * $Id: ApplicationCategoryBMPBean.java,v 1.1.2.3 2007/08/22 08:08:47 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -19,11 +19,9 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.block.text.data.LocalizedText;
-import com.idega.block.text.data.LocalizedTextBMPBean;
 import com.idega.block.text.data.LocalizedTextHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
-import com.idega.core.localisation.data.ICLocaleBMPBean;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDORelationshipException;
@@ -40,7 +38,8 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 	private static final String NAME = "category_name";
 	private static final String DESCRIPTION = "category_description";
 	private static final String EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT = "EGOV_APPLICATION_CATEGORY_NAME";
-//	private static final String EGOV_APPLICATION_CATEGORY_ID = "EGOV_APPLICATION_CATEGORY_ID";
+
+	//	private static final String EGOV_APPLICATION_CATEGORY_ID = "EGOV_APPLICATION_CATEGORY_ID";
 
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -50,24 +49,24 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 		addAttribute(getIDColumnName());
 		addAttribute(NAME, "name", String.class, 50);
 		addAttribute(DESCRIPTION, "name", String.class);
-		
-		addManyToManyRelationShip(LocalizedText.class,EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT);
+
+		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT);
 	}
 
 	public void setName(String name) {
 		setColumn(NAME, name);
 	}
 
-	public String getDefaultName(){
+	public String getDefaultName() {
 		return getStringColumnValue(NAME);
 	}
-	
+
 	public String getName() {
 		String localizedName = getLocalizedName();
-		if(localizedName == null){
+		if (localizedName == null) {
 			return getDefaultName();
 		}
-		else{
+		else {
 			return localizedName;
 		}
 	}
@@ -94,22 +93,22 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 		query.addOrder(table, NAME, true);
 		return this.idoFindPKsByQuery(query);
 	}
-	
-	public String getLocalizedName(){
+
+	public String getLocalizedName() {
 		IWContext iwc = IWContext.getInstance();
 		String localizedName = getLocalizedName(ICLocaleBusiness.getLocaleId(iwc.getLocale()));
-		if(localizedName == null){
-			if(getStringColumnValue(NAME)== null){
+		if (localizedName == null) {
+			if (getStringColumnValue(NAME) == null) {
 				System.out.println("NULL");
 			}
 			return getStringColumnValue(NAME);
 		}
-		else{
+		else {
 			return localizedName;
 		}
 	}
-	
-	public void setLocalizedNames(Map localizedEntries){
+
+	public void setLocalizedNames(Map localizedEntries) {
 		for (Iterator iter = localizedEntries.keySet().iterator(); iter.hasNext();) {
 			ICLocale icLocale = (ICLocale) iter.next();
 			LocalizedText locText = getLocalizedText(icLocale.getLocaleID());
@@ -117,11 +116,12 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 				locText = ((LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
 			}
 
-			locText.setHeadline((String)localizedEntries.get(icLocale));
+			locText.setHeadline((String) localizedEntries.get(icLocale));
 			locText.setLocaleId(icLocale.getLocaleID());
 			try {
 				locText.store();
-			} catch (IDOStoreException e1) {
+			}
+			catch (IDOStoreException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
@@ -131,69 +131,76 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
-			}			
+			}
 		}
 	}
-	
-	public LocalizedText getLocalizedText(int localeId){
+
+	public LocalizedText getLocalizedText(int localeId) {
 		Collection locales = null;
 		LocalizedText text = null;
-		
+
 		try {
 			locales = idoGetRelatedEntities(LocalizedText.class);
-		} catch (IDORelationshipException e) {
+		}
+		catch (IDORelationshipException e) {
 			return null;
 		}
 		for (Iterator iter = locales.iterator(); iter.hasNext();) {
 			text = (LocalizedText) iter.next();
-			if(text.getLocaleId()==localeId){
+			if (text.getLocaleId() == localeId) {
 				return text;
 			}
 		}
 		return null;
 	}
-	
-	public String getLocalizedName(int localeId){
+
+	public String getLocalizedName(int localeId) {
 		try {
 			return getLocalizedText(localeId).getHeadline();
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			// TODO Auto-generated catch block
-//			e.printStackTrace();
+			//			e.printStackTrace();
 			return getStringColumnValue(NAME);
 		}
 	}
-	
-	public void addLocalization(LocalizedText localizedText) throws SQLException{
+
+	public void addLocalization(LocalizedText localizedText) throws SQLException {
 		try {
 			this.idoAddTo(localizedText);
-		} catch (IDOAddRelationshipException e) {
+		}
+		catch (IDOAddRelationshipException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	public void removeLocalizedTextEntries(){
+
+	public void removeLocalizedTextEntries() {
 		Collection locales = null;
 		LocalizedText text = null;
 		try {
 			locales = idoGetRelatedEntities(LocalizedText.class);
-		} catch (IDORelationshipException e) {
+		}
+		catch (IDORelationshipException e) {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		for (Iterator iter = locales.iterator(); iter.hasNext();) {
 			text = (LocalizedText) iter.next();
 			try {
 				this.idoRemoveFrom(text);
 				text.remove();
-			} catch (IDORemoveRelationshipException e) {
+			}
+			catch (IDORemoveRelationshipException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (EJBException e) {
+			}
+			catch (EJBException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (RemoveException e) {
+			}
+			catch (RemoveException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
