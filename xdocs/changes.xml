@@ -7,6 +7,12 @@
 	</properties>
 
 	<body>
+		<release version="1.0.14" date="2007-08-31">
+			<action dev="alexis" type="update">
+				Update dependency to com.idega.block.process to 3.1.14
+			</action>
+		</release>
+		
 		<release version="1.0.13" date="2007-06-22">
 			<action dev="laddi" type="update">
 				Added possibility to show contact info when adding user information.
