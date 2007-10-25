@@ -136,12 +136,17 @@ div.info div#name {
 	float: left;
 }
 
-div.info div#address {
-	clear: both;
+div.info div#address, div.info div#postal {
+	clear: left;
 }
 
 div.info div#personalID {
 	float: right;
+}
+
+div.info div#phone, div.info div#email {
+	float: right;
+	clear: right;
 }
 
 /* General form styles */
