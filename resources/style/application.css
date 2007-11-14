@@ -389,50 +389,50 @@ div.bottom a.button span.buttonSpan span.left, div.bottom a.button span.buttonSp
 }
 
 div.bottom a.button span.buttonSpan span.middle {
-	background: url(/style/images/buttons/middle.png) repeat-x;
+	background: url(images/buttons/middle.png) repeat-x;
 	width: auto;
 	padding: 0 9px;
 	padding-top: 6px;
 }
 
 div.bottom a.button span.buttonSpan span.left {
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/style/images/buttons/left.png',sizingMethod='scale');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/buttons/left.png',sizingMethod='scale');
 }
 
 html>body div.bottom a.button span.buttonSpan span.left {
 	filter: none;
-	background: url(/style/images/buttons/left.png) no-repeat;
+	background: url(images/buttons/left.png) no-repeat;
 }
 
 div.bottom a.button span.buttonSpan span.right {
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/style/images/buttons/right.png',sizingMethod='scale');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/buttons/right.png',sizingMethod='scale');
 }
 
 html>body div.bottom a.button span.buttonSpan span.right {
 	filter: none;
-	background: url(/style/images/buttons/right.png) no-repeat;
+	background: url(images/buttons/right.png) no-repeat;
 }
 
 div.bottom a.button:hover span.buttonSpan span.middle {
-	background: url(/style/images/buttons/middle_hover.png) repeat-x;
+	background: url(images/buttons/middle_hover.png) repeat-x;
 }
 
 div.bottom a.button:hover span.buttonSpan span.left {
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/style/images/buttons/left_hover.png',sizingMethod='scale');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/buttons/left_hover.png',sizingMethod='scale');
 }
 
 html>body div.bottom a.button:hover span.buttonSpan span.left {
 	filter: none;
-	background: url(/style/images/buttons/left_hover.png) no-repeat;
+	background: url(images/buttons/left_hover.png) no-repeat;
 }
 
 div.bottom a.button:hover span.buttonSpan span.right {
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/style/images/buttons/right_hover.png',sizingMethod='scale');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/buttons/right_hover.png',sizingMethod='scale');
 }
 
 html>body div.bottom a.button:hover span.buttonSpan span.right {
 	filter: none;
-	background: url(/style/images/buttons/right_hover.png) no-repeat;
+	background: url(images/buttons/right_hover.png) no-repeat;
 }
 
 
