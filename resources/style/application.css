@@ -348,6 +348,93 @@ html>body div.bottom a.buttonCancel:hover {
 	filter: none;	
 }
 
+div.bottom a:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 18px;
+}
+
+div.bottom a.button {
+	float: right;
+	margin-top: 0;
+	padding-top: 0;
+	height: 33px;
+	margin-left: 12px;
+}
+
+div.bottom a.button span {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	color: #21262D;
+	text-align: center;
+	display: block;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+div.bottom a.button:hover span {
+	color: #571900;
+}
+
+div.bottom a.button span span {
+	float: left;
+}
+
+div.bottom a.buttonHome {
+	float: left;
+}
+
+div.bottom a.button span.buttonSpan span.left, div.bottom a.button span.buttonSpan span.middle, div.bottom a.button span.buttonSpan span.right {
+	width: 7px;
+	height: 33px;
+}
+
+div.bottom a.button span.buttonSpan span.middle {
+	background: url(/style/images/buttons/middle.png) repeat-x;
+	width: auto;
+	padding: 0 9px;
+	padding-top: 6px;
+}
+
+div.bottom a.button span.buttonSpan span.left {
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/style/images/buttons/left.png',sizingMethod='scale');
+}
+
+html>body div.bottom a.button span.buttonSpan span.left {
+	filter: none;
+	background: url(/style/images/buttons/left.png) no-repeat;
+}
+
+div.bottom a.button span.buttonSpan span.right {
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/style/images/buttons/right.png',sizingMethod='scale');
+}
+
+html>body div.bottom a.button span.buttonSpan span.right {
+	filter: none;
+	background: url(/style/images/buttons/right.png) no-repeat;
+}
+
+div.bottom a.button:hover span.buttonSpan span.middle {
+	background: url(/style/images/buttons/middle_hover.png) repeat-x;
+}
+
+div.bottom a.button:hover span.buttonSpan span.left {
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/style/images/buttons/left_hover.png',sizingMethod='scale');
+}
+
+html>body div.bottom a.button:hover span.buttonSpan span.left {
+	filter: none;
+	background: url(/style/images/buttons/left_hover.png) no-repeat;
+}
+
+div.bottom a.button:hover span.buttonSpan span.right {
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/style/images/buttons/right_hover.png',sizingMethod='scale');
+}
+
+html>body div.bottom a.button:hover span.buttonSpan span.right {
+	filter: none;
+	background: url(/style/images/buttons/right_hover.png) no-repeat;
+}
+
 
 /* Receipt */
 
