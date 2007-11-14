@@ -14,7 +14,7 @@ h1.subHeader {
 	padding-left: 15px;
 	padding-top: 4px;
 	margin: 0;
-	clear: both;
+	clear: none;
 }
 
 h1.applicationHeading {
@@ -113,6 +113,7 @@ div.info {
 	text-shadow: #fff 2px 2px 1px;
 	line-height: 18px;
 	border-bottom: 1px #788892 solid;
+	overflow: hidden;
 }
 
 div.info div.helperText {
