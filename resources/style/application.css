@@ -101,6 +101,9 @@ div.helperText {
 	text-shadow: none;
 	line-height: 1.2em;
 }
+.citizenForm .helperText {
+	visibility: visible							!important;
+}
 
 
 /* Personal info */
@@ -206,6 +209,15 @@ div.formItem label {
 	width: 160px;
 	font-size: 11px;
 	font-weight: bold;
+	//padding-top: 4px;
+	color: #222222;
+}
+.formSectionTitle {
+	float: left;
+	width: 160px;
+	font-size: 11px;
+	font-weight: bold;
+	margin-bottom: 20px;
 	//padding-top: 4px;
 	color: #222222;
 }
