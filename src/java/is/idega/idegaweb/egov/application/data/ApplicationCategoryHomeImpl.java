@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryHomeImpl.java,v 1.1 2006/01/12 17:04:20 gimmi Exp $
+ * $Id: ApplicationCategoryHomeImpl.java,v 1.2 2008/01/09 08:04:59 alexis Exp $
  * Created on Jan 12, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.data.IDOFactory;
  * <p>
  * TODO gimmi Describe Type ApplicationCategoryHomeImpl
  * </p>
- *  Last modified: $Date: 2006/01/12 17:04:20 $ by $Author: gimmi $
+ *  Last modified: $Date: 2008/01/09 08:04:59 $ by $Author: alexis $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ApplicationCategoryHomeImpl extends IDOFactory implements ApplicationCategoryHome {
 
@@ -49,5 +49,19 @@ public class ApplicationCategoryHomeImpl extends IDOFactory implements Applicati
 		java.util.Collection ids = ((ApplicationCategoryBMPBean) entity).ejbFindAllOrderedByName();
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	public Collection findAllOrderedByPriority() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationCategoryBMPBean) entity).ejbFindAllOrderedByPriority();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	public ApplicationCategory findByPriority(int priority) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ApplicationCategoryBMPBean) entity).ejbFindByPriority(priority);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 }

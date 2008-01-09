@@ -12,9 +12,14 @@
 package is.idega.idegaweb.egov.application.data;
 
 import java.util.Collection;
+import java.util.Iterator;
+
 import javax.ejb.FinderException;
 import com.idega.block.process.data.CaseCode;
+import com.idega.block.text.data.LocalizedText;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDORelationshipException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.Order;
@@ -39,6 +44,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application, co
 	private static final String TIMES_CLICKED = "times_clicked";
 	private static final String OPENS_IN_NEW_WINDOW = "opens_in_new_window";
 	private static final String HIDDEN_FROM_GUESTS = "hidden_from_guests";
+	private static final String PRIORITY = "app_priority";
 
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -53,6 +59,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application, co
 		addAttribute(getIDColumnName());
 		addAttribute(NAME, "name", String.class, 50);
 		
+		addManyToManyRelationShip(LocalizedText.class, "EGOV_APPLICATION_NAME");
 		addManyToOneRelationship(CATEGORY, ApplicationCategory.class);
 		addManyToOneRelationship(CASE_CODE, CaseCode.class);
 		setNullable(CASE_CODE, true);
@@ -67,6 +74,37 @@ public class ApplicationBMPBean extends GenericEntity implements Application, co
 		addAttribute(AGE_FROM, "Age from", Integer.class);
 		addAttribute(AGE_TO, "Age to", Integer.class);
 		addAttribute(TIMES_CLICKED, "Time clicked", Integer.class);
+		addAttribute(PRIORITY, "Priority", Integer.class);
+	}
+	
+	public LocalizedText getLocalizedText(int icLocaleId) {
+		Collection<LocalizedText> result = null;
+		try {
+			result = idoGetRelatedEntities(LocalizedText.class);
+		} catch(IDORelationshipException e) {
+			e.printStackTrace();
+		}
+		if(result != null) {
+			for(Iterator<LocalizedText> it = result.iterator(); it.hasNext(); ) {
+				LocalizedText temp = it.next();
+				if(temp.getLocaleId() == icLocaleId) {
+					return temp;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public void addLocalizedName(LocalizedText text) throws IDOAddRelationshipException {
+	  	idoAddTo(text);
+	}
+	
+	public void setPriority(Integer priority) {
+		setColumn(PRIORITY, priority);
+	}
+	
+	public Integer getPriority() {
+		return (Integer) getColumnValue(PRIORITY);
 	}
 
 	public void setAgeFrom(int age) {
@@ -194,6 +232,24 @@ public class ApplicationBMPBean extends GenericEntity implements Application, co
 		query.addColumn(new Column(table, getIDColumnName()));
 		query.addCriteria(new MatchCriteria(new Column(table, CATEGORY), MatchCriteria.EQUALS, category));
 		return this.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllByCategoryOrderedByPriority(ApplicationCategory category) throws FinderException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table.getColumn(getIDColumnName()));
+		query.addCriteria(new MatchCriteria(new Column(table, CATEGORY), MatchCriteria.EQUALS, category));
+		query.addOrder(table, PRIORITY, true);
+		return this.idoFindPKsByQuery(query);
+	}
+	
+	public Object ejbFindByCategoryAndPriority(ApplicationCategory category, int priority) throws FinderException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table.getColumn(getIDColumnName()));
+		query.addCriteria(new MatchCriteria(new Column(table, CATEGORY), MatchCriteria.EQUALS, category));
+		query.addCriteria(new MatchCriteria(new Column(table, PRIORITY), MatchCriteria.EQUALS, priority));
+		return this.idoFindOnePKByQuery(query);
 	}
 
 	public Collection ejbFindAll() throws FinderException {

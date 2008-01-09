@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.17 2007/04/18 17:33:11 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.18 2008/01/09 08:04:59 alexis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -22,6 +24,12 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.process.data.CaseCode;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.LocalizedTextHome;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.data.ICLocale;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOLookup;
 import com.idega.formbuilder.presentation.beans.FormDocument;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
@@ -59,16 +67,18 @@ public class ApplicationCreator extends ApplicationBlock {
 		this.iwrb = super.getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
 		
+		List<ICLocale> locales = ICLocaleBusiness.listOfLocales();
+		
 		String action = iwc.getParameter("prm_action");
 		
 		if ("create".equals(action)) {
-			getApplicationCreationForm(iwc, -1);
+			getApplicationCreationForm(iwc, -1, locales);
 		}
 		else if ("edit".equals(action)) {
-			getApplicationCreationForm(iwc, Integer.parseInt(iwc.getParameter("id")));
+			getApplicationCreationForm(iwc, Integer.parseInt(iwc.getParameter("id")), locales);
 		}
 		else if ("save".equals(action)) {
-			saveApplication(iwc);
+			saveApplication(iwc, locales);
 			listExisting(iwc);
 		}
 		else if ("delete".equals(action)) {
@@ -90,7 +100,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 	}
 
-	private void saveApplication(IWContext iwc) throws RemoteException, CreateException, FinderException {
+	private void saveApplication(IWContext iwc, List<ICLocale> locales) throws RemoteException, CreateException, FinderException, IDOAddRelationshipException {
 		
 		String id = iwc.getParameter("id");
 		String name = iwc.getParameter("name");
@@ -177,7 +187,38 @@ public class ApplicationCreator extends ApplicationBlock {
 					e.printStackTrace();
 				}
 			}
+			
+			for(Iterator<ICLocale> it = locales.iterator(); it.hasNext(); ) {
+				ICLocale locale = it.next();
+				String locName = iwc.getParameter(locale.getName() + "_locale");
+				
+				if(locName != null && !locName.equals("")) {
+					LocalizedText locText = app.getLocalizedText(locale.getLocaleID());
+					boolean newText = false;
+					if(locText == null) {
+						locText = getLocalizedTextHome().create();
+						newText = true;
+					}
+					
+					locText.setLocaleId(locale.getLocaleID());
+					locText.setBody(locName);
+					
+					locText.store();
+					
+					if(newText) {
+						app.addLocalizedName(locText);
+						
+						
+					}
+					
+				}
+			}
 		}
+		
+	}
+	
+	protected LocalizedTextHome getLocalizedTextHome() throws RemoteException {
+		return (LocalizedTextHome) IDOLookup.getHome(LocalizedText.class);
 	}
 	
 	private void listExisting(IWContext iwc) throws RemoteException, FinderException {
@@ -377,7 +418,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		return mappings;
 	}
 
-	private void getApplicationCreationForm(IWContext iwc, int applicationID) throws RemoteException {
+	private void getApplicationCreationForm(IWContext iwc, int applicationID, List<ICLocale> locales) throws RemoteException {
 		
 		Form form = new Form();
 		form.setID("applicationCreator");
@@ -410,16 +451,20 @@ public class ApplicationCreator extends ApplicationBlock {
 			CaseCode code = (CaseCode) iter.next();
 			caseCode.addMenuElement(code.getPrimaryKey().toString(), code.getDescriptionLocalizedKey() != null ? this.iwrb.getLocalizedString(code.getDescriptionLocalizedKey(), code.getDescription()) : code.getDescription());
 		}
+		Application application = null;
 
 		if (applicationID > 0) {
 			
 			try {
-				Application application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
-						new Integer(applicationID));
+				application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(new Integer(applicationID));
 				name.setContent(application.getName());
 				url.setContent(application.getUrl());
 				electronic.setSelected(application.getElectronic());
-				app_types.setSelectedElement(application.getAppType());
+				Integer temp = application.getAppType();
+				if(application.getAppType() != null) {
+					app_types.setSelectedElement(application.getAppType());
+				}
+				
 				requiresLogin.setSelected(application.getRequiresLogin());
 				visible.setSelected(application.getVisible());
 				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : "");
@@ -442,7 +487,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Layer formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		Label label = new Label(this.iwrb.getLocalizedString("name", "Name"), name);
+		Label label = new Label(this.iwrb.getLocalizedString("default_name", "Default name"), name);
 		formItem.add(label);
 		formItem.add(name);
 		layer.add(formItem);
@@ -523,10 +568,42 @@ public class ApplicationCreator extends ApplicationBlock {
 		formItem.add(label);
 		formItem.add(ageTo);
 		layer.add(formItem);
-
+		
 		Layer clearLayer = new Layer(Layer.DIV);
 		clearLayer.setStyleClass("Clear");
 		
+		layer.add(clearLayer);
+		
+		layer = new Layer(Layer.DIV);
+		layer.setStyleClass("formSection");
+		form.add(layer);
+		
+		Text heading = new Text("Localized name");
+		heading.setStyleClass("formSectionTitle");
+		layer.add(heading);
+		
+		for(Iterator<ICLocale> it = locales.iterator(); it.hasNext(); ) {
+			ICLocale locale = it.next();
+			Locale javaLocale = ICLocaleBusiness.getLocaleFromLocaleString(locale.getLocale());
+				
+			TextInput locInput = new TextInput(locale.getName() + "_locale");
+				
+			if(application != null) {
+				LocalizedText text = application.getLocalizedText(locale.getLocaleID());
+				locInput.setValue(text == null ? "" : text.getBody());
+			}
+				
+			formItem = new Layer(Layer.DIV);
+			formItem.setStyleClass("formItem");
+			label = new Label(javaLocale.getDisplayLanguage(), locInput);
+			formItem.add(label);
+			formItem.add(locInput);
+			layer.add(formItem);
+		}
+			
+		clearLayer = new Layer(Layer.DIV);
+		clearLayer.setStyleClass("Clear");
+			
 		layer.add(clearLayer);
 		
 		Layer buttonLayer = new Layer(Layer.DIV);

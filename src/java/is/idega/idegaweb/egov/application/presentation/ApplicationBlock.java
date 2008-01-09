@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.15 2006/11/23 08:23:22 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.16 2008/01/09 08:04:59 alexis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.idega.block.text.data.LocalizedText;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -79,7 +80,17 @@ public abstract class ApplicationBlock extends Block {
 				}
 				String url = application.getUrl();
 				if (url != null && !url.trim().equals("")) {
-					Link link = new Link(new Text(application.getName()));
+					int icLocaleId = iwc.getCurrentLocaleId();
+					
+					LocalizedText locText = application.getLocalizedText(icLocaleId);
+					String heading = null;
+					if(locText != null) {
+						heading = locText.getBody();
+					} else {
+						heading = application.getName();
+					}
+					
+					Link link = new Link(new Text(heading));
 					link.addParameter(PARAMETER_APPLICATION_PK, application.getPrimaryKey().toString());
 					if (application.getOpensInNewWindow()) {
 						link.setTarget(Link.TARGET_BLANK_WINDOW);

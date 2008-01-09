@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.12 2006/05/23 10:28:09 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.13 2008/01/09 08:04:59 alexis Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,14 +10,18 @@
 package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.business.ApplicationCategoryComparator;
 import is.idega.idegaweb.egov.application.business.ApplicationComparator;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.ejb.FinderException;
+
+import com.idega.block.text.data.LocalizedText;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.text.Heading1;
@@ -59,16 +63,25 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 			checkAges = (ages != null);
 		}
 		try {
-			List coll = new ArrayList(bus.getApplicationCategoryHome().findAllOrderedByName());
-			Collections.sort(coll, new ApplicationCategoryComparator(iwc.getCurrentLocale()));
-			Iterator iter = coll.iterator();
+			int icLocaleId = iwc.getCurrentLocaleId();
+			Collection categories = getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByPriority();
+//			Collection coll = bus.getApplicationCategoryHome().findAllOrderedByPriority();
+//			Collections.sort(coll, new ApplicationCategoryComparator(iwc.getCurrentLocale()));
+			Iterator iter = categories.iterator();
 			Layer mainLayer = new Layer();
 			mainLayer.setID(this.layerID);
 			while (iter.hasNext()) {
 				ApplicationCategory cat = (ApplicationCategory) iter.next();
+				LocalizedText locText = cat.getLocalizedText(icLocaleId);
 				Layer l = new Layer();
 				l.setStyleClass("applicationCategory");
-				l.add(new Heading1(cat.getName()));
+				String heading = null;
+				if(locText != null) {
+					heading = locText.getBody();
+				} else {
+					heading = cat.getName();
+				}
+				l.add(new Heading1(heading));
 				try {
 					List apps = new ArrayList(bus.getApplicationHome().findAllByCategory(cat));
 					Collections.sort(apps, new ApplicationComparator(iwc.getCurrentLocale()));

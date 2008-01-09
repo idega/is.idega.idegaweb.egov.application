@@ -24,4 +24,8 @@ public interface ApplicationHome extends IDOHome {
 	public Collection findElectronicApplications() throws FinderException;
 
 	public Collection findMostClicked(int numberOfEntries) throws FinderException;
+	
+	public Collection findAllByCategoryOrderedByPriority(ApplicationCategory category) throws FinderException;
+	
+	public Application findByCategoryAndPriority(ApplicationCategory category, int priority) throws FinderException;
 }

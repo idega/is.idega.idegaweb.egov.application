@@ -2,9 +2,11 @@ package is.idega.idegaweb.egov.application.data;
 
 
 import java.util.Collection;
+
 import javax.ejb.CreateException;
-import com.idega.block.process.data.CaseCode;
 import javax.ejb.FinderException;
+
+import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
 
@@ -62,5 +64,19 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 		Collection ids = ((ApplicationBMPBean) entity).ejbFindMostClicked(numberOfEntries);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	public Collection findAllByCategoryOrderedByPriority(ApplicationCategory category) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindAllByCategoryOrderedByPriority(category);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	public Application findByCategoryAndPriority(ApplicationCategory category, int priority) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ApplicationBMPBean) entity).ejbFindByCategoryAndPriority(category, priority);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 }

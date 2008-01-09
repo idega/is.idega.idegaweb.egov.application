@@ -2,9 +2,21 @@ package is.idega.idegaweb.egov.application.data;
 
 
 import com.idega.block.process.data.CaseCode;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 
 public interface Application extends IDOEntity {
+	
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#setPriority
+	 */
+	public void setPriority(Integer priority);
+	
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#getPriority
+	 */
+	public Integer getPriority();
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setAgeFrom
@@ -25,6 +37,10 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getAgeTo
 	 */
 	public int getAgeTo();
+	
+	public LocalizedText getLocalizedText(int icLocaleId);
+	
+	public void addLocalizedName(LocalizedText text) throws IDOAddRelationshipException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getTimesClicked

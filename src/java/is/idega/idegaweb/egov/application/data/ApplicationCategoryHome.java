@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryHome.java,v 1.1 2006/01/12 17:04:20 gimmi Exp $
+ * $Id: ApplicationCategoryHome.java,v 1.2 2008/01/09 08:04:59 alexis Exp $
  * Created on Jan 12, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.data.IDOHome;
  * <p>
  * TODO gimmi Describe Type ApplicationCategoryHome
  * </p>
- *  Last modified: $Date: 2006/01/12 17:04:20 $ by $Author: gimmi $
+ *  Last modified: $Date: 2008/01/09 08:04:59 $ by $Author: alexis $
  * 
  * @author <a href="mailto:gimmi@idega.com">gimmi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ApplicationCategoryHome extends IDOHome {
 
@@ -38,4 +38,8 @@ public interface ApplicationCategoryHome extends IDOHome {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#ejbFindAllOrderedByName
 	 */
 	public Collection findAllOrderedByName() throws FinderException;
+	
+	public Collection findAllOrderedByPriority() throws FinderException;
+	
+	public ApplicationCategory findByPriority(int priority) throws FinderException;
 }

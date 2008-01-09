@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.11 2007/02/22 09:01:24 laddi Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.12 2008/01/09 08:04:59 alexis Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -51,6 +51,78 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		
 		application.setTimesClicked(timesClicked);
 		application.store();
+	}
+	
+	public void checkApplicationCategoryPriorityConstraint() {
+		Collection categories = null;
+		try {
+			categories = getApplicationCategoryHome().findAllOrderedByPriority();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		if(categories != null) {
+			Collection<ApplicationCategory> unprioritized = new ArrayList<ApplicationCategory>();
+			int currentPriority = 1;
+			for(Iterator<ApplicationCategory> it = categories.iterator(); it.hasNext(); ) {
+				ApplicationCategory cat = it.next();
+				Integer priority = cat.getPriority();
+				
+				if(priority == null) {
+					unprioritized.add(cat);
+					continue;
+				}
+				
+				if(priority.intValue() != currentPriority) {
+					cat.setPriority(currentPriority);
+					cat.store();
+				}
+				currentPriority++;
+			}
+			
+			for(Iterator<ApplicationCategory> it = unprioritized.iterator(); it.hasNext(); ) {
+				ApplicationCategory cat = it.next();
+				cat.setPriority(currentPriority);
+				currentPriority++;
+				cat.store();
+			}
+		}
+	}
+	
+	public void checkApplicationPriorityConstraint(ApplicationCategory cat) {
+		Collection apps = null;
+		try {
+			apps = getApplicationHome().findAllByCategoryOrderedByPriority(cat);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		if(apps != null) {
+			Collection<Application> unprioritized = new ArrayList<Application>();
+			int currentPriority = 1;
+			for(Iterator<Application> it = apps.iterator(); it.hasNext(); ) {
+				Application app = it.next();
+				Integer priority = app.getPriority();
+				
+				if(priority == null) {
+					unprioritized.add(app);
+					continue;
+				}
+				
+				if(priority.intValue() != currentPriority) {
+					app.setPriority(currentPriority);
+					app.store();
+				}
+				currentPriority++;
+			}
+			
+			for(Iterator<Application> it = unprioritized.iterator(); it.hasNext(); ) {
+				Application app = it.next();
+				app.setPriority(currentPriority);
+				currentPriority++;
+				app.store();
+			}
+		}
 	}
 	
 	public Collection getMostClickedApplications(int numberOfEntries) {

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusiness.java,v 1.7 2006/01/19 09:30:46 laddi Exp $
+ * $Id: ApplicationBusiness.java,v 1.8 2008/01/09 08:04:59 alexis Exp $
  * Created on Jan 19, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package is.idega.idegaweb.egov.application.business;
 
 import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
 import is.idega.idegaweb.egov.application.data.ApplicationHome;
 import java.util.Collection;
@@ -24,10 +25,10 @@ import com.idega.util.Age;
  * <p>
  * TODO laddi Describe Type ApplicationBusiness
  * </p>
- *  Last modified: $Date: 2006/01/19 09:30:46 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/01/09 08:04:59 $ by $Author: alexis $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface ApplicationBusiness extends IBOService, CaseBusiness {
 
@@ -45,6 +46,10 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#updateTimesClicked
 	 */
 	public void updateTimesClicked(Application application) throws java.rmi.RemoteException;
+	
+	public void checkApplicationCategoryPriorityConstraint();
+	
+	public void checkApplicationPriorityConstraint(ApplicationCategory cat);
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getMostClickedApplications
