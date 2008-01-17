@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.13 2008/01/09 08:04:59 alexis Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.14 2008/01/17 08:15:23 alexis Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -65,13 +65,22 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		try {
 			int icLocaleId = iwc.getCurrentLocaleId();
 			Collection categories = getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByPriority();
-//			Collection coll = bus.getApplicationCategoryHome().findAllOrderedByPriority();
-//			Collections.sort(coll, new ApplicationCategoryComparator(iwc.getCurrentLocale()));
 			Iterator iter = categories.iterator();
 			Layer mainLayer = new Layer();
 			mainLayer.setID(this.layerID);
+			List nextCategoryApps = null;
+			
+			ApplicationCategory cat = null;
+			ApplicationCategory nextCat = null;
+			boolean nextCompact = false;
+			
 			while (iter.hasNext()) {
-				ApplicationCategory cat = (ApplicationCategory) iter.next();
+				if(nextCat != null) {
+					cat = nextCat;
+				} else {
+					cat = (ApplicationCategory) iter.next();
+				}
+				
 				LocalizedText locText = cat.getLocalizedText(icLocaleId);
 				Layer l = new Layer();
 				l.setStyleClass("applicationCategory");
@@ -83,8 +92,18 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 				}
 				l.add(new Heading1(heading));
 				try {
-					List apps = new ArrayList(bus.getApplicationHome().findAllByCategory(cat));
-					Collections.sort(apps, new ApplicationComparator(iwc.getCurrentLocale()));
+					List apps = new ArrayList(bus.getApplicationHome().findAllByCategoryOrderedByPriority(cat));
+					nextCat = (ApplicationCategory) iter.next();
+					nextCategoryApps = new ArrayList(bus.getApplicationHome().findAllByCategory(nextCat));
+					if(nextCompact) {
+						l.setStyleClass("compactCategory");
+						nextCompact = false;
+					} else {
+						if(apps.size() > 0 && apps.size() < 3 && nextCategoryApps.size() > 0 && nextCategoryApps.size() < 3) {
+							l.setStyleClass("compactCategory");
+							nextCompact = true;
+						}
+					}
 					Lists appList = getApplicationList(iwc, checkAges, apps, ages);
 					l.add(appList);
 					if (appList.getChildrenCount() == 0) {

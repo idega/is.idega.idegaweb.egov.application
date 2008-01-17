@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.9 2008/01/09 08:04:59 alexis Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.10 2008/01/17 08:15:23 alexis Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -40,9 +40,7 @@ import com.idega.presentation.TableRow;
 import com.idega.presentation.TableRowGroup;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -308,7 +306,9 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 	 * @throws RemoteException
 	 */
 	private void getCategoryCreationForm(IWContext iwc, ApplicationCategory cat, List<ICLocale> locales) throws RemoteException {
-		getApplicationBusiness(iwc).checkApplicationPriorityConstraint(cat);
+		if(cat != null) {
+			getApplicationBusiness(iwc).checkApplicationPriorityConstraint(cat);
+		}
 		
 		Form form = new Form();
 		form.setID("applicationCategoryCreator");
@@ -362,88 +362,94 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		clearLayer.setStyleClass("Clear");
 		
 		List apps = null;
-		try {
-			apps = new ArrayList(getApplicationBusiness(iwc).getApplicationHome().findAllByCategoryOrderedByPriority(cat));
-		}
-		catch (FinderException f) {
-			f.printStackTrace();
-		}
-		
-		Table2 table = new Table2();
-		table.setWidth("100%");
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setStyleClass("ruler");
-		table.setStyleClass("adminTable");
-		
-		TableRowGroup group = table.createHeaderRowGroup();
-		TableRow row = group.createRow();
-		TableCell2 cell = row.createHeaderCell();
-		cell.setStyleClass("firstColumn");
-		cell.setStyleClass("application");
-		cell.add(new Text(this.iwrb.getLocalizedString("application", "Application")));
-		
-		cell = row.createHeaderCell();
-		cell.setStyleClass("description");
-		cell.add(new Text(this.iwrb.getLocalizedString("priority", "Priority")));
-		
-		group = table.createBodyRowGroup();
-		int iRow = 1;
-		
-		Iterator iter = apps.iterator();
-		
-		while (iter.hasNext()) {
-			Application app = (Application) iter.next();
-			CaseCode code = app.getCaseCode();
-			
-			row = table.createRow();
-			
-			if (iRow % 2 == 0) {
-				row.setStyleClass("evenRow");
+		if(cat != null) {
+			try {
+				apps = new ArrayList(getApplicationBusiness(iwc).getApplicationHome().findAllByCategoryOrderedByPriority(cat));
 			}
-			else {
-				row.setStyleClass("oddRow");
+			catch (FinderException f) {
+				f.printStackTrace();
 			}
-
-			cell = row.createCell();
+		}
+		
+		if(apps != null && !apps.isEmpty()) {
+			Table2 table = new Table2();
+			table.setWidth("100%");
+			table.setCellpadding(0);
+			table.setCellspacing(0);
+			table.setStyleClass("ruler");
+			table.setStyleClass("adminTable");
+			
+			TableRowGroup group = table.createHeaderRowGroup();
+			TableRow row = group.createRow();
+			TableCell2 cell = row.createHeaderCell();
 			cell.setStyleClass("firstColumn");
 			cell.setStyleClass("application");
-			cell.add(new Text(app.getName()));
+			cell.add(new Text(this.iwrb.getLocalizedString("application", "Application")));
 			
-			cell = row.createCell();
+			cell = row.createHeaderCell();
 			cell.setStyleClass("description");
-			cell.setStyleClass("lastColumn");
+			cell.add(new Text(this.iwrb.getLocalizedString("priority", "Priority")));
 			
-			Link up = new Link(this.iwb.getImage("previous.png", this.iwrb.getLocalizedString("previous", "Up")));
-			up.addParameter("prm_action", "app_up");
-			up.addParameter("app_id", app.getPrimaryKey().toString());
-			up.addParameter("id", cat.getPrimaryKey().toString());
-			cell.add(up);
+			group = table.createBodyRowGroup();
+			int iRow = 1;
 			
-			if(iRow <= 1) {
+			Iterator iter = apps.iterator();
+			
+			while (iter.hasNext()) {
+				Application app = (Application) iter.next();
+				CaseCode code = app.getCaseCode();
 				
-				up.setStyleAttribute("visibility", "hidden");
-			
+				row = table.createRow();
+				
+				if (iRow % 2 == 0) {
+					row.setStyleClass("evenRow");
+				}
+				else {
+					row.setStyleClass("oddRow");
+				}
+
+				cell = row.createCell();
+				cell.setStyleClass("firstColumn");
+				cell.setStyleClass("application");
+				cell.add(new Text(app.getName()));
+				
+				cell = row.createCell();
+				cell.setStyleClass("description");
+				cell.setStyleClass("lastColumn");
+				
+				Link up = new Link(this.iwb.getImage("previous.png", this.iwrb.getLocalizedString("previous", "Up")));
+				up.addParameter("prm_action", "app_up");
+				up.addParameter("app_id", app.getPrimaryKey().toString());
+				up.addParameter("id", cat.getPrimaryKey().toString());
+				up.setStyleClass("flippedImageLink");
+				cell.add(up);
+				
+				if(iRow <= 1) {
+					
+					up.setStyleAttribute("visibility", "hidden");
+				
+				}
+				
+				Link down = new Link(this.iwb.getImage("next.png", this.iwrb.getLocalizedString("next", "Down")));
+				down.addParameter("prm_action", "app_down");
+				down.addParameter("app_id", app.getPrimaryKey().toString());
+				down.addParameter("id", cat.getPrimaryKey().toString());
+				down.setStyleClass("flippedImageLink");
+				cell.add(down);
+				
+				if(iRow >= apps.size()) {
+					
+					down.setStyleAttribute("visibility", "hidden");
+				
+				}	
+
+				iRow++;
 			}
 			
-			Link down = new Link(this.iwb.getImage("next.png", this.iwrb.getLocalizedString("next", "Down")));
-			down.addParameter("prm_action", "app_down");
-			down.addParameter("app_id", app.getPrimaryKey().toString());
-			down.addParameter("id", cat.getPrimaryKey().toString());
-			cell.add(down);
+			layer.add(clearLayer);
 			
-			if(iRow >= apps.size()) {
-				
-				down.setStyleAttribute("visibility", "hidden");
-			
-			}	
-
-			iRow++;
+			form.add(table);
 		}
-		
-		layer.add(clearLayer);
-		
-		form.add(table);
 		
 		Layer buttonLayer = new Layer(Layer.DIV);
 		buttonLayer.setStyleClass("buttonLayer");
@@ -456,19 +462,6 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		buttonLayer.add(save);
 
 		add(form);
-	}
-	
-	private DropdownMenu getPrioritySelector(Integer selectedValue, int priorities) {
-		DropdownMenu prioInput = new DropdownMenu("priority");
-		prioInput.addMenuElementFirst("", "--Select--");
-		for(int i = 1; i <= priorities; i++) {
-			String pr = Integer.toString(i);
-			prioInput.addMenuElement(pr, pr);
-		}
-		if(selectedValue != null) {
-			prioInput.setSelectedElement(selectedValue);
-		}
-		return prioInput;
 	}
 	
 	protected ICLanguageHome getICLanguageHome() throws RemoteException {
@@ -557,6 +550,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			Link up = new Link(this.iwb.getImage("previous.png", this.iwrb.getLocalizedString("previous", "Up")));
 			up.addParameter("prm_action", "category_up");
 			up.addParameter("id", cat.getPrimaryKey().toString());
+			up.setStyleClass("flippedImageLink");
 			cell.add(up);
 			
 			if(iRow <= 1) {
@@ -568,6 +562,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			Link down = new Link(this.iwb.getImage("next.png", this.iwrb.getLocalizedString("next", "Down")));
 			down.addParameter("prm_action", "category_down");
 			down.addParameter("id", cat.getPrimaryKey().toString());
+			down.setStyleClass("flippedImageLink");
 			cell.add(down);
 			
 			if(iRow >= categories.size()) {
