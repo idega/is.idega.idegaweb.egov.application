@@ -295,6 +295,10 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected DropdownMenu getUserChooser(IWContext iwc, User user, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
+		return getUserChooser(iwc, null, user, chosenUser, parameterName, iwrb);
+	}
+
+	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
 		Collection children = null;
 		try {
 			children = getMemberFamilyLogic(iwc).getChildrenInCustodyOf(user);
@@ -305,11 +309,21 @@ public abstract class ApplicationForm extends Block {
 		children.add(user);
 
 		Application application = null;
-		try {
-			application = getApplicationBusiness(iwc).getApplication(getCaseCode());
+		if (applicationPK != null) {
+			try {
+				application = getApplicationBusiness(iwc).getApplication(applicationPK);
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
 		}
-		catch (FinderException fe) {
-			// Nothing found, continuing...
+		else {
+			try {
+				application = getApplicationBusiness(iwc).getApplication(getCaseCode());
+			}
+			catch (FinderException fe) {
+				// Nothing found, continuing...
+			}
 		}
 
 		DropdownMenu menu = new DropdownMenu(parameterName);

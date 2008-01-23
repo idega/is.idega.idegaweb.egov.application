@@ -5,7 +5,7 @@
   <pomVersion>3</pomVersion>
   <name>eGov General Cases</name>
   <artifactId>is.idega.idegaweb.egov.application</artifactId>
-  <currentVersion>1.0.14</currentVersion>
+  <currentVersion>1.0.15</currentVersion>
   <inceptionYear>2005</inceptionYear>
   <shortDescription>eGov Citizen</shortDescription>
   <versions>
@@ -78,6 +78,11 @@
       <id>1.0.14</id>
       <name>1.0.14</name>
       <tag>APPLICATION_1_0_14</tag>
+    </version>
+    <version>
+      <id>1.0.15</id>
+      <name>1.0.15</name>
+      <tag>APPLICATION_1_0_15</tag>
     </version>
   </versions>
   <branches/>
