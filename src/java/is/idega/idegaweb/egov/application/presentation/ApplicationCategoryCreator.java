@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.10 2008/01/17 08:15:23 alexis Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.11 2008/01/24 07:26:16 alexis Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -18,12 +18,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextHome;
+import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLanguage;
 import com.idega.core.localisation.data.ICLanguageHome;
@@ -50,6 +52,14 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
+	
+	private void clearApplicationCategoryViewerCache(IWContext iwc) {
+		IWCacheManager2 cacheManager = IWCacheManager2.getInstance(iwc.getIWMainApplication());
+		Map cache = cacheManager.getCache(ApplicationCategoryViewer.CACHE_KEY);
+		if(cache != null) {
+			cache.clear();
+		}
+	}
 
 	public void present(IWContext iwc) throws Exception {
 		this.iwrb = getResourceBundle(iwc);
@@ -160,6 +170,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				upperCat.store();
 			}
 			
+			clearApplicationCategoryViewerCache(iwc);
+			
 			listExisting(iwc);
 		}
 		else if("category_down".equals(action)) {
@@ -195,6 +207,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				lowerCat.setPriority(priority.intValue());
 				lowerCat.store();
 			}
+			
+			clearApplicationCategoryViewerCache(iwc);
 			
 			listExisting(iwc);
 		}
@@ -236,6 +250,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				upperApp.store();
 			}
 			
+			clearApplicationCategoryViewerCache(iwc);
+			
 			getCategoryCreationForm(iwc, category, locales);
 		}
 		else if("app_down".equals(action)) {
@@ -275,6 +291,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				lowerApp.setPriority(priority.intValue());
 				lowerApp.store();
 			}
+			
+			clearApplicationCategoryViewerCache(iwc);
 			
 			getCategoryCreationForm(iwc, category, locales);
 		}
