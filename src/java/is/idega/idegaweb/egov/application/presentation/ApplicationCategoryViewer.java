@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.14 2008/01/17 08:15:23 alexis Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.15 2008/01/25 07:00:53 alexis Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,13 +10,10 @@
 package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.business.ApplicationComparator;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.FinderException;
@@ -32,7 +29,8 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 
 	private String layerID = "applicationCategoryViewer";
 	public static final String CACHE_KEY = "app_application_category_viewer";
-
+	private static final int COLUMNS = 3;
+	
 	public ApplicationCategoryViewer() {
 		setCacheable(getCacheKey(), (20 * 60 * 1000));
 	}
@@ -55,6 +53,18 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 	}
 
 	public void present(IWContext iwc) throws Exception {
+		Layer mainLayer = new Layer();
+		mainLayer.setID(this.layerID);
+		
+		List<Layer> columnList = new ArrayList<Layer>();
+		for(int i = 0; i < COLUMNS; i++) {
+			Layer column = new Layer(Layer.DIV);
+			column.setStyleClass("applicationCategoryColumn");
+			column.setId("appCatColumn" + i);
+			mainLayer.add(column);
+			columnList.add(column);
+		}
+		
 		ApplicationBusiness bus = getApplicationBusiness(iwc);
 		Age[] ages = null;
 		boolean checkAges = false;
@@ -64,55 +74,95 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		}
 		try {
 			int icLocaleId = iwc.getCurrentLocaleId();
-			Collection categories = getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByPriority();
-			Iterator iter = categories.iterator();
-			Layer mainLayer = new Layer();
-			mainLayer.setID(this.layerID);
-			List nextCategoryApps = null;
+			Collection categoriesCollection = getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByPriority();
+			Object[] categories = categoriesCollection.toArray();
 			
 			ApplicationCategory cat = null;
 			ApplicationCategory nextCat = null;
-			boolean nextCompact = false;
+			List nextCategoryApps = null;
 			
-			while (iter.hasNext()) {
+			for(int i = 0, j = 0; i < columnList.size() && j < categories.length; i++, j++) {
+				Layer column = columnList.get(i);
+				
 				if(nextCat != null) {
 					cat = nextCat;
 				} else {
-					cat = (ApplicationCategory) iter.next();
+					cat = (ApplicationCategory) categories[j];
 				}
+				List apps = new ArrayList(bus.getApplicationHome().findAllByCategoryOrderedByPriority(cat));
 				
-				LocalizedText locText = cat.getLocalizedText(icLocaleId);
-				Layer l = new Layer();
-				l.setStyleClass("applicationCategory");
-				String heading = null;
-				if(locText != null) {
-					heading = locText.getBody();
+				if(apps.isEmpty()) {
+					i--;
+					continue;
 				} else {
-					heading = cat.getName();
-				}
-				l.add(new Heading1(heading));
-				try {
-					List apps = new ArrayList(bus.getApplicationHome().findAllByCategoryOrderedByPriority(cat));
-					nextCat = (ApplicationCategory) iter.next();
-					nextCategoryApps = new ArrayList(bus.getApplicationHome().findAllByCategory(nextCat));
-					if(nextCompact) {
-						l.setStyleClass("compactCategory");
-						nextCompact = false;
+					
+					Layer l = new Layer();
+					l.setStyleClass("applicationCategory");
+					
+					LocalizedText locText = cat.getLocalizedText(icLocaleId);
+					String heading = null;
+					if(locText != null) {
+						heading = locText.getBody();
 					} else {
-						if(apps.size() > 0 && apps.size() < 3 && nextCategoryApps.size() > 0 && nextCategoryApps.size() < 3) {
-							l.setStyleClass("compactCategory");
-							nextCompact = true;
-						}
+						heading = cat.getName();
 					}
 					Lists appList = getApplicationList(iwc, checkAges, apps, ages);
-					l.add(appList);
-					if (appList.getChildrenCount() == 0) {
-						l.setStyleClass("empty");
+					
+					if(j < categories.length - 1) {
+						nextCat = (ApplicationCategory) categories[j+1];
+						nextCategoryApps = new ArrayList(bus.getApplicationHome().findAllByCategory(nextCat));
+						
+						if(nextCategoryApps.isEmpty()) {
+							l.add(new Heading1(heading));
+							l.add(appList);
+							
+							nextCat = null;
+						} else {
+							if(nextCategoryApps != null && nextCat != null && (apps.size() + nextCategoryApps.size() < 7) && !apps.isEmpty() && !nextCategoryApps.isEmpty()) {
+								Layer l1 = new Layer();
+								l1.setStyleClass("compactCategory");
+								l1.add(new Heading1(heading));
+								l1.add(appList);
+								
+								Lists nextAppList = getApplicationList(iwc, checkAges, nextCategoryApps, ages);
+								locText = nextCat.getLocalizedText(icLocaleId);
+								if(locText != null) {
+									heading = locText.getBody();
+								} else {
+									heading = nextCat.getName();
+								}
+								
+								Layer l2 = new Layer();
+								l2.setStyleClass("compactCategory");
+								l2.add(new Heading1(heading));
+								l2.add(nextAppList);
+								
+								l.add(l1);
+								l.add(l2);
+								
+								j++;
+								
+								nextCat = null;
+							} else {
+								l.add(new Heading1(heading));
+								l.add(appList);
+								
+								nextCat = null;
+							}
+						}
+					} else {
+						l.add(new Heading1(heading));
+						l.add(appList);
 					}
+					
+					if(i == columnList.size() - 1) {
+						i = -1;
+					}
+					
+					column.add(l);
+					
 				}
-				catch (FinderException f) {
-				}
-				mainLayer.add(l);
+				
 			}
 			
 			Layer clearLayer = new Layer(Layer.DIV);
