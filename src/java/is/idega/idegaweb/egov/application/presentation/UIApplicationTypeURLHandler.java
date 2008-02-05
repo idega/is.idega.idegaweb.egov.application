@@ -12,25 +12,25 @@ import com.idega.presentation.ui.TextInput;
 
 
 /**
- * Interface is meant to be extended by beans, reflecting application type for egov applications
- * 
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/02/05 12:44:07 $ by $Author: civilis $
+ * Last modified: $Date: 2008/02/05 19:31:36 $ by $Author: civilis $
  *
  */
 public class UIApplicationTypeURLHandler extends Block {
 	
 	private Application application;
+	public static final String urlParam = "url";
+	public static final String elecParam = "elect";
 	
 	@Override
 	public void main(IWContext iwc) throws Exception {
 		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		TextInput url = new TextInput("url");
-		BooleanInput electronic = new BooleanInput("elec");
+		TextInput url = new TextInput(urlParam);
+		BooleanInput electronic = new BooleanInput(elecParam);
 		
 		if(application != null) {
 		
@@ -38,17 +38,21 @@ public class UIApplicationTypeURLHandler extends Block {
 			electronic.setSelected(application.getElectronic());
 		}
 		
+		Layer container = new Layer(Layer.SPAN);
+		
 		Layer layer = new Layer(Layer.DIV);
 		Label label = new Label(iwrb.getLocalizedString("electronic", "Electronic"), electronic);
 		layer.add(label);
 		layer.add(electronic);
-		add(layer);
+		container.add(layer);
 		
 		layer = new Layer(Layer.DIV);
 		label = new Label(iwrb.getLocalizedString("url", "Url"), url);
 		layer.add(label);
 		layer.add(url);
-		add(layer);
+		container.add(layer);
+		
+		add(container);
 	}
 
 	public void setApplication(Application application) {

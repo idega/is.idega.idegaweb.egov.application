@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.20 2008/02/05 12:44:07 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.21 2008/02/05 19:31:35 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -50,6 +50,7 @@ import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.CoreConstants;
+import com.idega.util.PresentationUtil;
 import com.idega.webface.WFUtil;
 
 public class ApplicationCreator extends ApplicationBlock {
@@ -59,8 +60,9 @@ public class ApplicationCreator extends ApplicationBlock {
 //	public static final String FROM_APP_REQ_PARAM = FormDocument.FROM_APP_REQ_PARAM;
 	public static final String FORMBUILDER_REDIRECT_PATH = "/workspace/forms/formbuilder/";
 	
-	private static final String APP_CREATOR_ENGINE = "/dwr/interface/CommentsEngine.js";
-	private static final String APP_CREATOR_BPM = "javascript/appBPM.js";
+	private String DWR_ENGINE = "/dwr/engine.js";
+	private static final String APP_TYPES_HANDLER_ENGINE = "/dwr/interface/ApplicationTypesHandler.js";
+	private static final String APP_CREATOR_APP_TYPES = "javascript/applicationTypes.js";
 	private static final String web2beanBeanIdentifier = "web2bean";
 	
 	public static final String appTypesManagerBeanIdentifier = "appTypesManager";
@@ -124,7 +126,8 @@ public class ApplicationCreator extends ApplicationBlock {
 		String code = iwc.getParameter("code");
 		String opensInNew = iwc.getParameter("newin");
 		String hiddenFromGuests = iwc.getParameter("hidden");
-		if (name != null && !name.trim().equals("")) {
+		if (name != null && !name.trim().equals("") && !"-1".equals(appType)) {
+			
 			Application app = null;
 			if (id != null) {
 				try {
@@ -391,6 +394,8 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		DropdownMenu menu = new DropdownMenu("appType");
 		
+		menu.addMenuElement("-1", "Select");
+		
 		List<ApplicationType> appTypes = getAppTypesManager().getApplicationTypes();
 		
 		for (ApplicationType appType : appTypes) {
@@ -416,6 +421,8 @@ public class ApplicationCreator extends ApplicationBlock {
 	
 	private void getApplicationCreationForm(IWContext iwc, int applicationID, List<ICLocale> locales) throws RemoteException {
 
+		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, getCreationFormJavaScriptSources(iwc));
+		
 		Form form = new Form();
 		form.setID("applicationCreator");
 		form.setStyleClass("adminForm");
@@ -431,6 +438,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Layer handlerContainer = new Layer(Layer.DIV);
 		handlerContainer.setStyleClass("appTypeHandlerContainer");
+		
+		appTypes.setOnChange("egov_AppTypes.appTypeChanged("+applicationID+", jQuery(this).val(), document.getElementById('"+handlerContainer.getId()+"'));");
+		
+//		egov_AppTypes.appTypeChanged
 
 		DropdownMenu category = new DropdownMenu("cat");
 		try {
@@ -616,14 +627,17 @@ public class ApplicationCreator extends ApplicationBlock {
 		this.urlLength = urlLength;
 	}
 	
-	protected List<String> getBPMJavaScriptSources(IWContext iwc) {
+	protected List<String> getCreationFormJavaScriptSources(IWContext iwc) {
 		
 		List<String> sources = new ArrayList<String>();
 		
 		try {
 			Web2Business web2 = (Web2Business)WFUtil.getBeanInstance(web2beanBeanIdentifier);
 			sources.add(web2.getBundleURIToJQueryLib());
-			sources.add(getBundle(iwc).getVirtualPathWithFileNameString(APP_CREATOR_BPM));
+			sources.add(DWR_ENGINE);
+			sources.add(APP_TYPES_HANDLER_ENGINE);
+			sources.add(getBundle(iwc).getVirtualPathWithFileNameString(APP_CREATOR_APP_TYPES));
+			
 			return sources;
 			
 		} catch (RemoteException e) {
@@ -631,18 +645,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 	}
 
-	public Boolean getUseBPM() {
-		return useBPM;
-	}
-
-	public void setUseBPM(Boolean useBPM) {
-		
-		if(useBPM == null)
-			useBPM = false;
-		
-		this.useBPM = useBPM;
-	}
-	
 	protected ApplicationTypesManager getAppTypesManager() {
 		return (ApplicationTypesManager)WFUtil.getBeanInstance(appTypesManagerBeanIdentifier);
 	}

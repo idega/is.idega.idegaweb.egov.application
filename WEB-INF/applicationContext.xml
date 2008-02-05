@@ -9,4 +9,8 @@
 	<bean id="appTypesManager" class="is.idega.idegaweb.egov.application.business.ApplicationTypesManager" scope="singleton" />
 	
 	<bean id="appTypeURL" class="is.idega.idegaweb.egov.application.business.ApplicationTypeURL" scope="singleton" />
+	
+	<bean id="appTypesHandler" class="is.idega.idegaweb.egov.application.presentation.beans.ApplicationTypesHandler" scope="singleton">
+		<property name="applicationTypesManager" ref="appTypesManager" />
+	</bean>
 </beans>

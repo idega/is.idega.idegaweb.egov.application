@@ -19,9 +19,9 @@ import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/02/05 12:44:07 $ by $Author: civilis $
+ * Last modified: $Date: 2008/02/05 19:31:36 $ by $Author: civilis $
  *
  */
 public class ApplicationTypeURL implements ApplicationType, ApplicationContextAware, ApplicationListener {
@@ -49,8 +49,8 @@ public class ApplicationTypeURL implements ApplicationType, ApplicationContextAw
 
 	public void save(IWContext iwc, Application app) {
 		
-		String url = iwc.getParameter("url");
-		String elec = iwc.getParameter("elec");
+		String url = iwc.getParameter(UIApplicationTypeURLHandler.urlParam);
+		String elec = iwc.getParameter(UIApplicationTypeURLHandler.elecParam);
 		
 		app.setElectronic("Y".equalsIgnoreCase(elec));
 		app.setUrl(url);
