@@ -26,7 +26,7 @@ import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 
-public class ApplicationBMPBean extends GenericEntity implements Application, com.idega.formbuilder.business.egov.Application {
+public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	private static final long serialVersionUID = 4244056022577759101L;
 	
@@ -66,7 +66,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application, co
 		
 		addAttribute(URL, "URL", String.class);
 		addAttribute(ELECTRONIC, "Is electronic application", Boolean.class);
-		addAttribute(APP_TYPE, "Application type", Integer.class);
+		addAttribute(APP_TYPE, "Application type", String.class);
 		addAttribute(REQUIRES_LOGIN, "Requires login", Boolean.class);
 		addAttribute(VISIBLE, "Is visible", Boolean.class);
 		addAttribute(OPENS_IN_NEW_WINDOW, "Opens in new window", Boolean.class);
@@ -190,12 +190,12 @@ public class ApplicationBMPBean extends GenericEntity implements Application, co
 		return getStringColumnValue(URL);
 	}
 	
-	public void setAppType(Integer app_type) {
-		setColumn(APP_TYPE, app_type);
+	public void setAppType(String appType) {
+		setColumn(APP_TYPE, appType);
 	}
 
-	public Integer getAppType() {
-		return getIntegerColumnValue(APP_TYPE);
+	public String getAppType() {
+		return getStringColumnValue(APP_TYPE);
 	}
 
 	public void setOpensInNewWindow(boolean opensInNew) {

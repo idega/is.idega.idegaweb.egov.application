@@ -142,7 +142,7 @@ public interface Application extends IDOEntity {
 	 */
 	public boolean getHiddenFromGuests();
 	
-	public void setAppType(Integer app_type);
+	public void setAppType(String appType);
 		
-	public Integer getAppType();
+	public String getAppType();
 }
