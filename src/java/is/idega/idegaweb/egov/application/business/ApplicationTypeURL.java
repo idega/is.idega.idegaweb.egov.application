@@ -1,8 +1,8 @@
 package is.idega.idegaweb.egov.application.business;
 
-import is.idega.idegaweb.egov.application.business.ApplicationType;
-import is.idega.idegaweb.egov.application.business.ApplicationTypePluggedInEvent;
+import is.idega.idegaweb.egov.application.IWBundleStarter;
 import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.presentation.UIApplicationTypeURLHandler;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -14,16 +14,14 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
-import com.idega.util.CoreConstants;
 
 /**
- * Interface is meant to be extended by beans, reflecting application type for egov applications
- * 
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/02/05 09:11:19 $ by $Author: civilis $
+ * Last modified: $Date: 2008/02/05 12:44:07 $ by $Author: civilis $
  *
  */
 public class ApplicationTypeURL implements ApplicationType, ApplicationContextAware, ApplicationListener {
@@ -32,12 +30,17 @@ public class ApplicationTypeURL implements ApplicationType, ApplicationContextAw
 	private static final String beanIdentifier = "appTypeURL";
 	private static final String appType = "EGOV_URL";
 	
-	public UIComponent getHandlerComponent(FacesContext ctx) {
-		return null;
+	public UIComponent getHandlerComponent(FacesContext ctx, Application app) {
+		
+		UIApplicationTypeURLHandler h = new UIApplicationTypeURLHandler();
+		h.setApplication(app);
+		return h;
 	}
 
 	public String getLabel(IWContext iwc) {
-		return "EGOV URL";
+		
+		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
+		return iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("app_type.url", "Url");
 	}
 
 	public String getType() {
@@ -47,11 +50,10 @@ public class ApplicationTypeURL implements ApplicationType, ApplicationContextAw
 	public void save(IWContext iwc, Application app) {
 		
 		String url = iwc.getParameter("url");
+		String elec = iwc.getParameter("elec");
 		
-		if(url != null && !CoreConstants.EMPTY.equals(url))
-			app.setUrl(url);
-		
-		System.out.println("saving ..url...");
+		app.setElectronic("Y".equalsIgnoreCase(elec));
+		app.setUrl(url);
 	}
 
 	public void setApplicationContext(ApplicationContext applicationcontext)

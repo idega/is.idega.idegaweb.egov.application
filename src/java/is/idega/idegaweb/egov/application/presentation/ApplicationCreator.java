@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.19 2008/02/05 09:11:19 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.20 2008/02/05 12:44:07 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -63,8 +63,6 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String APP_CREATOR_BPM = "javascript/appBPM.js";
 	private static final String web2beanBeanIdentifier = "web2bean";
 	
-	public static final String APP_TYPE_URL = "app_type_url";
-	
 	public static final String appTypesManagerBeanIdentifier = "appTypesManager";
 	
 	
@@ -117,7 +115,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		String id = iwc.getParameter("id");
 		String name = iwc.getParameter("name");
-		String elec = iwc.getParameter("elec");
 		String appType = iwc.getParameter("appType");
 		String requiresLogin = iwc.getParameter("reqLogin");
 		String visible = iwc.getParameter("visible");
@@ -142,8 +139,6 @@ public class ApplicationCreator extends ApplicationBlock {
 				app = getApplicationBusiness(iwc).getApplicationHome().create();
 			}
 			app.setName(name);
-			//app.setUrl(url);
-			app.setElectronic("Y".equalsIgnoreCase(elec));
 			app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
 			app.setVisible("Y".equalsIgnoreCase(visible));
 			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
@@ -154,9 +149,19 @@ public class ApplicationCreator extends ApplicationBlock {
 				app.setCaseCode(getApplicationBusiness(iwc).getCaseCode(code));
 			}
 			app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
-			getAppTypesManager().getApplicationType(appType).save(iwc, app);
 			
-			app.store();
+			ApplicationType applType = getAppTypesManager().getApplicationType(appType);
+			
+			if(applType != null) {
+			
+				app.setAppType(appType);
+				applType.save(iwc, app);
+				app.store();
+				
+			} else {
+				
+				throw new RuntimeException("No Application type registered for: "+appType);
+			}
 
 			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
 			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
@@ -385,7 +390,6 @@ public class ApplicationCreator extends ApplicationBlock {
 	private DropdownMenu getAppTypesMenu(IWContext iwc) {
 		
 		DropdownMenu menu = new DropdownMenu("appType");
-		menu.addMenuElement(APP_TYPE_URL, iwrb.getLocalizedString("app_type.url", "Url"));
 		
 		List<ApplicationType> appTypes = getAppTypesManager().getApplicationTypes();
 		
@@ -401,9 +405,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		if(appType != null && !CoreConstants.EMPTY.equals(appType)) {
 		
-			if(appType.equals(APP_TYPE_URL))
-				return iwrb.getLocalizedString("app_type.url", "Url");
-			
 			ApplicationType at = getAppTypesManager().getApplicationType(appType);
 			
 			if(at != null)
@@ -420,8 +421,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		form.setStyleClass("adminForm");
 		
 		TextInput name = new TextInput("name");
-		TextInput url = new TextInput("url");
-		BooleanInput electronic = new BooleanInput("elec");
 		DropdownMenu appTypes = getAppTypesMenu(iwc);
 		BooleanInput requiresLogin = new BooleanInput("reqLogin");
 		BooleanInput visible = new BooleanInput("visible");
@@ -429,6 +428,9 @@ public class ApplicationCreator extends ApplicationBlock {
 		BooleanInput hidden = new BooleanInput("hidden");
 		TextInput ageFrom = new TextInput("ageFrom");
 		TextInput ageTo = new TextInput("ageTo");
+		
+		Layer handlerContainer = new Layer(Layer.DIV);
+		handlerContainer.setStyleClass("appTypeHandlerContainer");
 
 		DropdownMenu category = new DropdownMenu("cat");
 		try {
@@ -454,11 +456,14 @@ public class ApplicationCreator extends ApplicationBlock {
 			try {
 				application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(new Integer(applicationID));
 				name.setContent(application.getName());
-				url.setContent(application.getUrl());
-				electronic.setSelected(application.getElectronic());
 				
 				if(application.getAppType() != null) {
 					appTypes.setSelectedElement(application.getAppType());
+					
+					ApplicationType appType = getAppTypesManager().getApplicationType(application.getAppType());
+					
+					if(appType != null)
+						handlerContainer.add(appType.getHandlerComponent(iwc, application));
 				}
 				
 				requiresLogin.setSelected(application.getRequiresLogin());
@@ -511,16 +516,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(this.iwrb.getLocalizedString("electronic", "Electronic"), electronic);
-		formItem.add(label);
-		formItem.add(electronic);
-		layer.add(formItem);
-		
-		formItem = new Layer(Layer.DIV);
-		formItem.setStyleClass("formItem");
-		label = new Label(this.iwrb.getLocalizedString("url", "url"), url);
-		formItem.add(label);
-		formItem.add(url);
+		formItem.add(handlerContainer);
 		layer.add(formItem);
 
 		formItem = new Layer(Layer.DIV);

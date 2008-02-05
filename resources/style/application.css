@@ -527,9 +527,6 @@ span.required {
 	color: #f00;
 }
 
-
-
-
 /* General */
 .Clear{
 	clear: both;
@@ -538,4 +535,9 @@ span.required {
 	font-size: 0;
 	line-height: 0;
 	visibility: hidden;
+}
+
+.appTypeHandlerContainer, .appTypeHandlerContainer div {
+	clear: both;
+	display: block;
 }

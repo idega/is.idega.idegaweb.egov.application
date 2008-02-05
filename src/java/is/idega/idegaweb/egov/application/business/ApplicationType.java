@@ -11,9 +11,9 @@ import com.idega.presentation.IWContext;
  * Interface is meant to be extended by beans, reflecting application type for egov applications
  * 
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/02/05 09:11:19 $ by $Author: civilis $
+ * Last modified: $Date: 2008/02/05 12:44:07 $ by $Author: civilis $
  *
  */
 public interface ApplicationType {
@@ -22,7 +22,7 @@ public interface ApplicationType {
 	
 	public abstract String getType();
 	
-	public abstract UIComponent getHandlerComponent(FacesContext ctx);
+	public abstract UIComponent getHandlerComponent(FacesContext ctx, Application app);
 	
 	public abstract void save(IWContext iwc, Application app);
 }
