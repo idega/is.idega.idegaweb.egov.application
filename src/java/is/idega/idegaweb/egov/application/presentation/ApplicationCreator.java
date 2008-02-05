@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.18 2008/01/09 08:04:59 alexis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.19 2008/02/05 09:11:19 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -9,16 +9,16 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
+import is.idega.idegaweb.egov.application.business.ApplicationType;
+import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.data.Application;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -26,11 +26,11 @@ import javax.ejb.FinderException;
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextHome;
+import com.idega.block.web2.business.Web2Business;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
-import com.idega.formbuilder.presentation.beans.FormDocument;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWResourceBundle;
@@ -49,24 +49,37 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.CoreConstants;
+import com.idega.webface.WFUtil;
 
 public class ApplicationCreator extends ApplicationBlock {
 
-	public static final String APP_FORM_NAME_PARAM = FormDocument.APP_FORM_NAME_PARAM;
-	public static final String APP_ID_PARAM = FormDocument.APP_ID_PARAM;
-	public static final String FROM_APP_REQ_PARAM = FormDocument.FROM_APP_REQ_PARAM;
+//	public static final String APP_FORM_NAME_PARAM = FormDocument.APP_FORM_NAME_PARAM;
+//	public static final String APP_ID_PARAM = FormDocument.APP_ID_PARAM;
+//	public static final String FROM_APP_REQ_PARAM = FormDocument.FROM_APP_REQ_PARAM;
 	public static final String FORMBUILDER_REDIRECT_PATH = "/workspace/forms/formbuilder/";
+	
+	private static final String APP_CREATOR_ENGINE = "/dwr/interface/CommentsEngine.js";
+	private static final String APP_CREATOR_BPM = "javascript/appBPM.js";
+	private static final String web2beanBeanIdentifier = "web2bean";
+	
+	public static final String APP_TYPE_URL = "app_type_url";
+	
+	public static final String appTypesManagerBeanIdentifier = "appTypesManager";
+	
 	
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
 	
 	private int urlLength = 50;
+	private Boolean useBPM = true;
 
 	public void present(IWContext iwc) throws Exception {
 		
 		this.iwrb = super.getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
 		
+		@SuppressWarnings("unchecked")
 		List<ICLocale> locales = ICLocaleBusiness.listOfLocales();
 		
 		String action = iwc.getParameter("prm_action");
@@ -104,9 +117,8 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		String id = iwc.getParameter("id");
 		String name = iwc.getParameter("name");
-		String url = iwc.getParameter("url");
 		String elec = iwc.getParameter("elec");
-		String app_type = iwc.getParameter("appType");
+		String appType = iwc.getParameter("appType");
 		String requiresLogin = iwc.getParameter("reqLogin");
 		String visible = iwc.getParameter("visible");
 		int ageFrom = iwc.isParameterSet("ageFrom") ? Integer.parseInt(iwc.getParameter("ageFrom")) : -1;
@@ -130,27 +142,8 @@ public class ApplicationCreator extends ApplicationBlock {
 				app = getApplicationBusiness(iwc).getApplicationHome().create();
 			}
 			app.setName(name);
-			app.setUrl(url);
+			//app.setUrl(url);
 			app.setElectronic("Y".equalsIgnoreCase(elec));
-			
-			Integer at = 0;
-			
-			if(app_type != null) {
-				
-				try {
-					at = Integer.parseInt(app_type);
-					
-					if(at == FORMBUILDER_TYPE)
-						app.setElectronic(true);
-					
-					app.setAppType(at);
-					
-				} catch (Exception e) {
-					// TODO: use logger
-					e.printStackTrace();
-				}
-			}
-			
 			app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
 			app.setVisible("Y".equalsIgnoreCase(visible));
 			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
@@ -161,13 +154,16 @@ public class ApplicationCreator extends ApplicationBlock {
 				app.setCaseCode(getApplicationBusiness(iwc).getCaseCode(code));
 			}
 			app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
+			getAppTypesManager().getApplicationType(appType).save(iwc, app);
+			
 			app.store();
 
 			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
 			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
 			
 //			id == null means it's new app
-			if(id == null && at == FORMBUILDER_TYPE && name != null && !name.equals("")) {
+			/* FIXME: see FormDocument from formbuilder method save()
+			if(id == null && at == APP_TYPE_FORMBUILDER && name != null && !name.equals("")) {
 				
 				try {
 					
@@ -182,11 +178,10 @@ public class ApplicationCreator extends ApplicationBlock {
 					);
 					
 				} catch (IOException e) {
-//					TODO: use logger
-					System.out.println("probably some old component was used? and redirect was called when component was actually already been started rendering");
-					e.printStackTrace();
+					Logger.getLogger(getClassName()).log(Level.SEVERE, "probably some old component was used? and redirect was called when component was actually already been started rendering", e);
 				}
 			}
+			*/
 			
 			for(Iterator<ICLocale> it = locales.iterator(); it.hasNext(); ) {
 				ICLocale locale = it.next();
@@ -207,14 +202,10 @@ public class ApplicationCreator extends ApplicationBlock {
 					
 					if(newText) {
 						app.addLocalizedName(locText);
-						
-						
 					}
-					
 				}
 			}
 		}
-		
 	}
 	
 	protected LocalizedTextHome getLocalizedTextHome() throws RemoteException {
@@ -223,7 +214,8 @@ public class ApplicationCreator extends ApplicationBlock {
 	
 	private void listExisting(IWContext iwc) throws RemoteException, FinderException {
 		
-		Collection applications = getApplicationBusiness(iwc).getApplicationHome().findAll();
+		@SuppressWarnings("unchecked")
+		Collection<Application> applications = getApplicationBusiness(iwc).getApplicationHome().findAll();
 
 		Form form = new Form();
 		form.setID("applicationCreator");
@@ -292,10 +284,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		group = table.createBodyRowGroup();
 		int iRow = 1;
 		
-		Iterator iter = applications.iterator();
+		Iterator<Application> iter = applications.iterator();
 		
 		while (iter.hasNext()) {
-			Application app = (Application) iter.next();
+			Application app = iter.next();
 			CaseCode code = app.getCaseCode();
 			
 			row = table.createRow();
@@ -345,12 +337,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			cell = row.createCell();
 			cell.setStyleClass("appType");
 			
-			Integer app_type = app.getAppType();
-			
-			if(app_type != null)
-				cell.add(new Text(getAppTypesIdToNameMappings().get(app_type)));
-			else
-				cell.add(new Text(""));
+			cell.add(new Text(getAppTypeLabel(iwc, app.getAppType())));
 			
 			cell = row.createCell();
 			cell.setStyleClass("electronic");
@@ -395,31 +382,39 @@ public class ApplicationCreator extends ApplicationBlock {
 		add(form);
 	}
 	
-	private DropdownMenu getAppTypesMenu() {
+	private DropdownMenu getAppTypesMenu(IWContext iwc) {
 		
 		DropdownMenu menu = new DropdownMenu("appType");
-		SortedMap<Integer, String> mappings = getAppTypesIdToNameMappings();
+		menu.addMenuElement(APP_TYPE_URL, iwrb.getLocalizedString("app_type.url", "Url"));
 		
-		for (Integer app_type_id : mappings.keySet())
-			menu.addMenuElement(app_type_id, mappings.get(app_type_id));
+		List<ApplicationType> appTypes = getAppTypesManager().getApplicationTypes();
+		
+		for (ApplicationType appType : appTypes) {
+			
+			menu.addMenuElement(appType.getType(), appType.getLabel(iwc));
+		}
 		
 		return menu;
 	}
 	
-	private static final int FORMBUILDER_TYPE = 1;
-	
-	private SortedMap<Integer, String> getAppTypesIdToNameMappings() {
+	private String getAppTypeLabel(IWContext iwc, String appType) {
 		
-//		TODO: discard hardcoding and make it configurable - use ConfigFactory and Config from core
-		SortedMap<Integer, String> mappings = new TreeMap<Integer, String>();
-		mappings.put(FORMBUILDER_TYPE, iwrb.getLocalizedString("app_type.formbuilder", "Formbuilder"));
-		mappings.put(2, iwrb.getLocalizedString("app_type.url", "Url"));
+		if(appType != null && !CoreConstants.EMPTY.equals(appType)) {
 		
-		return mappings;
+			if(appType.equals(APP_TYPE_URL))
+				return iwrb.getLocalizedString("app_type.url", "Url");
+			
+			ApplicationType at = getAppTypesManager().getApplicationType(appType);
+			
+			if(at != null)
+				return at.getLabel(iwc);
+		}
+		
+		return CoreConstants.EMPTY;
 	}
-
+	
 	private void getApplicationCreationForm(IWContext iwc, int applicationID, List<ICLocale> locales) throws RemoteException {
-		
+
 		Form form = new Form();
 		form.setID("applicationCreator");
 		form.setStyleClass("adminForm");
@@ -427,7 +422,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		TextInput name = new TextInput("name");
 		TextInput url = new TextInput("url");
 		BooleanInput electronic = new BooleanInput("elec");
-		DropdownMenu app_types = getAppTypesMenu();
+		DropdownMenu appTypes = getAppTypesMenu(iwc);
 		BooleanInput requiresLogin = new BooleanInput("reqLogin");
 		BooleanInput visible = new BooleanInput("visible");
 		BooleanInput newin = new BooleanInput("newin");
@@ -445,12 +440,13 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		DropdownMenu caseCode = new DropdownMenu("code");
 		caseCode.addMenuElementFirst("-1", this.iwrb.getLocalizedString("no_code", "No Code"));
-		Collection caseCodes = getApplicationBusiness(iwc).getCaseCodes();
-		Iterator iter = caseCodes.iterator();
-		while (iter.hasNext()) {
-			CaseCode code = (CaseCode) iter.next();
+		@SuppressWarnings("unchecked")
+		Collection<CaseCode> caseCodes = getApplicationBusiness(iwc).getCaseCodes();
+		
+		for (CaseCode code : caseCodes) {
 			caseCode.addMenuElement(code.getPrimaryKey().toString(), code.getDescriptionLocalizedKey() != null ? this.iwrb.getLocalizedString(code.getDescriptionLocalizedKey(), code.getDescription()) : code.getDescription());
 		}
+		
 		Application application = null;
 
 		if (applicationID > 0) {
@@ -460,9 +456,9 @@ public class ApplicationCreator extends ApplicationBlock {
 				name.setContent(application.getName());
 				url.setContent(application.getUrl());
 				electronic.setSelected(application.getElectronic());
-				Integer temp = application.getAppType();
+				
 				if(application.getAppType() != null) {
-					app_types.setSelectedElement(application.getAppType());
+					appTypes.setSelectedElement(application.getAppType());
 				}
 				
 				requiresLogin.setSelected(application.getRequiresLogin());
@@ -508,9 +504,9 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		label = new Label(this.iwrb.getLocalizedString("app_type", "Application type"), app_types);
+		label = new Label(this.iwrb.getLocalizedString("app_type", "Application type"), appTypes);
 		formItem.add(label);
-		formItem.add(app_types);
+		formItem.add(appTypes);
 		layer.add(formItem);
 		
 		formItem = new Layer(Layer.DIV);
@@ -622,5 +618,36 @@ public class ApplicationCreator extends ApplicationBlock {
 	
 	public void setURLLength(int urlLength) {
 		this.urlLength = urlLength;
+	}
+	
+	protected List<String> getBPMJavaScriptSources(IWContext iwc) {
+		
+		List<String> sources = new ArrayList<String>();
+		
+		try {
+			Web2Business web2 = (Web2Business)WFUtil.getBeanInstance(web2beanBeanIdentifier);
+			sources.add(web2.getBundleURIToJQueryLib());
+			sources.add(getBundle(iwc).getVirtualPathWithFileNameString(APP_CREATOR_BPM));
+			return sources;
+			
+		} catch (RemoteException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Boolean getUseBPM() {
+		return useBPM;
+	}
+
+	public void setUseBPM(Boolean useBPM) {
+		
+		if(useBPM == null)
+			useBPM = false;
+		
+		this.useBPM = useBPM;
+	}
+	
+	protected ApplicationTypesManager getAppTypesManager() {
+		return (ApplicationTypesManager)WFUtil.getBeanInstance(appTypesManagerBeanIdentifier);
 	}
 }
