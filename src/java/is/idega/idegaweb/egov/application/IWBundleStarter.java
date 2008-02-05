@@ -17,8 +17,10 @@ public class IWBundleStarter implements IWBundleStartable {
 
 	public void start(IWBundle starterBundle) {
 		
+		/*
 		ApplicationViewManager cViewManager = ApplicationViewManager.getInstance(starterBundle.getApplication());
 		cViewManager.getContentNode();
+		*/
 		
 		GlobalIncludeManager.getInstance().addBundleStyleSheet(IW_BUNDLE_IDENTIFIER, "/style/application.css", ExternalLink.MEDIA_SCREEN);
 		GlobalIncludeManager.getInstance().addBundleStyleSheet(IW_BUNDLE_IDENTIFIER, "/style/application-print.css", ExternalLink.MEDIA_PRINT);
