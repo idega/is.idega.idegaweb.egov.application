@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.11 2007/04/18 17:31:10 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.12 2008/02/06 18:19:26 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,22 +10,30 @@
 package is.idega.idegaweb.egov.application.servlet.filter;
 
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.business.ApplicationType;
+import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
+import is.idega.idegaweb.egov.application.presentation.ApplicationCreator;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.business.SpringBeanLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
@@ -58,6 +66,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 	}
 
 	private boolean getIfDoRedirect(HttpServletRequest request) {
+		@SuppressWarnings("unchecked")
 		Map map = request.getParameterMap();
 		return map.containsKey(ApplicationBlock.PARAMETER_APPLICATION_PK);
 	}
@@ -66,13 +75,17 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 		try {
 			LoginBusinessBean loginBusiness = getLoginBusiness(request);
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
-			
 			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
 			IWMainApplication iwma = getIWMainApplication(request);
-			IWApplicationContext iwc = iwma.getIWApplicationContext();
-			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
+			IWApplicationContext iwac = iwma.getIWApplicationContext();
+			Application application = getApplicationBusiness(iwac).getApplication(new Integer(pk));
 			
 			updateTimesClicked(iwma, application);
+			
+			ApplicationType at = getAppTypesManager(request.getSession().getServletContext()).getApplicationType(application.getAppType());
+			
+			if(at == null)
+				throw new RuntimeException("No application type resolved for app type: "+application.getAppType()+", application id: "+application.getPrimaryKey());
 			
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				//try {
@@ -88,7 +101,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 						uri += "&";
 					}
 					
-					String applUrl = application.getUrl();
+					String applUrl = at.getUrl(iwac, application);
 					String encoding = System.getProperty("file.encoding");
 					String applUrlEncoded = URLEncoder.encode(applUrl,encoding);
 
@@ -100,11 +113,11 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			}
 			else if(isLoggedOn){
 				
-				String uri = application.getUrl();
+				String uri = at.getUrl(iwac, application);
 				uri = IWAuthenticator.getUriParsedWithVariables(request,uri);
 				return uri;
 			}
-			return application.getUrl();
+			return at.getUrl(iwac, application);
 			
 		}
 		catch (Exception e) {
@@ -153,4 +166,8 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 		}
 	}
 
+	protected ApplicationTypesManager getAppTypesManager(ServletContext ctx) {
+		
+		return (ApplicationTypesManager)SpringBeanLookup.getInstance().getSpringBean(ctx, ApplicationCreator.appTypesManagerBeanIdentifier);
+	}
 }
