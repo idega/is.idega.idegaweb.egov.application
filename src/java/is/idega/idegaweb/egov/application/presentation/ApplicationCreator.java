@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.21 2008/02/05 19:31:35 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.22 2008/02/06 11:49:07 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -158,8 +158,11 @@ public class ApplicationCreator extends ApplicationBlock {
 			if(applType != null) {
 			
 				app.setAppType(appType);
-				applType.save(iwc, app);
+				applType.beforeStore(iwc, app);
 				app.store();
+				
+				if(applType.afterStore(iwc, app))
+					app.store();
 				
 			} else {
 				
