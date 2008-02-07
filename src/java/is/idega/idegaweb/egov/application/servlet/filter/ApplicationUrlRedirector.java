@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.12 2008/02/06 18:19:26 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.13 2008/02/07 13:55:45 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -14,7 +14,6 @@ import is.idega.idegaweb.egov.application.business.ApplicationType;
 import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
-import is.idega.idegaweb.egov.application.presentation.ApplicationCreator;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -168,6 +167,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
 	protected ApplicationTypesManager getAppTypesManager(ServletContext ctx) {
 		
-		return (ApplicationTypesManager)SpringBeanLookup.getInstance().getSpringBean(ctx, ApplicationCreator.appTypesManagerBeanIdentifier);
+		return (ApplicationTypesManager)SpringBeanLookup.getInstance().getSpringBean(ctx, ApplicationBlock.appTypesManagerBeanIdentifier);
 	}
 }

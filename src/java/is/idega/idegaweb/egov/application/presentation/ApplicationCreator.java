@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.22 2008/02/06 11:49:07 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.23 2008/02/07 13:55:45 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,7 +10,6 @@
 package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.business.ApplicationType;
-import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.data.Application;
 
 import java.rmi.RemoteException;
@@ -65,14 +64,11 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String APP_CREATOR_APP_TYPES = "javascript/applicationTypes.js";
 	private static final String web2beanBeanIdentifier = "web2bean";
 	
-	public static final String appTypesManagerBeanIdentifier = "appTypesManager";
-	
 	
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
 	
 	private int urlLength = 50;
-	private Boolean useBPM = true;
 
 	public void present(IWContext iwc) throws Exception {
 		
@@ -646,9 +642,5 @@ public class ApplicationCreator extends ApplicationBlock {
 		} catch (RemoteException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	protected ApplicationTypesManager getAppTypesManager() {
-		return (ApplicationTypesManager)WFUtil.getBeanInstance(appTypesManagerBeanIdentifier);
 	}
 }

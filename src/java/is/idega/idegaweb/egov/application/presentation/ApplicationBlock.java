@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.16 2008/01/09 08:04:59 alexis Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.17 2008/02/07 13:55:45 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -11,6 +11,8 @@ package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.accounting.business.CitizenBusiness;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.business.ApplicationType;
+import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.data.Application;
 
 import java.rmi.RemoteException;
@@ -29,9 +31,13 @@ import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.util.Age;
+import com.idega.util.CoreConstants;
+import com.idega.webface.WFUtil;
 
 public abstract class ApplicationBlock extends Block {
 
+	public static final String appTypesManagerBeanIdentifier = "appTypesManager";
+	
 	public static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	public static final String PARAMETER_APPLICATION_PK = "prm_app_application_pk";
 	public static final String PARAMETER_IDENTIFIER_NAME = "prm_app_identifier_name";
@@ -51,13 +57,15 @@ public abstract class ApplicationBlock extends Block {
 	
 	protected abstract void present(IWContext iwc) throws Exception;
 
-	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection applications, Age[] ages) throws RemoteException {
+	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection<Application> applications, Age[] ages) throws RemoteException {
 		Lists list = new Lists();
 		
-		Collection applicationList = new ArrayList();
-		Iterator iter = applications.iterator();
+		Collection<ListItem> applicationList = new ArrayList<ListItem>(applications.size());
+		Iterator<Application> iter = applications.iterator();
+		ApplicationTypesManager appTypesManager = getAppTypesManager();
+		
 		while (iter.hasNext()) {
-			Application application = (Application) iter.next();
+			Application application = iter.next();
 
 			boolean displayApplication = true;
 			try {
@@ -68,6 +76,7 @@ public abstract class ApplicationBlock extends Block {
 			}
 			
 			if (application.getVisible() && (!checkAges || displayApplication) && !(iwc.isLoggedOn() && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(iwc.getCurrentUser()))) {
+				
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");
@@ -79,7 +88,16 @@ public abstract class ApplicationBlock extends Block {
 					li.setStyleClass("requiresLogin");
 				}
 				String url = application.getUrl();
-				if (url != null && !url.trim().equals("")) {
+				
+				String appType = application.getAppType();
+				
+				if(appType != null) {
+				
+					ApplicationType at = appTypesManager.getApplicationType(appType);
+					url = at.getUrl(iwc, application);
+				}
+				
+				if (url != null && !url.trim().equals(CoreConstants.EMPTY)) {
 					int icLocaleId = iwc.getCurrentLocaleId();
 					
 					LocalizedText locText = application.getLocalizedText(icLocaleId);
@@ -102,7 +120,7 @@ public abstract class ApplicationBlock extends Block {
 		}
 		
 		boolean first = true;
-		Iterator iterator = applicationList.iterator();
+		Iterator<ListItem> iterator = applicationList.iterator();
 		while (iterator.hasNext()) {
 			ListItem element = (ListItem) iterator.next();
 			if (first) {
@@ -136,5 +154,9 @@ public abstract class ApplicationBlock extends Block {
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
+	}
+	
+	protected ApplicationTypesManager getAppTypesManager() {
+		return (ApplicationTypesManager)WFUtil.getBeanInstance(appTypesManagerBeanIdentifier);
 	}
 }
