@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.13 2008/02/07 13:55:45 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.14 2008/02/08 09:07:24 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -81,10 +81,14 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			
 			updateTimesClicked(iwma, application);
 			
-			ApplicationType at = getAppTypesManager(request.getSession().getServletContext()).getApplicationType(application.getAppType());
+			String url;
 			
-			if(at == null)
-				throw new RuntimeException("No application type resolved for app type: "+application.getAppType()+", application id: "+application.getPrimaryKey());
+			if(application.getAppType() != null) {
+				
+				ApplicationType at = getAppTypesManager(request.getSession().getServletContext()).getApplicationType(application.getAppType());
+				url = at.getUrl(iwac, application);
+			} else
+				url = application.getUrl();
 			
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				//try {
@@ -100,9 +104,8 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 						uri += "&";
 					}
 					
-					String applUrl = at.getUrl(iwac, application);
 					String encoding = System.getProperty("file.encoding");
-					String applUrlEncoded = URLEncoder.encode(applUrl,encoding);
+					String applUrlEncoded = URLEncoder.encode(url, encoding);
 
 					uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON+"="+applUrlEncoded;
 					return uri;
@@ -112,11 +115,10 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			}
 			else if(isLoggedOn){
 				
-				String uri = at.getUrl(iwac, application);
-				uri = IWAuthenticator.getUriParsedWithVariables(request,uri);
-				return uri;
+				url = IWAuthenticator.getUriParsedWithVariables(request, url);
+				return url;
 			}
-			return at.getUrl(iwac, application);
+			return url;
 			
 		}
 		catch (Exception e) {

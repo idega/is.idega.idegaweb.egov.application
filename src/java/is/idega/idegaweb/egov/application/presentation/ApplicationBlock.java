@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.17 2008/02/07 13:55:45 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.18 2008/02/08 09:07:25 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -87,15 +87,17 @@ public abstract class ApplicationBlock extends Block {
 				if (application.getRequiresLogin()) {
 					li.setStyleClass("requiresLogin");
 				}
-				String url = application.getUrl();
 				
 				String appType = application.getAppType();
+				String url;
 				
 				if(appType != null) {
 				
 					ApplicationType at = appTypesManager.getApplicationType(appType);
 					url = at.getUrl(iwc, application);
-				}
+					
+				} else
+					url = application.getUrl();
 				
 				if (url != null && !url.trim().equals(CoreConstants.EMPTY)) {
 					int icLocaleId = iwc.getCurrentLocaleId();
