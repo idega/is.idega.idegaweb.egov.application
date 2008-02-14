@@ -14,9 +14,6 @@ egov_AppTypes.appTypeChanged = function(appId, typeSelected, container) {
 		{
 			callback: function(result) {
 			
-				console.log('got result: '+result);
-				console.log(container);
-				
 				if(result != null)
 					insertNodesToContainer(result, container);
 			}
