@@ -1,5 +1,10 @@
 package is.idega.idegaweb.egov.application.presentation;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.html.HtmlMessage;
+
+import org.apache.commons.validator.UrlValidator;
+
 import is.idega.idegaweb.egov.application.data.Application;
 
 import com.idega.idegaweb.IWResourceBundle;
@@ -13,9 +18,9 @@ import com.idega.presentation.ui.TextInput;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/02/05 19:31:36 $ by $Author: civilis $
+ * Last modified: $Date: 2008/02/19 16:54:02 $ by $Author: anton $
  *
  */
 public class UIApplicationTypeURLHandler extends Block {
@@ -26,16 +31,34 @@ public class UIApplicationTypeURLHandler extends Block {
 	
 	@Override
 	public void main(IWContext iwc) throws Exception {
-		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
+		String urlValue = iwc.getParameter(urlParam);
+		String elecValue = iwc.getParameter(elecParam);
+		if(urlValue == null || urlValue.trim().equals("")) {
+			iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_empty", "'Url' field is empty")));
+		}
+		
+		UrlValidator validator = new UrlValidator();
+		if(!validator.isValid(urlValue)) {
+			iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_error", "Incorrect URL value")));
+		}
+		
 		TextInput url = new TextInput(urlParam);
+		url.setId(urlParam);
 		BooleanInput electronic = new BooleanInput(elecParam);
+		if(elecValue != null && elecValue.equals("Y")) {
+			electronic.setSelected(true);
+		} else {
+			electronic.setSelected(false);
+		}
 		
-		if(application != null) {
-		
+		if(application != null) {		
 			url.setContent(application.getUrl());
 			electronic.setSelected(application.getElectronic());
+		}
+		if(urlValue != null && !urlValue.trim().equals("")) {
+			url.setContent(urlValue);
 		}
 		
 		Layer container = new Layer(Layer.SPAN);
@@ -47,9 +70,15 @@ public class UIApplicationTypeURLHandler extends Block {
 		container.add(layer);
 		
 		layer = new Layer(Layer.DIV);
+		Layer errorItem = new Layer(Layer.SPAN);
+		errorItem.setStyleClass("error");
 		label = new Label(iwrb.getLocalizedString("url", "Url"), url);
+		HtmlMessage msg = (HtmlMessage)iwc.getApplication().createComponent(HtmlMessage.COMPONENT_TYPE);
+		msg.setFor(url.getId());
+		errorItem.add(msg);
 		layer.add(label);
 		layer.add(url);
+		layer.add(errorItem);
 		container.add(layer);
 		
 		add(container);
