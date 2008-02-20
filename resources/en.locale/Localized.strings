@@ -1,6 +1,8 @@
 age_greater='Age from' field value is greater than 'Age to' field value
-name_empty='Default name' field is empty
-url_empty='Url' field is empty
+name_empty='Default name' field should not be empty
+url_empty='Url' field should not be empty empty
 app_type_select='Application type' value field is not selected
 bpm_proc_select='BPM process' field value is not selected
 url_error=Incorrect URL value
+not_number=The value should be a number
+negative_number=The number should be greater than 0

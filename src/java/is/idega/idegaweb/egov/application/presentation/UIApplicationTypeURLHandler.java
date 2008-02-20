@@ -18,9 +18,9 @@ import com.idega.presentation.ui.TextInput;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
- * Last modified: $Date: 2008/02/19 16:54:02 $ by $Author: anton $
+ * Last modified: $Date: 2008/02/20 14:27:23 $ by $Author: anton $
  *
  */
 public class UIApplicationTypeURLHandler extends Block {
@@ -35,13 +35,16 @@ public class UIApplicationTypeURLHandler extends Block {
 		
 		String urlValue = iwc.getParameter(urlParam);
 		String elecValue = iwc.getParameter(elecParam);
-		if(urlValue == null || urlValue.trim().equals("")) {
-			iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_empty", "'Url' field is empty")));
-		}
-		
-		UrlValidator validator = new UrlValidator();
-		if(!validator.isValid(urlValue)) {
-			iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_error", "Incorrect URL value")));
+		String action = iwc.getParameter(ApplicationCreator.ACTION);
+		if(ApplicationCreator.SAVE_ACTION.equals(action)) {
+			UrlValidator validator = new UrlValidator();
+			if((urlValue == null || urlValue.trim().equals(""))) {
+				iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_empty", "'Url' field should not be empty")));
+			} else {
+				if(!validator.isValid(urlValue)) {
+					iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_error", "Incorrect URL value")));
+				}
+			}
 		}
 		
 		TextInput url = new TextInput(urlParam);
@@ -64,12 +67,14 @@ public class UIApplicationTypeURLHandler extends Block {
 		Layer container = new Layer(Layer.SPAN);
 		
 		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass("formItem");
 		Label label = new Label(iwrb.getLocalizedString("electronic", "Electronic"), electronic);
 		layer.add(label);
 		layer.add(electronic);
 		container.add(layer);
 		
 		layer = new Layer(Layer.DIV);
+		layer.setStyleClass("formItem");
 		Layer errorItem = new Layer(Layer.SPAN);
 		errorItem.setStyleClass("error");
 		label = new Label(iwrb.getLocalizedString("url", "Url"), url);

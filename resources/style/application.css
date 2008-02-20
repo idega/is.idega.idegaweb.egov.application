@@ -527,6 +527,13 @@ span.required {
 	color: #f00;
 }
 
+div.errors, span.error {
+	font-size: 11px;
+	font-weight: bold;
+	color: #f00;
+}
+
+
 /* General */
 .Clear{
 	clear: both;

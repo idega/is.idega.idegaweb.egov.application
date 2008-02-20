@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.24 2008/02/19 16:54:02 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.25 2008/02/20 14:27:23 anton Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -79,6 +79,12 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String NEW_WIN_INPUT = "newin";
 	private static final String HIDDEN_INPUT = "hidden";
 	
+	public static final String ACTION = "prm_action";
+	public static final String SAVE_ACTION = "save";
+	public static final String CREATE_ACTION = "create";
+	public static final String EDIT_ACTION = "edit";
+	public static final String DELETE_ACTION = "delete";
+	
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
 	
@@ -92,15 +98,15 @@ public class ApplicationCreator extends ApplicationBlock {
 		@SuppressWarnings("unchecked")
 		List<ICLocale> locales = ICLocaleBusiness.listOfLocales();
 		
-		String action = iwc.getParameter("prm_action");
+		String action = iwc.getParameter(ACTION);
 		
-		if ("create".equals(action)) {
+		if (CREATE_ACTION.equals(action)) {
 			getApplicationCreationForm(iwc, -1, locales);
 		}
-		else if ("edit".equals(action)) {
+		else if (EDIT_ACTION.equals(action)) {
 			getApplicationCreationForm(iwc, Integer.parseInt(iwc.getParameter("id")), locales);
 		}
-		else if ("save".equals(action)) {
+		else if (SAVE_ACTION.equals(action)) {
 			saveApplication(iwc, locales);
 			if(iwc.getMessages().hasNext()) {
 				getApplicationCreationForm(iwc, -1, locales);
@@ -108,7 +114,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				listExisting(iwc);
 			}
 		}
-		else if ("delete".equals(action)) {
+		else if (DELETE_ACTION.equals(action)) {
 			try {
 				Application app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
 						new Integer(iwc.getParameter("id")));
@@ -134,26 +140,39 @@ public class ApplicationCreator extends ApplicationBlock {
 		String appType = iwc.getParameter(APP_TYPE_INPUT);
 		String requiresLogin = iwc.getParameter(REQ_LOGIN_INPUT);
 		String visible = iwc.getParameter(VISIBLE_INPUT);
-		int ageFrom = iwc.isParameterSet(AGE_FROM_INPUT) ? Integer.parseInt(iwc.getParameter(AGE_FROM_INPUT)) : -1;
-		int ageTo = iwc.isParameterSet(AGE_TO_INPUT) ? Integer.parseInt(iwc.getParameter(AGE_TO_INPUT)) : -1;
+		
+		Integer ageFrom = null;
+		Integer ageTo = null;
+		try {
+			ageFrom = iwc.isParameterSet(AGE_FROM_INPUT) ? new Integer(iwc.getParameter(AGE_FROM_INPUT)) : null;
+		} catch(NumberFormatException exp) {
+			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("not_number", "The value should be a number")));
+		}
+		
+		try {
+			ageTo = iwc.isParameterSet(AGE_TO_INPUT) ? new Integer(iwc.getParameter(AGE_TO_INPUT)) : null;
+		} catch(NumberFormatException exp) {
+			iwc.addMessage(AGE_TO_INPUT, new FacesMessage(this.iwrb.getLocalizedString("not_number", "The value should be a number")));
+		}
+		
 		String cat = iwc.getParameter(CAT_INPUT);
 		String code = iwc.getParameter(CODE_INPUT);
 		String opensInNew = iwc.getParameter(NEW_WIN_INPUT);
 		String hiddenFromGuests = iwc.getParameter(HIDDEN_INPUT);
 		
 		if(name == null || name.trim().equals(CoreConstants.EMPTY)) {
-			iwc.addMessage(NAME_INPUT, new FacesMessage(this.iwrb.getLocalizedString("name_empty", "'Default name' field is empty")));
+			iwc.addMessage(NAME_INPUT, new FacesMessage(this.iwrb.getLocalizedString("name_empty", "'Default name' field should not be empty")));
 		}
 		if(appType.equals("-1")) {
 			iwc.addMessage(APP_TYPE_INPUT, new FacesMessage(this.iwrb.getLocalizedString("app_type_select", "'Application type' value field is not selected")));
 		}
-		/*if(ageFrom == -1) {
-			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(AGE_FROM_INPUT + ": Should not be empty"));
+		if(ageFrom != null && ageFrom.intValue() <= 0) {
+			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("negative_number", "The number should be greater than 0")));
 		}
-		if(ageTo == -1) {
-			iwc.addMessage(AGE_TO_INPUT, new FacesMessage(AGE_TO_INPUT + ": Should not be empty"));
-		}*/
-		if(ageFrom >= ageTo && ageTo != -1 && ageFrom != -1) {
+		if(ageTo != null && ageTo.intValue() <= 0) {
+			iwc.addMessage(AGE_TO_INPUT, new FacesMessage(this.iwrb.getLocalizedString("negative_number", "The number should be greater than 0")));
+		}
+		if(ageTo != null && ageFrom != null && ageTo.intValue() > 0 && ageFrom.intValue() > 0 && ageFrom.intValue() >= ageTo.intValue()) {
 			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("age_greater", "'Age from' field value is greater than 'Age to' field value")));
 		}
 		
@@ -462,16 +481,29 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, getCreationFormJavaScriptSources(iwc));
 		
-		String name_value = iwc.getParameter(NAME_INPUT);
-		String appType_value = iwc.getParameter(APP_TYPE_INPUT);
-		String requiresLogin_value = iwc.getParameter(REQ_LOGIN_INPUT);
-		String visible_value = iwc.getParameter(VISIBLE_INPUT);
-		int ageFrom_value = iwc.isParameterSet(AGE_FROM_INPUT) ? Integer.parseInt(iwc.getParameter(AGE_FROM_INPUT)) : -1;
-		int ageTo_value = iwc.isParameterSet(AGE_TO_INPUT) ? Integer.parseInt(iwc.getParameter(AGE_TO_INPUT)) : -1;
-		String cat_value = iwc.getParameter(CAT_INPUT);
-		String code_value = iwc.getParameter(CODE_INPUT);
-		String opensInNew_value = iwc.getParameter(NEW_WIN_INPUT);
-		String hiddenFromGuests_value = iwc.getParameter(HIDDEN_INPUT);
+		String nameValue = iwc.getParameter(NAME_INPUT);
+		String appTypeValue = iwc.getParameter(APP_TYPE_INPUT);
+		String requiresLoginValue = iwc.getParameter(REQ_LOGIN_INPUT);
+		String visibleValue = iwc.getParameter(VISIBLE_INPUT);
+		
+		Integer ageFromValue = null;
+		Integer ageToValue = null;
+		try {
+			ageFromValue = iwc.isParameterSet(AGE_FROM_INPUT) ? new Integer(iwc.getParameter(AGE_FROM_INPUT)) : null;
+		} catch(NumberFormatException exp) {
+			exp.printStackTrace();
+		}
+		
+		try {
+			ageToValue = iwc.isParameterSet(AGE_TO_INPUT) ? new Integer(iwc.getParameter(AGE_TO_INPUT)) : null;
+		} catch(NumberFormatException exp) {
+			exp.printStackTrace();
+		}
+
+		String catValue = iwc.getParameter(CAT_INPUT);
+		String codeValue = iwc.getParameter(CODE_INPUT);
+		String opensInNewValue = iwc.getParameter(NEW_WIN_INPUT);
+		String hiddenFromGuestsValue = iwc.getParameter(HIDDEN_INPUT);
 
 		Form form = new Form();
 		form.setID("applicationCreator");
@@ -479,34 +511,34 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		TextInput name = new TextInput("name");
 		name.setId(NAME_INPUT);
-		name.setValue(name_value);
+		name.setValue(nameValue);
 		
 		DropdownMenu appTypes = getAppTypesMenu(iwc);		
 		appTypes.setId(APP_TYPE_INPUT);
 		
 		BooleanInput requiresLogin = new BooleanInput("reqLogin");
-		if(requiresLogin_value != null && requiresLogin_value.equals("Y")) {
+		if(requiresLoginValue != null && requiresLoginValue.equals("Y")) {
 			requiresLogin.setSelected(true);
 		} else {
 			requiresLogin.setSelected(false);
 		}
 		
 		BooleanInput visible = new BooleanInput("visible");
-		if(visible_value != null && visible_value.equals("Y")) {
+		if(visibleValue != null && visibleValue.equals("Y")) {
 			visible.setSelected(true);
 		} else {
 			visible.setSelected(false);
 		}
 		
 		BooleanInput newin = new BooleanInput("newin");
-		if(opensInNew_value != null && opensInNew_value.equals("Y")) {
+		if(opensInNewValue != null && opensInNewValue.equals("Y")) {
 			newin.setSelected(true);
 		} else {
 			newin.setSelected(false);
 		}
 		
 		BooleanInput hidden = new BooleanInput("hidden");
-		if(hiddenFromGuests_value != null && hiddenFromGuests_value.equals("Y")) {
+		if(hiddenFromGuestsValue != null && hiddenFromGuestsValue.equals("Y")) {
 			hidden.setSelected(true);
 		} else {
 			hidden.setSelected(false);
@@ -514,28 +546,28 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		TextInput ageFrom = new TextInput("ageFrom");
 		ageFrom.setId(AGE_FROM_INPUT);
-		if(ageFrom_value != -1) {
-			ageFrom.setValue(ageFrom_value);
+		if(ageFromValue != null) {
+			ageFrom.setValue(ageFromValue);
 		}
 		
 		TextInput ageTo = new TextInput("ageTo");
 		ageTo.setId(AGE_TO_INPUT);
-		if(ageTo_value != -1) {
-			ageTo.setValue(ageTo_value);
+		if(ageToValue != null) {
+			ageTo.setValue(ageToValue);
 		}
 		
 		Layer handlerContainer = new Layer(Layer.DIV);
 		handlerContainer.setStyleClass("appTypeHandlerContainer");
 		
 		appTypes.setOnChange("egov_AppTypes.appTypeChanged("+applicationID+", jQuery(this).val(), document.getElementById('"+handlerContainer.getId()+"'));");
-		appTypes.setSelectedElement(appType_value);
+		appTypes.setSelectedElement(appTypeValue);
 		
 //		egov_AppTypes.appTypeChanged
 
 		DropdownMenu category = new DropdownMenu("cat");
 		try {
 			category.addMenuElements(getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByName());
-			category.setSelectedElement(cat_value);
+			category.setSelectedElement(catValue);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -548,7 +580,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		for (CaseCode code : caseCodes) {
 			caseCode.addMenuElement(code.getPrimaryKey().toString(), code.getDescriptionLocalizedKey() != null ? this.iwrb.getLocalizedString(code.getDescriptionLocalizedKey(), code.getDescription()) : code.getDescription());
-			caseCode.setSelectedElement(code_value);
+			caseCode.setSelectedElement(codeValue);
 		}
 		
 		Application application = null;
@@ -575,10 +607,10 @@ public class ApplicationCreator extends ApplicationBlock {
 			}
 		}
 
-		if(appType_value != null) {
-			appTypes.setSelectedElement(appType_value);
+		if(appTypeValue != null) {
+			appTypes.setSelectedElement(appTypeValue);
 			
-			ApplicationType appType = getAppTypesManager().getApplicationType(appType_value);
+			ApplicationType appType = getAppTypesManager().getApplicationType(appTypeValue);
 			
 			if(appType != null)
 				handlerContainer.add(appType.getHandlerComponent(iwc, application));
@@ -589,7 +621,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		form.add(layer);
 		
 		Layer formItem = new Layer(Layer.DIV);
-		Layer errorItem = new Layer(Layer.DIV);
+		Layer errorItem = new Layer(Layer.SPAN);
 		errorItem.setStyleClass("error");
 		
 		formItem.setStyleClass("errors");
@@ -610,7 +642,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		errorItem = new Layer(Layer.DIV);
+		errorItem = new Layer(Layer.SPAN);
 		errorItem.setStyleClass("error");
 		
 		label = new Label(this.iwrb.getLocalizedString("category", "category"), category);
@@ -624,7 +656,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		errorItem = new Layer(Layer.DIV);
+		errorItem = new Layer(Layer.SPAN);
 		errorItem.setStyleClass("error");
 		label = new Label(this.iwrb.getLocalizedString("case_code", "Case code"), caseCode);
 		msg = (HtmlMessage)iwc.getApplication().createComponent(HtmlMessage.COMPONENT_TYPE);
@@ -637,7 +669,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		errorItem = new Layer(Layer.DIV);
+		errorItem = new Layer(Layer.SPAN);
 		errorItem.setStyleClass("error");
 		label = new Label(this.iwrb.getLocalizedString("app_type", "Application type"), appTypes);
 		msg = (HtmlMessage)iwc.getApplication().createComponent(HtmlMessage.COMPONENT_TYPE);
@@ -683,7 +715,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
-		errorItem = new Layer(Layer.DIV);
+		errorItem = new Layer(Layer.SPAN);
 		errorItem.setStyleClass("error");
 		label = new Label(this.iwrb.getLocalizedString("age_from", "Age from"), ageFrom);
 		msg = (HtmlMessage)iwc.getApplication().createComponent(HtmlMessage.COMPONENT_TYPE);
@@ -697,11 +729,11 @@ public class ApplicationCreator extends ApplicationBlock {
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
 		label = new Label(this.iwrb.getLocalizedString("age_to", "Age to"), ageTo);
-		//msg = (HtmlMessage)iwc.getApplication().createComponent(HtmlMessage.COMPONENT_TYPE);
-		//msg.setFor(ageTo.getId());
+		msg = (HtmlMessage)iwc.getApplication().createComponent(HtmlMessage.COMPONENT_TYPE);
+		msg.setFor(ageTo.getId());
 		formItem.add(label);
 		formItem.add(ageTo);
-		//formItem.add(msg);
+		formItem.add(msg);
 		layer.add(formItem);
 		
 		Layer clearLayer = new Layer(Layer.DIV);
