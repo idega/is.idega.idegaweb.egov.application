@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.26 2008/02/20 14:31:03 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.27 2008/02/20 17:29:27 anton Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -168,22 +168,17 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 		if(ageFrom != null && ageFrom.intValue() <= 0) {
 			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("negative_number", "The number should be greater than 0")));
+			ageFrom = null;
 		}
 		if(ageTo != null && ageTo.intValue() <= 0) {
 			iwc.addMessage(AGE_TO_INPUT, new FacesMessage(this.iwrb.getLocalizedString("negative_number", "The number should be greater than 0")));
+			ageTo = null;
 		}
 		if(ageTo != null && ageFrom != null && ageTo.intValue() > 0 && ageFrom.intValue() > 0 && ageFrom.intValue() >= ageTo.intValue()) {
 			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("age_greater", "'Age from' field value is greater than 'Age to' field value")));
-		}
+		}		
 		
-		
-		
-		if(iwc.getMessages().hasNext()) {
-			return;
-		}
-		
-		if (name != null && !name.trim().equals("") && !"-1".equals(appType)) {
-			
+		if (name != null && !name.trim().equals("") && !"-1".equals(appType)) {			
 			Application app = null;
 			if (id != null) {
 				try {
@@ -194,7 +189,7 @@ public class ApplicationCreator extends ApplicationBlock {
 					f.printStackTrace();
 				}
 			}
-			else {
+			else {				
 				app = getApplicationBusiness(iwc).getApplicationHome().create();
 			}
 			app.setName(name);
@@ -202,8 +197,8 @@ public class ApplicationCreator extends ApplicationBlock {
 			app.setVisible("Y".equalsIgnoreCase(visible));
 			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
 			app.setHiddenFromGuests("Y".equalsIgnoreCase(hiddenFromGuests));
-			app.setAgeFrom(ageFrom);
-			app.setAgeTo(ageTo);
+			app.setAgeFrom((ageFrom == null)? -1 : ageFrom.intValue());
+			app.setAgeTo((ageTo == null)? -1 : ageTo.intValue());
 			if (code != null && !code.equals("-1")) {
 				app.setCaseCode(getApplicationBusiness(iwc).getCaseCode(code));
 			}
@@ -212,7 +207,11 @@ public class ApplicationCreator extends ApplicationBlock {
 			ApplicationType applType = getAppTypesManager().getApplicationType(appType);
 			
 			if(applType != null) {
-			
+				applType.getHandlerComponent().validate(iwc);
+				if(iwc.getMessages().hasNext()) {
+					return;
+				}
+				
 				app.setAppType(appType);
 				applType.beforeStore(iwc, app);
 				app.store();
@@ -613,7 +612,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			ApplicationType appType = getAppTypesManager().getApplicationType(appTypeValue);
 			
 			if(appType != null)
-				handlerContainer.add(appType.getHandlerComponent(iwc, application));
+				handlerContainer.add(appType.getHandlerComponent().getUIComponent(iwc, application));
 		}
 		
 		Layer layer = new Layer(Layer.DIV);

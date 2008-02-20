@@ -1,6 +1,7 @@
 package is.idega.idegaweb.egov.application.business;
 
 import is.idega.idegaweb.egov.application.IWBundleStarter;
+import is.idega.idegaweb.egov.application.business.ApplicationType.ApplicationTypeHandlerComponent;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.presentation.UIApplicationTypeURLHandler;
 
@@ -20,9 +21,9 @@ import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
- * Last modified: $Date: 2008/02/06 18:19:32 $ by $Author: civilis $
+ * Last modified: $Date: 2008/02/20 17:29:27 $ by $Author: anton $
  *
  */
 public class ApplicationTypeURL implements ApplicationType, ApplicationContextAware, ApplicationListener {
@@ -30,6 +31,11 @@ public class ApplicationTypeURL implements ApplicationType, ApplicationContextAw
 	private ApplicationContext ctx;
 	private static final String beanIdentifier = "appTypeURL";
 	private static final String appType = "EGOV_URL";
+	
+	public ApplicationTypeHandlerComponent getHandlerComponent() {		
+		UIApplicationTypeURLHandler h = new UIApplicationTypeURLHandler();
+		return h;
+	}
 	
 	public UIComponent getHandlerComponent(FacesContext ctx, Application app) {
 		

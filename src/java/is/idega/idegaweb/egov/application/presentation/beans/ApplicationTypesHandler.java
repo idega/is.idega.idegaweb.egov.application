@@ -22,9 +22,9 @@ import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/02/05 19:31:35 $ by $Author: civilis $
+ * Last modified: $Date: 2008/02/20 17:29:27 $ by $Author: anton $
  *
  */
 public class ApplicationTypesHandler {
@@ -44,7 +44,7 @@ public class ApplicationTypesHandler {
 		try {
 			Application application = appId == null || appId == -1 ? null : getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(appId);
 			
-			UIComponent handlerComponent = appType.getHandlerComponent(ctx, application);
+			UIComponent handlerComponent = appType.getHandlerComponent().getUIComponent(ctx, application);
 			
 			if(handlerComponent == null)
 				return null;

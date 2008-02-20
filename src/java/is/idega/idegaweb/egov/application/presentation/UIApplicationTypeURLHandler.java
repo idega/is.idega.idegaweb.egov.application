@@ -1,10 +1,13 @@
 package is.idega.idegaweb.egov.application.presentation;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlMessage;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.validator.UrlValidator;
 
+import is.idega.idegaweb.egov.application.business.ApplicationType.ApplicationTypeHandlerComponent;
 import is.idega.idegaweb.egov.application.data.Application;
 
 import com.idega.idegaweb.IWResourceBundle;
@@ -18,35 +21,24 @@ import com.idega.presentation.ui.TextInput;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
- * Last modified: $Date: 2008/02/20 14:27:23 $ by $Author: anton $
+ * Last modified: $Date: 2008/02/20 17:29:27 $ by $Author: anton $
  *
  */
-public class UIApplicationTypeURLHandler extends Block {
+public class UIApplicationTypeURLHandler extends Block implements ApplicationTypeHandlerComponent {
 	
 	private Application application;
 	public static final String urlParam = "url";
 	public static final String elecParam = "elect";
 	
 	@Override
-	public void main(IWContext iwc) throws Exception {
+	public void main(IWContext iwc) throws Exception {		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		String urlValue = iwc.getParameter(urlParam);
 		String elecValue = iwc.getParameter(elecParam);
-		String action = iwc.getParameter(ApplicationCreator.ACTION);
-		if(ApplicationCreator.SAVE_ACTION.equals(action)) {
-			UrlValidator validator = new UrlValidator();
-			if((urlValue == null || urlValue.trim().equals(""))) {
-				iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_empty", "'Url' field should not be empty")));
-			} else {
-				if(!validator.isValid(urlValue)) {
-					iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_error", "Incorrect URL value")));
-				}
-			}
-		}
-		
+				
 		TextInput url = new TextInput(urlParam);
 		url.setId(urlParam);
 		BooleanInput electronic = new BooleanInput(elecParam);
@@ -91,5 +83,34 @@ public class UIApplicationTypeURLHandler extends Block {
 
 	public void setApplication(Application application) {
 		this.application = application;
+	}
+	
+	public boolean validate(IWContext iwc) {
+		boolean valid = true;
+		
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		String urlValue = iwc.getParameter(urlParam);
+		String elecValue = iwc.getParameter(elecParam);
+		String action = iwc.getParameter(ApplicationCreator.ACTION);
+		if(ApplicationCreator.SAVE_ACTION.equals(action)) {
+			UrlValidator validator = new UrlValidator();
+			if((urlValue == null || urlValue.trim().equals(""))) {
+				iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_empty", "'Url' field should not be empty")));
+				valid = false;
+			} else {
+				if(!validator.isValid(urlValue)) {
+					iwc.addMessage(urlParam, new FacesMessage(iwrb.getLocalizedString("url_error", "Incorrect URL value")));
+					valid = false;
+				}
+			}
+		}
+		return valid;
+	}
+
+	public UIComponent getUIComponent(FacesContext ctx, Application app) {
+		UIApplicationTypeURLHandler h = new UIApplicationTypeURLHandler();
+		h.setApplication(app);
+		
+		return h;
 	}
 }
