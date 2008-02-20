@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.25 2008/02/20 14:27:23 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.26 2008/02/20 14:31:03 anton Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -728,12 +728,15 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
+		errorItem = new Layer(Layer.SPAN);
+		errorItem.setStyleClass("error");
 		label = new Label(this.iwrb.getLocalizedString("age_to", "Age to"), ageTo);
 		msg = (HtmlMessage)iwc.getApplication().createComponent(HtmlMessage.COMPONENT_TYPE);
 		msg.setFor(ageTo.getId());
+		errorItem.add(msg);
 		formItem.add(label);
 		formItem.add(ageTo);
-		formItem.add(msg);
+		formItem.add(errorItem);
 		layer.add(formItem);
 		
 		Layer clearLayer = new Layer(Layer.DIV);
