@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.29 2008/02/21 12:15:04 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.30 2008/02/21 14:15:28 anton Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -534,6 +534,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		DropdownMenu appTypes = getAppTypesMenu(iwc);		
 		appTypes.setId(APP_TYPE_INPUT);
+		appTypes.setValue(appTypeValue);
 		
 		BooleanInput requiresLogin = new BooleanInput("reqLogin");
 		if(requiresLoginValue != null && requiresLoginValue.equals("Y")) {
@@ -626,10 +627,19 @@ public class ApplicationCreator extends ApplicationBlock {
 			}
 		}
 
+		String typeValue = null;
 		if(appTypeValue != null) {
-			appTypes.setSelectedElement(appTypeValue);
+			typeValue = appTypeValue; 
+		} else {
+			if(application != null) {
+				typeValue = application.getAppType();
+			}
+		}
+		
+		if(typeValue != null && !typeValue.trim().equals("")) {
+			appTypes.setSelectedElement(typeValue);
 			
-			ApplicationType appType = getAppTypesManager().getApplicationType(appTypeValue);
+			ApplicationType appType = getAppTypesManager().getApplicationType(typeValue);
 			
 			if(appType != null)
 				handlerContainer.add(appType.getHandlerComponent().getUIComponent(iwc, application));
