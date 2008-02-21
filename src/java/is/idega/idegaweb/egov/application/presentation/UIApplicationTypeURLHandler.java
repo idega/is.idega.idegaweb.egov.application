@@ -21,9 +21,9 @@ import com.idega.presentation.ui.TextInput;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
- * Last modified: $Date: 2008/02/20 17:29:27 $ by $Author: anton $
+ * Last modified: $Date: 2008/02/21 12:15:05 $ by $Author: anton $
  *
  */
 public class UIApplicationTypeURLHandler extends Block implements ApplicationTypeHandlerComponent {
@@ -90,7 +90,7 @@ public class UIApplicationTypeURLHandler extends Block implements ApplicationTyp
 		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		String urlValue = iwc.getParameter(urlParam);
-		String elecValue = iwc.getParameter(elecParam);
+
 		String action = iwc.getParameter(ApplicationCreator.ACTION);
 		if(ApplicationCreator.SAVE_ACTION.equals(action)) {
 			UrlValidator validator = new UrlValidator();

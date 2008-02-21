@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.28 2008/02/21 08:09:35 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.29 2008/02/21 12:15:04 anton Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -102,19 +102,16 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		if (CREATE_ACTION.equals(action)) {
 			getApplicationCreationForm(iwc, -1, locales);
-		}
-		else if (EDIT_ACTION.equals(action)) {
+		} else if (EDIT_ACTION.equals(action)) {
 			getApplicationCreationForm(iwc, Integer.parseInt(iwc.getParameter("id")), locales);
-		}
-		else if (SAVE_ACTION.equals(action)) {
-			saveApplication(iwc, locales);
-			if(iwc.getMessages().hasNext()) {
-				getApplicationCreationForm(iwc, -1, locales);
-			} else {
+		} else if (SAVE_ACTION.equals(action)) {			
+			if(validate(iwc)) {
+				saveApplication(iwc, locales);
 				listExisting(iwc);
+			} else {
+				getApplicationCreationForm(iwc, -1, locales);
 			}
-		}
-		else if (DELETE_ACTION.equals(action)) {
+		} else if (DELETE_ACTION.equals(action)) {
 			try {
 				Application app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
 						new Integer(iwc.getParameter("id")));
@@ -143,40 +140,15 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Integer ageFrom = null;
 		Integer ageTo = null;
-		try {
-			ageFrom = iwc.isParameterSet(AGE_FROM_INPUT) ? new Integer(iwc.getParameter(AGE_FROM_INPUT)) : null;
-		} catch(NumberFormatException exp) {
-			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("not_number", "The value should be a number")));
-		}
-		
-		try {
-			ageTo = iwc.isParameterSet(AGE_TO_INPUT) ? new Integer(iwc.getParameter(AGE_TO_INPUT)) : null;
-		} catch(NumberFormatException exp) {
-			iwc.addMessage(AGE_TO_INPUT, new FacesMessage(this.iwrb.getLocalizedString("not_number", "The value should be a number")));
-		}
 		
 		String cat = iwc.getParameter(CAT_INPUT);
 		String code = iwc.getParameter(CODE_INPUT);
 		String opensInNew = iwc.getParameter(NEW_WIN_INPUT);
 		String hiddenFromGuests = iwc.getParameter(HIDDEN_INPUT);
 		
-		if(name == null || name.trim().equals(CoreConstants.EMPTY)) {
-			iwc.addMessage(NAME_INPUT, new FacesMessage(this.iwrb.getLocalizedString("name_empty", "'Default name' field should not be empty")));
+		if(!validate(iwc)) {
+			return;
 		}
-		if(appType.equals("-1")) {
-			iwc.addMessage(APP_TYPE_INPUT, new FacesMessage(this.iwrb.getLocalizedString("app_type_select", "'Application type' value field is not selected")));
-		}
-		if(ageFrom != null && ageFrom.intValue() <= 0) {
-			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("negative_number", "The number should be greater than 0")));
-			ageFrom = null;
-		}
-		if(ageTo != null && ageTo.intValue() <= 0) {
-			iwc.addMessage(AGE_TO_INPUT, new FacesMessage(this.iwrb.getLocalizedString("negative_number", "The number should be greater than 0")));
-			ageTo = null;
-		}
-		if(ageTo != null && ageFrom != null && ageTo.intValue() > 0 && ageFrom.intValue() > 0 && ageFrom.intValue() >= ageTo.intValue()) {
-			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("age_greater", "'Age from' field value is greater than 'Age to' field value")));
-		}		
 		
 		Application app = null;
 		if (id != null) {
@@ -203,13 +175,8 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 		app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
 		
-		ApplicationType applType = getAppTypesManager().getApplicationType(appType);
-		
+		ApplicationType applType = getAppTypesManager().getApplicationType(appType);		
 		if(applType != null) {
-			applType.getHandlerComponent().validate(iwc);
-			if(iwc.getMessages().hasNext()) {
-				return;
-			}
 			
 			app.setAppType(appType);
 			applType.beforeStore(iwc, app);
@@ -268,6 +235,60 @@ public class ApplicationCreator extends ApplicationBlock {
 					app.addLocalizedName(locText);
 				}
 			}
+		}
+	}
+	
+	protected boolean validate(IWContext iwc) {
+		String name = iwc.getParameter(NAME_INPUT);
+		String appType = iwc.getParameter(APP_TYPE_INPUT);
+		
+		Integer ageFrom = null;
+		Integer ageTo = null;
+		
+				
+		try {
+			ageFrom = iwc.isParameterSet(AGE_FROM_INPUT) ? new Integer(iwc.getParameter(AGE_FROM_INPUT)) : null;
+		} catch(NumberFormatException exp) {
+			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("not_number", "The value should be a number")));
+		}
+		
+		try {
+			ageTo = iwc.isParameterSet(AGE_TO_INPUT) ? new Integer(iwc.getParameter(AGE_TO_INPUT)) : null;
+		} catch(NumberFormatException exp) {
+			iwc.addMessage(AGE_TO_INPUT, new FacesMessage(this.iwrb.getLocalizedString("not_number", "The value should be a number")));
+		}
+		if(name == null || name.trim().equals(CoreConstants.EMPTY)) {
+			iwc.addMessage(NAME_INPUT, new FacesMessage(this.iwrb.getLocalizedString("name_empty", "'Default name' field should not be empty")));
+		}
+		if(appType.equals("-1")) {
+			iwc.addMessage(APP_TYPE_INPUT, new FacesMessage(this.iwrb.getLocalizedString("app_type_select", "'Application type' value field is not selected")));
+		}
+		if(ageFrom != null && ageFrom.intValue() <= 0) {
+			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("negative_number", "The number should be greater than 0")));
+			ageFrom = null;
+		}
+		if(ageTo != null && ageTo.intValue() <= 0) {
+			iwc.addMessage(AGE_TO_INPUT, new FacesMessage(this.iwrb.getLocalizedString("negative_number", "The number should be greater than 0")));
+			ageTo = null;
+		}
+		if(ageTo != null && ageFrom != null && ageTo.intValue() > 0 && ageFrom.intValue() > 0 && ageFrom.intValue() >= ageTo.intValue()) {
+			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("age_greater", "'Age from' field value is greater than 'Age to' field value")));
+		}
+		
+		if(!appType.equals("-1")) {
+			ApplicationType applType = getAppTypesManager().getApplicationType(appType);
+			
+			if(applType != null) {
+				applType.getHandlerComponent().validate(iwc);
+			} else {				
+				throw new RuntimeException("No Application type registered for: " + appType);
+			}
+		}
+		
+		if(iwc.getMessages().hasNext()) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 
