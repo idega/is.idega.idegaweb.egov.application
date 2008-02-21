@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.27 2008/02/20 17:29:27 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.28 2008/02/21 08:09:35 anton Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -178,100 +178,99 @@ public class ApplicationCreator extends ApplicationBlock {
 			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("age_greater", "'Age from' field value is greater than 'Age to' field value")));
 		}		
 		
-		if (name != null && !name.trim().equals("") && !"-1".equals(appType)) {			
-			Application app = null;
-			if (id != null) {
-				try {
-					app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
-							new Integer(id));
-				}
-				catch (FinderException f) {
-					f.printStackTrace();
-				}
+		Application app = null;
+		if (id != null) {
+			try {
+				app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
+						new Integer(id));
 			}
-			else {				
-				app = getApplicationBusiness(iwc).getApplicationHome().create();
+			catch (FinderException f) {
+				f.printStackTrace();
 			}
-			app.setName(name);
-			app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
-			app.setVisible("Y".equalsIgnoreCase(visible));
-			app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
-			app.setHiddenFromGuests("Y".equalsIgnoreCase(hiddenFromGuests));
-			app.setAgeFrom((ageFrom == null)? -1 : ageFrom.intValue());
-			app.setAgeTo((ageTo == null)? -1 : ageTo.intValue());
-			if (code != null && !code.equals("-1")) {
-				app.setCaseCode(getApplicationBusiness(iwc).getCaseCode(code));
+		}
+		else {				
+			app = getApplicationBusiness(iwc).getApplicationHome().create();
+		}
+		app.setName(name);
+		app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
+		app.setVisible("Y".equalsIgnoreCase(visible));
+		app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
+		app.setHiddenFromGuests("Y".equalsIgnoreCase(hiddenFromGuests));
+		app.setAgeFrom((ageFrom == null)? -1 : ageFrom.intValue());
+		app.setAgeTo((ageTo == null)? -1 : ageTo.intValue());
+		if (code != null && !code.equals("-1")) {
+			app.setCaseCode(getApplicationBusiness(iwc).getCaseCode(code));
+		}
+		app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
+		
+		ApplicationType applType = getAppTypesManager().getApplicationType(appType);
+		
+		if(applType != null) {
+			applType.getHandlerComponent().validate(iwc);
+			if(iwc.getMessages().hasNext()) {
+				return;
 			}
-			app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
 			
-			ApplicationType applType = getAppTypesManager().getApplicationType(appType);
+			app.setAppType(appType);
+			applType.beforeStore(iwc, app);
+			app.store();
 			
-			if(applType != null) {
-				applType.getHandlerComponent().validate(iwc);
-				if(iwc.getMessages().hasNext()) {
-					return;
-				}
-				
-				app.setAppType(appType);
-				applType.beforeStore(iwc, app);
+			if(applType.afterStore(iwc, app))
 				app.store();
-				
-				if(applType.afterStore(iwc, app))
-					app.store();
-				
-			} else {				
-				throw new RuntimeException("No Application type registered for: "+appType);
-			}
+			
+		} else {				
+			throw new RuntimeException("No Application type registered for: "+appType);
+		}
 
-			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
-			IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
-			
+		IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
+		IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
+		
 //			id == null means it's new app
-			/* FIXME: see FormDocument from formbuilder method save()
-			if(id == null && at == APP_TYPE_FORMBUILDER && name != null && !name.equals("")) {
-				
-				try {
-					
-					iwc.setSessionAttribute(APP_FORM_NAME_PARAM, name);
-					iwc.setSessionAttribute(APP_ID_PARAM, String.valueOf(app.getPrimaryKey()));
-					iwc.getResponse().sendRedirect(
-							new StringBuilder(FORMBUILDER_REDIRECT_PATH)
-							.append("?")
-							.append(FROM_APP_REQ_PARAM)
-							.append("=1&encParams=1")
-							.toString()
-					);
-					
-				} catch (IOException e) {
-					Logger.getLogger(getClassName()).log(Level.SEVERE, "probably some old component was used? and redirect was called when component was actually already been started rendering", e);
-				}
-			}
-			*/
+		/* FIXME: see FormDocument from formbuilder method save()
+		if(id == null && at == APP_TYPE_FORMBUILDER && name != null && !name.equals("")) {
 			
-			for(Iterator<ICLocale> it = locales.iterator(); it.hasNext(); ) {
-				ICLocale locale = it.next();
-				String locName = iwc.getParameter(locale.getName() + "_locale");
+			try {
 				
-				if(locName != null && !locName.equals("")) {
-					LocalizedText locText = app.getLocalizedText(locale.getLocaleID());
-					boolean newText = false;
-					if(locText == null) {
-						locText = getLocalizedTextHome().create();
-						newText = true;
-					}
-					
-					locText.setLocaleId(locale.getLocaleID());
-					locText.setBody(locName);
-					
-					locText.store();
-					
-					if(newText) {
-						app.addLocalizedName(locText);
-					}
+				iwc.setSessionAttribute(APP_FORM_NAME_PARAM, name);
+				iwc.setSessionAttribute(APP_ID_PARAM, String.valueOf(app.getPrimaryKey()));
+				iwc.getResponse().sendRedirect(
+						new StringBuilder(FORMBUILDER_REDIRECT_PATH)
+						.append("?")
+						.append(FROM_APP_REQ_PARAM)
+						.append("=1&encParams=1")
+						.toString()
+				);
+				
+			} catch (IOException e) {
+				Logger.getLogger(getClassName()).log(Level.SEVERE, "probably some old component was used? and redirect was called when component was actually already been started rendering", e);
+			}
+		}
+		*/
+		
+		for(Iterator<ICLocale> it = locales.iterator(); it.hasNext(); ) {
+			ICLocale locale = it.next();
+			String locName = iwc.getParameter(locale.getName() + "_locale");
+			
+			if(locName != null && !locName.equals("")) {
+				LocalizedText locText = app.getLocalizedText(locale.getLocaleID());
+				boolean newText = false;
+				if(locText == null) {
+					locText = getLocalizedTextHome().create();
+					newText = true;
+				}
+				
+				locText.setLocaleId(locale.getLocaleID());
+				locText.setBody(locName);
+				
+				locText.store();
+				
+				if(newText) {
+					app.addLocalizedName(locText);
 				}
 			}
 		}
 	}
+
 	
 	protected LocalizedTextHome getLocalizedTextHome() throws RemoteException {
 		return (LocalizedTextHome) IDOLookup.getHome(LocalizedText.class);
