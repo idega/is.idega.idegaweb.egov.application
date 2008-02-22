@@ -7,6 +7,12 @@
 	</properties>
 
 	<body>
+		<release version="1.0.12" date="2008-02-22">
+			<action dev="alexis" type="update">
+				Updated core version to 3.1.82
+			</action>
+		</release>
+		
 		<release version="1.0.11" date="2007-03-09">
 			<action dev="palli" type="update">
 				Updating and fixing dependencies to create a new sunnan3
