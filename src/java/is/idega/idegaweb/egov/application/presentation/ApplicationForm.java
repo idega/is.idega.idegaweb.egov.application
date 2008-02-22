@@ -3,8 +3,7 @@
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  * 
- * This software is the proprietary information of Idega hf. Use is subject to
- * license terms.
+ * This software is the proprietary information of Idega hf. Use is subject to license terms.
  */
 package is.idega.idegaweb.egov.application.presentation;
 
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.ejb.FinderException;
@@ -28,6 +28,8 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
@@ -43,6 +45,8 @@ import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.user.business.NoEmailFoundException;
+import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
@@ -59,8 +63,9 @@ public abstract class ApplicationForm extends Block {
 	private ICPage iWindowPage;
 	private int iWidth = 400;
 	private int iHeight = 400;
-	
+
 	private boolean iHasErrors = false;
+	private Map iPhaseErrors;
 	private Map iErrors;
 
 	public void main(IWContext iwc) {
@@ -70,33 +75,57 @@ public abstract class ApplicationForm extends Block {
 
 		present(iwc);
 	}
-	
+
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
 	}
-	
+
 	protected void setError(String parameter, String error) {
+		setError(-1, parameter, error);
+	}
+
+	protected void setError(int phase, String parameter, String error) {
 		if (this.iErrors == null) {
-			this.iErrors = new HashMap();
+			this.iErrors = new LinkedHashMap();
 		}
-		
+
 		this.iHasErrors = true;
+		if (phase > 0) {
+			if (iPhaseErrors == null) {
+				iPhaseErrors = new HashMap();
+			}
+			iPhaseErrors.put(new Integer(phase), Boolean.TRUE);
+		}
 		this.iErrors.put(parameter, error);
 	}
-	
+
 	protected boolean hasErrors() {
 		return this.iHasErrors;
 	}
-	
+
+	protected boolean hasErrors(int phase) {
+		if (iPhaseErrors == null) {
+			return false;
+		}
+		else {
+			Boolean hasErrors = (Boolean) iPhaseErrors.get(new Integer(phase));
+			if (hasErrors != null) {
+				return hasErrors.booleanValue();
+			}
+			return false;
+		}
+	}
+
 	protected boolean hasError(String parameter) {
 		if (hasErrors()) {
 			return this.iErrors.containsKey(parameter);
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Adds the errors encountered
+	 * 
 	 * @param iwc
 	 * @param errors
 	 */
@@ -104,26 +133,26 @@ public abstract class ApplicationForm extends Block {
 		if (this.iHasErrors) {
 			Layer layer = new Layer(Layer.DIV);
 			layer.setStyleClass("errorLayer");
-			
+
 			Layer image = new Layer(Layer.DIV);
 			image.setStyleClass("errorImage");
 			layer.add(image);
-			
+
 			Heading1 heading = new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured", "There was a problem with the following items"));
 			layer.add(heading);
-			
+
 			Lists list = new Lists();
 			layer.add(list);
-			
+
 			Iterator iter = this.iErrors.values().iterator();
 			while (iter.hasNext()) {
 				String element = (String) iter.next();
 				ListItem item = new ListItem();
 				item.add(new Text(element));
-				
+
 				list.add(item);
 			}
-			
+
 			parent.getChildren().add(layer);
 		}
 	}
@@ -132,7 +161,7 @@ public abstract class ApplicationForm extends Block {
 		addWindowToOpen(iwc, getParentPage());
 		return getDisplayLayer(heading, body, "receipt", "receiptImage");
 	}
-	
+
 	private void addWindowToOpen(IWContext iwc, Page page) {
 		if (this.iWindowPage != null) {
 			boolean hasSeenWindow = false;
@@ -183,6 +212,14 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected Layer getPersonInfo(IWContext iwc, User user) throws RemoteException {
+		return getPersonInfo(iwc, user, true);
+	}
+
+	protected Layer getPersonInfo(IWContext iwc, User user, boolean showAddress) throws RemoteException {
+		return getPersonInfo(iwc, user, showAddress, false);
+	}
+
+	protected Layer getPersonInfo(IWContext iwc, User user, boolean showAddress, boolean showContactInfo) throws RemoteException {
 		Layer layer = new Layer(Layer.DIV);
 		layer.setStyleClass("info");
 
@@ -192,40 +229,76 @@ public abstract class ApplicationForm extends Block {
 			if (address != null) {
 				postal = address.getPostalCode();
 			}
-	
+			Phone phone = null;
+			Email email = null;
+			if (showContactInfo) {
+				try {
+					phone = getUserBusiness(iwc).getUsersHomePhone(user);
+				}
+				catch (NoPhoneFoundException e) {
+					//No phone found...
+				}
+				try {
+					email = getUserBusiness(iwc).getUsersMainEmail(user);
+				}
+				catch (NoEmailFoundException e) {
+					//No email found...
+				}
+			}
+
 			Layer personInfo = new Layer(Layer.DIV);
 			personInfo.setStyleClass("personInfo");
 			personInfo.setID("name");
 			personInfo.add(new Text(user.getName()));
 			layer.add(personInfo);
-	
+
 			personInfo = new Layer(Layer.DIV);
 			personInfo.setStyleClass("personInfo");
 			personInfo.setID("personalID");
 			personInfo.add(new Text(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())));
 			layer.add(personInfo);
-	
+
+			if (phone != null) {
+				personInfo = new Layer(Layer.DIV);
+				personInfo.setStyleClass("personInfo");
+				personInfo.setID("phone");
+				personInfo.add(new Text(phone.getNumber()));
+				layer.add(personInfo);
+			}
+
 			personInfo = new Layer(Layer.DIV);
 			personInfo.setStyleClass("personInfo");
 			personInfo.setID("address");
-			if (address != null) {
+			if (address != null && showAddress) {
 				personInfo.add(new Text(address.getStreetAddress()));
 			}
 			layer.add(personInfo);
-	
+
+			if (email != null) {
+				personInfo = new Layer(Layer.DIV);
+				personInfo.setStyleClass("personInfo");
+				personInfo.setID("email");
+				personInfo.add(new Text(email.getEmailAddress()));
+				layer.add(personInfo);
+			}
+
 			personInfo = new Layer(Layer.DIV);
 			personInfo.setStyleClass("personInfo");
 			personInfo.setID("postal");
-			if (postal != null) {
+			if (postal != null && showAddress) {
 				personInfo.add(new Text(postal.getPostalAddress()));
 			}
 			layer.add(personInfo);
 		}
-		
+
 		return layer;
 	}
 
 	protected DropdownMenu getUserChooser(IWContext iwc, User user, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
+		return getUserChooser(iwc, null, user, chosenUser, parameterName, iwrb);
+	}
+
+	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
 		Collection children = null;
 		try {
 			children = getMemberFamilyLogic(iwc).getChildrenInCustodyOf(user);
@@ -236,11 +309,21 @@ public abstract class ApplicationForm extends Block {
 		children.add(user);
 
 		Application application = null;
-		try {
-			application = getApplicationBusiness(iwc).getApplication(getCaseCode());
+		if (applicationPK != null) {
+			try {
+				application = getApplicationBusiness(iwc).getApplication(applicationPK);
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
 		}
-		catch (FinderException fe) {
-			// Nothing found, continuing...
+		else {
+			try {
+				application = getApplicationBusiness(iwc).getApplication(getCaseCode());
+			}
+			catch (FinderException fe) {
+				// Nothing found, continuing...
+			}
 		}
 
 		DropdownMenu menu = new DropdownMenu(parameterName);
@@ -433,7 +516,7 @@ public abstract class ApplicationForm extends Block {
 	protected abstract String getCaseCode();
 
 	protected abstract void present(IWContext iwc);
-	
+
 	public void setWindowPage(ICPage page) {
 		this.iWindowPage = page;
 	}

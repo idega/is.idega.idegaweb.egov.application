@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.15 2008/01/25 07:00:53 alexis Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.16 2008/02/22 10:30:48 alexis Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -107,6 +107,12 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 						heading = cat.getName();
 					}
 					Lists appList = getApplicationList(iwc, checkAges, apps, ages);
+					int temp = appList.getChildrenCount();
+					
+					if(appList.getChildrenCount() < 1) {
+						i--;
+						continue;
+					}
 					
 					if(j < categories.length - 1) {
 						nextCat = (ApplicationCategory) categories[j+1];
@@ -118,13 +124,14 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 							
 							nextCat = null;
 						} else {
-							if(nextCategoryApps != null && nextCat != null && (apps.size() + nextCategoryApps.size() < 7) && !apps.isEmpty() && !nextCategoryApps.isEmpty()) {
+							Lists nextAppList = getApplicationList(iwc, checkAges, nextCategoryApps, ages);
+							if(nextAppList.getChildCount() > 0 && appList.getChildCount() > 0 && (appList.getChildCount() + nextAppList.getChildCount() < 8)) {
 								Layer l1 = new Layer();
 								l1.setStyleClass("compactCategory");
 								l1.add(new Heading1(heading));
 								l1.add(appList);
 								
-								Lists nextAppList = getApplicationList(iwc, checkAges, nextCategoryApps, ages);
+								
 								locText = nextCat.getLocalizedText(icLocaleId);
 								if(locText != null) {
 									heading = locText.getBody();

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.30 2008/02/21 14:15:28 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.31 2008/02/22 10:30:48 alexis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -11,7 +11,6 @@ package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.business.ApplicationType;
 import is.idega.idegaweb.egov.application.data.Application;
-
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -63,7 +62,6 @@ public class ApplicationCreator extends ApplicationBlock {
 //	public static final String FROM_APP_REQ_PARAM = FormDocument.FROM_APP_REQ_PARAM;
 	public static final String FORMBUILDER_REDIRECT_PATH = "/workspace/forms/formbuilder/";
 	
-	private String DWR_ENGINE = "/dwr/engine.js";
 	private static final String APP_TYPES_HANDLER_ENGINE = "/dwr/interface/ApplicationTypesHandler.js";
 	private static final String APP_CREATOR_APP_TYPES = "javascript/applicationTypes.js";
 	private static final String web2beanBeanIdentifier = "web2bean";
@@ -830,7 +828,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		try {
 			Web2Business web2 = (Web2Business)WFUtil.getBeanInstance(web2beanBeanIdentifier);
 			sources.add(web2.getBundleURIToJQueryLib());
-			sources.add(DWR_ENGINE);
+			sources.add(CoreConstants.DWR_ENGINE_SCRIPT);
 			sources.add(APP_TYPES_HANDLER_ENGINE);
 			sources.add(getBundle(iwc).getVirtualPathWithFileNameString(APP_CREATOR_APP_TYPES));
 			

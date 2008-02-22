@@ -17,9 +17,9 @@ iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationCategory
 iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationCreator.name=Kreator aplikacj
 iw.component.is.idega.idegaweb.egov.application.presentation.ApplicationFavorites.name=Ulubione aplikacji
 iw.component.is.idega.idegaweb.egov.application.presentation.UserApplications.name=Aplikacje u\u017Cytkownik
-legend.electronic=Aplikacja jest wysy\\u0142ana elektronicznie, ale nie mo\\u017Cna \\u015Bledzi\\u0107 statusu/post\\u0119pu w sprawie przez Elektroniczny Reykjavi
+legend.electronic=Aplikacja jest wysy\u0142ana elektronicznie, ale nie mo\u017Cna \u015Bledzi\u0107 statusu/post\u0119pu w sprawie przez Elektroniczny Reykjavi
 legend.non_electronic=Aplikacja w formacie PDF do wydruku (pobierz Adobe Acrobat Reader
-legend.requires_login=Aplikacje s\\u0105 wysy\\u0142ane elektronicznie i mo\\u017Cna \\u015Bledzi\\u0107 status/ post\\u0119p w sprawie przez Elektroniczny Reykjavi
+legend.requires_login=Aplikacje s\u0105 wysy\u0142ane elektronicznie i mo\u017Cna \u015Bledzi\u0107 status/ post\u0119p w sprawie przez Elektroniczny Reykjavi
 list_applications=Lista aplikacj
 list_categories=Lista kategori
 name=Nazwisk
