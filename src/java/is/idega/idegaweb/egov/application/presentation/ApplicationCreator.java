@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.31 2008/02/22 10:30:48 alexis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.32 2008/03/06 07:31:28 anton Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -138,6 +138,17 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Integer ageFrom = null;
 		Integer ageTo = null;
+		try {
+			ageFrom = iwc.isParameterSet(AGE_FROM_INPUT) ? new Integer(iwc.getParameter(AGE_FROM_INPUT)) : null;
+		} catch(NumberFormatException exp) {
+			exp.printStackTrace();
+		}
+		
+		try {
+			ageTo = iwc.isParameterSet(AGE_TO_INPUT) ? new Integer(iwc.getParameter(AGE_TO_INPUT)) : null;
+		} catch(NumberFormatException exp) {
+			exp.printStackTrace();
+		}
 		
 		String cat = iwc.getParameter(CAT_INPUT);
 		String code = iwc.getParameter(CODE_INPUT);
