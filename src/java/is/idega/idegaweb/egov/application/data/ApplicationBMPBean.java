@@ -51,6 +51,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	private static final String TIMES_CLICKED = "times_clicked";
 	private static final String OPENS_IN_NEW_WINDOW = "opens_in_new_window";
 	private static final String HIDDEN_FROM_GUESTS = "hidden_from_guests";
+	private static final String COLUMN_LOGIN_PAGE_URL = "login_page_url";
 
 	private static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME_LOC_TEXT";
 	private static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
@@ -86,10 +87,11 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(AGE_TO, "Age to", Integer.class);
 		addAttribute(TIMES_CLICKED, "Time clicked", Integer.class);
 		
+		addAttribute(COLUMN_LOGIN_PAGE_URL, "Login page url", String.class);
+		
 		//localization
 		addManyToManyRelationShip(LocalizedText.class,EGOV_APPLICATION_NAME_LOC_TEXT);
 		addManyToManyRelationShip(LocalizedText.class,EGOV_APPLICATION_URL_LOC_TEXT);
-
 	}
 
 	public void setAgeFrom(int age) {
@@ -161,6 +163,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	public void setName(String name) {
 		setColumn(NAME, name);
+	}
+	
+	public String getLoginPageURL() {
+		return getStringColumnValue(COLUMN_LOGIN_PAGE_URL);
+	}
+	
+	public void setLoginPageURL(String url) {
+		setColumn(COLUMN_LOGIN_PAGE_URL, url);
 	}
 	
 	public String getQueryForMiddleTable(String tableName, int applicationId){

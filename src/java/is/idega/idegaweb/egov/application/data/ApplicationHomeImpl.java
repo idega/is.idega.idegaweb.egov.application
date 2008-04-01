@@ -9,7 +9,6 @@ import com.idega.data.IDOEntity;
 import com.idega.data.IDOFactory;
 
 public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
-
 	public Class getEntityInterfaceClass() {
 		return Application.class;
 	}
@@ -36,9 +35,11 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 		return this.findByPrimaryKey(pk);
 	}
 
-	public Collection findAllByCategory(ApplicationCategory category) throws FinderException {
+	public Collection findAllByCategory(ApplicationCategory category)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ApplicationBMPBean) entity).ejbFindAllByCategory(category);
+		Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindAllByCategory(category);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
@@ -52,14 +53,17 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 
 	public Collection findElectronicApplications() throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ApplicationBMPBean) entity).ejbFindElectronicApplications();
+		Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindElectronicApplications();
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findMostClicked(int numberOfEntries) throws FinderException {
+	public Collection findMostClicked(int numberOfEntries)
+			throws FinderException {
 		IDOEntity entity = this.idoCheckOutPooledEntity();
-		Collection ids = ((ApplicationBMPBean) entity).ejbFindMostClicked(numberOfEntries);
+		Collection ids = ((ApplicationBMPBean) entity)
+				.ejbFindMostClicked(numberOfEntries);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

@@ -2,13 +2,12 @@ package is.idega.idegaweb.egov.application.data;
 
 
 import java.util.Locale;
+import java.util.Collection;
 import java.util.Map;
-
 import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOEntity;
 
 public interface Application extends IDOEntity {
-
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setAgeFrom
 	 */
@@ -95,49 +94,91 @@ public interface Application extends IDOEntity {
 	public void setName(String name);
 
 	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getLoginPageURL
+	 */
+	public String getLoginPageURL();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setLoginPageURL
+	 */
+	public void setLoginPageURL(String url);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getQueryForMiddleTable
+	 */
+	public String getQueryForMiddleTable(String tableName, int applicationId);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getQueryForTxLocalizedText
+	 */
+	public String getQueryForTxLocalizedText(int localeId,
+			Collection localNamesIds);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#updateLocalizedTextEntry
+	 */
+	public void updateLocalizedTextEntry(Object primaryKey, String headline);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#insertLocalizedTextEntry
+	 */
+	public void insertLocalizedTextEntry(int localeId, String headline,
+			boolean settingNames);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setLocalizedUrls
+	 */
+	public void setLocalizedUrls(Map localizedEntries, boolean isNewApplication);
+
+	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setLocalizedNames
 	 */
-	public void setLocalizedNames(Map localizedNames, boolean isNewApplication);	
-	
+	public void setLocalizedNames(Map localizedEntries, boolean isNewApplication);
+
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getName
 	 */
 	public String getName();
 
 	/**
-	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getNameByLocale
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getLocalizedName
 	 */
-	public String getNameByLocale();	
-	
+	public String getLocalizedName(Locale locale);
+
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getNameByLocale
 	 */
-	public String getNameByLocale(Locale locale);	
-	
+	public String getNameByLocale(Locale locale);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getNameByLocale
+	 */
+	public String getNameByLocale();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrlByLocale
+	 */
+	public String getUrlByLocale();
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrlByLocale
+	 */
+	public String getUrlByLocale(Locale locale);
+
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getLocalizedUrl
+	 */
+	public String getLocalizedUrl(Locale locale);
+
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setUrl
 	 */
 	public void setUrl(String url);
 
 	/**
-	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setLocalizedNames
-	 */
-	public void setLocalizedUrls(Map localizedEntries, boolean isNewApplication);
-	
-	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrl
 	 */
 	public String getUrl();
-
-	/**
-	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrlByLocale
-	 */
-	public String getUrlByLocale();
- 
-	/**
-	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrlByLocale
-	 */
-	public String getUrlByLocale(Locale locale);
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setOpensInNewWindow
@@ -158,11 +199,9 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getHiddenFromGuests
 	 */
 	public boolean getHiddenFromGuests();
-	
-	public boolean removeLocalizedEntries();
-	
-	public String getLocalizedName(Locale locale);
-	
-	public String getLocalizedUrl(Locale locale);
 
+	/**
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#removeLocalizedEntries
+	 */
+	public boolean removeLocalizedEntries();
 }

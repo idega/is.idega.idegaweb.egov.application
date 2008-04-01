@@ -7,6 +7,12 @@
 	</properties>
 
 	<body>
+		<release version="1.0.16" date="2008-04-01">
+			<action dev="palli" type="update">
+				Added possibility to set login page for a specific application.
+			</action>
+		</release>
+
 		<release version="1.0.15" date="2008-01-23">
 			<action dev="laddi" type="update">
 				Added possibility to set a specific application (PK) when fetching user chooser.
