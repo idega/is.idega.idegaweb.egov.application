@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site-templates>
+
+	<site name="Applications" site-category="eBusiness">
+		<structure>
+			<page name="Application categories" type="applicationCategories">
+				<page name="Application register" type="applicationRegister"/>
+			</page>
+		</structure>
+	</site>
+	
+</site-templates>

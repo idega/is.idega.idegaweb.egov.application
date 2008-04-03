@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page-templates>
+	<page name="Application category viewer" type="applicationCategories" iconfile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/images/pageIcons/categoryViewer.png" templatefile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/pages/egov_application_categories.xml"></page>	
+
+	<page name="Application register" type="applicationRegister" iconfile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/images/pageIcons/applicationRegister.png" templatefile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/pages/egov_cases_caseoverviewapplication_register.xml"></page>	
+
+</page-templates>
