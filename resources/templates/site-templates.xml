@@ -4,7 +4,8 @@
 	<site name="Applications" site-category="eBusiness">
 		<structure>
 			<page name="Application categories" type="applicationCategories"/>
-			<page name="Application register" type="applicationRegister"/>
+			<page name="Application category creator" type="applicationCategoryCreator"/>
+			<page name="Application register" type="applicationCreator"/>
 		</structure>
 	</site>
 	

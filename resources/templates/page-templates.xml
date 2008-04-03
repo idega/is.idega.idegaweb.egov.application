@@ -2,6 +2,8 @@
 <page-templates>
 	<page name="Application category viewer" type="applicationCategories" iconfile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/images/pageIcons/categoryViewer.png" templatefile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/pages/egov_application_categories.xml"></page>	
 
-	<page name="Application register" type="applicationRegister" iconfile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/images/pageIcons/applicationRegister.png" templatefile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/pages/egov_cases_caseoverviewapplication_register.xml"></page>	
+	<page name="Application category creator" type="applicationCategoryCreator" iconfile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/images/pageIcons/categoryCreator.png" templatefile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/pages/egov_application_categorycreator.xml"></page>	
+
+	<page name="Application creator" type="applicationCreator" iconfile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/images/pageIcons/applicationCreator.png" templatefile="idegaweb/bundles/is.idega.idegaweb.egov.application.bundle/resources/pages/egov_application_creator.xml"></page>	
 
 </page-templates>
