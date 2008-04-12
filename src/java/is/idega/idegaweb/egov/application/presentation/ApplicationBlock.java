@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.18 2008/02/08 09:07:25 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.19 2008/04/12 01:52:56 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -11,7 +11,6 @@ package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.accounting.business.CitizenBusiness;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.business.ApplicationType;
 import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.data.Application;
 
@@ -31,7 +30,6 @@ import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.util.Age;
-import com.idega.util.CoreConstants;
 import com.idega.webface.WFUtil;
 
 public abstract class ApplicationBlock extends Block {
@@ -62,7 +60,6 @@ public abstract class ApplicationBlock extends Block {
 		
 		Collection<ListItem> applicationList = new ArrayList<ListItem>(applications.size());
 		Iterator<Application> iter = applications.iterator();
-		ApplicationTypesManager appTypesManager = getAppTypesManager();
 		
 		while (iter.hasNext()) {
 			Application application = iter.next();
@@ -88,35 +85,22 @@ public abstract class ApplicationBlock extends Block {
 					li.setStyleClass("requiresLogin");
 				}
 				
-				String appType = application.getAppType();
-				String url;
+				int icLocaleId = iwc.getCurrentLocaleId();
 				
-				if(appType != null) {
-				
-					ApplicationType at = appTypesManager.getApplicationType(appType);
-					url = at.getUrl(iwc, application);
-					
-				} else
-					url = application.getUrl();
-				
-				if (url != null && !url.trim().equals(CoreConstants.EMPTY)) {
-					int icLocaleId = iwc.getCurrentLocaleId();
-					
-					LocalizedText locText = application.getLocalizedText(icLocaleId);
-					String heading = null;
-					if(locText != null) {
-						heading = locText.getBody();
-					} else {
-						heading = application.getName();
-					}
-					
-					Link link = new Link(new Text(heading));
-					link.addParameter(PARAMETER_APPLICATION_PK, application.getPrimaryKey().toString());
-					if (application.getOpensInNewWindow()) {
-						link.setTarget(Link.TARGET_BLANK_WINDOW);
-					}
-					li.add(link);
+				LocalizedText locText = application.getLocalizedText(icLocaleId);
+				String heading = null;
+				if(locText != null) {
+					heading = locText.getBody();
+				} else {
+					heading = application.getName();
 				}
+				
+				Link link = new Link(new Text(heading));
+				link.addParameter(PARAMETER_APPLICATION_PK, application.getPrimaryKey().toString());
+				if (application.getOpensInNewWindow()) {
+					link.setTarget(Link.TARGET_BLANK_WINDOW);
+				}
+				li.add(link);
 				applicationList.add(li);
 			}
 		}
