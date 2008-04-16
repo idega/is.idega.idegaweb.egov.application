@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.32 2008/03/06 07:31:28 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.33 2008/04/16 15:57:49 anton Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -97,17 +97,22 @@ public class ApplicationCreator extends ApplicationBlock {
 		List<ICLocale> locales = ICLocaleBusiness.listOfLocales();
 		
 		String action = iwc.getParameter(ACTION);
+		String id = iwc.getParameter("id");
 		
 		if (CREATE_ACTION.equals(action)) {
 			getApplicationCreationForm(iwc, -1, locales);
 		} else if (EDIT_ACTION.equals(action)) {
-			getApplicationCreationForm(iwc, Integer.parseInt(iwc.getParameter("id")), locales);
+			getApplicationCreationForm(iwc, Integer.parseInt(id), locales);
 		} else if (SAVE_ACTION.equals(action)) {			
 			if(validate(iwc)) {
 				saveApplication(iwc, locales);
 				listExisting(iwc);
 			} else {
-				getApplicationCreationForm(iwc, -1, locales);
+				if(id == null) {
+					getApplicationCreationForm(iwc, -1, locales);
+				} else {
+					getApplicationCreationForm(iwc, Integer.parseInt(id), locales);
+				}
 			}
 		} else if (DELETE_ACTION.equals(action)) {
 			try {
@@ -130,7 +135,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 	private void saveApplication(IWContext iwc, List<ICLocale> locales) throws RemoteException, CreateException, FinderException, IDOAddRelationshipException {
 				
-		String id = iwc.getParameter("id");
+		String id = (String) iwc.getParameter("id");
 		String name = iwc.getParameter(NAME_INPUT);
 		String appType = iwc.getParameter(APP_TYPE_INPUT);
 		String requiresLogin = iwc.getParameter(REQ_LOGIN_INPUT);
@@ -158,7 +163,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		if(!validate(iwc)) {
 			return;
 		}
-		
+
 		Application app = null;
 		if (id != null) {
 			try {
@@ -506,7 +511,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 	
 	private void getApplicationCreationForm(IWContext iwc, int applicationID, List<ICLocale> locales) throws RemoteException {
-
+		
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, getCreationFormJavaScriptSources(iwc));
 		
 		String nameValue = iwc.getParameter(NAME_INPUT);
