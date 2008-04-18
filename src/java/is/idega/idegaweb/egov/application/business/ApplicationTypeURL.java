@@ -1,7 +1,6 @@
 package is.idega.idegaweb.egov.application.business;
 
 import is.idega.idegaweb.egov.application.IWBundleStarter;
-import is.idega.idegaweb.egov.application.business.ApplicationType.ApplicationTypeHandlerComponent;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.presentation.UIApplicationTypeURLHandler;
 
@@ -21,9 +20,9 @@ import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
- * Last modified: $Date: 2008/02/20 17:29:27 $ by $Author: anton $
+ * Last modified: $Date: 2008/04/18 23:35:59 $ by $Author: anton $
  *
  */
 public class ApplicationTypeURL implements ApplicationType, ApplicationContextAware, ApplicationListener {
