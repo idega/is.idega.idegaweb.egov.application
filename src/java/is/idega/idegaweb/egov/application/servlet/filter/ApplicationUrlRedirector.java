@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.9.2.3 2008/04/01 14:37:28 palli Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.9.2.4 2008/05/02 16:48:24 laddi Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -37,24 +38,23 @@ import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
 
-public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
+public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 	private static final String PROP_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
 	private static final String PROP_UPDATE_TIMES_CLICKED = "egov.application.updateclicks";
-	
+
 	private static final String PROP_VALUE_UPDATE_TIMES_CLICKED_DISABLED = "disabled";
-	
+
 	public void init(FilterConfig arg0) {
 	}
 
-	public void doFilter(ServletRequest srequest, ServletResponse sresponse, FilterChain chain) throws IOException,
-			ServletException {
+	public void doFilter(ServletRequest srequest, ServletResponse sresponse, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) srequest;
 		HttpServletResponse response = (HttpServletResponse) sresponse;
 		initializeDefaultDomain(request);
 		boolean doRedirect = getIfDoRedirect(request);
 		if (doRedirect) {
-			String newUrl = getNewRedirectURL(request,response);
+			String newUrl = getNewRedirectURL(request, response);
 			response.sendRedirect(newUrl);
 		}
 		else {
@@ -67,11 +67,11 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 		return map.containsKey(ApplicationBlock.PARAMETER_APPLICATION_PK);
 	}
 
-	public String getNewRedirectURL(HttpServletRequest request,HttpServletResponse response) {
+	public String getNewRedirectURL(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			LoginBusinessBean loginBusiness = getLoginBusiness(request);
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
-			
+
 			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
 			IWMainApplication iwma = getIWMainApplication(request);
 			IWApplicationContext iwc = iwma.getIWApplicationContext();
@@ -79,45 +79,74 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
 			IWContext iwContext = new IWContext(request, response, request.getSession().getServletContext());
 			updateTimesClicked(iwma, application);
-			
+
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				//try {
-					
-					IWMainApplicationSettings settings = iwma.getSettings();
-					
-					String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI);
-					if (application.getLoginPageURL() != null) {
-						loginPage = application.getLoginPageURL();
-					}
-					
-					String uri = loginPage;
-					if (uri.indexOf("?") == -1) {
-						uri += "?";
-					} else {
-						uri += "&";
-					}
-					
-//					String applUrl = application.getUrl();
-					String applUrl = application.getUrlByLocale(iwContext.getCurrentLocale());
-					String encoding = System.getProperty("file.encoding");
-					String applUrlEncoded = URLEncoder.encode(applUrl,encoding);
 
-					uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON+"="+applUrlEncoded;
-					return uri;
+				IWMainApplicationSettings settings = iwma.getSettings();
+
+				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI);
+				if (application.getLoginPageURL() != null) {
+					loginPage = application.getLoginPageURL();
+				}
+
+				String uri = loginPage;
+				if (uri.indexOf("?") == -1) {
+					uri += "?";
+				}
+				else {
+					uri += "&";
+				}
+
+				//					String applUrl = application.getUrl();
+				String applUrl = application.getUrlByLocale(iwContext.getCurrentLocale());
+				String encoding = System.getProperty("file.encoding");
+				String applUrlEncoded = URLEncoder.encode(applUrl, encoding);
+
+				uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON + "=" + applUrlEncoded;
+
+				Enumeration enumeration = request.getParameterNames();
+				while (enumeration.hasMoreElements()) {
+					String parameter = (String) enumeration.nextElement();
+					String value = request.getParameter(parameter);
+
+					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK) && value != null) {
+						uri += "&" + parameter + "=" + value;
+					}
+				}
+
+				return uri;
 				//} catch (FinderException f) {
 				//	return application.getUrl();
 				//}
 			}
-			else if(isLoggedOn){
-				
-//				String uri = application.getUrl();
+			else if (isLoggedOn) {
+
+				//				String uri = application.getUrl();
 				String uri = application.getUrlByLocale(iwContext.getCurrentLocale());
-				uri = IWAuthenticator.getUriParsedWithVariables(request,uri);
+				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
+
+				Enumeration enumeration = request.getParameterNames();
+				while (enumeration.hasMoreElements()) {
+					String parameter = (String) enumeration.nextElement();
+					String value = request.getParameter(parameter);
+
+					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK) && value != null) {
+						if (uri.indexOf("?") == -1) {
+							uri += "?";
+						}
+						else {
+							uri += "&";
+						}
+						uri += parameter + "=" + value;
+					}
+				}
+
 				return uri;
 			}
-//			return application.getUrl();
+			//			return application.getUrl();
 			return application.getUrlByLocale(iwContext.getCurrentLocale());
-			
+
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -129,20 +158,21 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 	 * <p>
 	 * TODO tryggvil describe method updateTimesClicked
 	 * </p>
+	 * 
 	 * @param application
 	 */
-	private void updateTimesClicked(IWMainApplication iwma,Application application) {
+	private void updateTimesClicked(IWMainApplication iwma, Application application) {
 
 		IWApplicationContext iwc = iwma.getIWApplicationContext();
 		String prop = iwma.getSettings().getProperty(PROP_UPDATE_TIMES_CLICKED);
 		boolean updateEveryTime = true;
-		if(prop!=null){
-			if(prop.equals(PROP_VALUE_UPDATE_TIMES_CLICKED_DISABLED)){
-				updateEveryTime=false;
+		if (prop != null) {
+			if (prop.equals(PROP_VALUE_UPDATE_TIMES_CLICKED_DISABLED)) {
+				updateEveryTime = false;
 			}
 		}
-		
-		if(updateEveryTime){
+
+		if (updateEveryTime) {
 			try {
 				getApplicationBusiness(iwc).updateTimesClicked(application);
 			}
@@ -155,7 +185,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
 	public void destroy() {
 	}
-	
+
 	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwc) {
 		try {
 			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwc, ApplicationBusiness.class);
