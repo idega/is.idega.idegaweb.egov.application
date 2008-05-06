@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.9.2.4 2008/05/02 16:48:24 laddi Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.9.2.5 2008/05/06 17:02:43 laddi Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -101,9 +101,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				//					String applUrl = application.getUrl();
 				String applUrl = application.getUrlByLocale(iwContext.getCurrentLocale());
 				String encoding = System.getProperty("file.encoding");
-				String applUrlEncoded = URLEncoder.encode(applUrl, encoding);
-
-				uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON + "=" + applUrlEncoded;
 
 				Enumeration enumeration = request.getParameterNames();
 				while (enumeration.hasMoreElements()) {
@@ -111,9 +108,19 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					String value = request.getParameter(parameter);
 
 					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK) && value != null) {
-						uri += "&" + parameter + "=" + value;
+						if (applUrl.indexOf("?") == -1) {
+							applUrl += "?";
+						}
+						else {
+							applUrl += "&";
+						}
+
+						applUrl += parameter + "=" + value;
 					}
 				}
+
+				String applUrlEncoded = URLEncoder.encode(applUrl, encoding);
+				uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON + "=" + applUrlEncoded;
 
 				return uri;
 				//} catch (FinderException f) {
