@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.9.2.5 2008/05/06 17:02:43 laddi Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.9.2.6 2008/05/07 10:28:04 laddi Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -98,24 +98,28 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					uri += "&";
 				}
 
-				//					String applUrl = application.getUrl();
 				String applUrl = application.getUrlByLocale(iwContext.getCurrentLocale());
 				String encoding = System.getProperty("file.encoding");
 
 				Enumeration enumeration = request.getParameterNames();
 				while (enumeration.hasMoreElements()) {
 					String parameter = (String) enumeration.nextElement();
-					String value = request.getParameter(parameter);
 
-					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK) && value != null) {
-						if (applUrl.indexOf("?") == -1) {
-							applUrl += "?";
-						}
-						else {
-							applUrl += "&";
-						}
+					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK)) {
+						String[] values = request.getParameterValues(parameter);
+						if (values != null) {
+							for (int i = 0; i < values.length; i++) {
+								String value = values[i];
+								if (applUrl.indexOf("?") == -1) {
+									applUrl += "?";
+								}
+								else {
+									applUrl += "&";
+								}
 
-						applUrl += parameter + "=" + value;
+								applUrl += parameter + "=" + value;
+							}
+						}
 					}
 				}
 
@@ -123,37 +127,36 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON + "=" + applUrlEncoded;
 
 				return uri;
-				//} catch (FinderException f) {
-				//	return application.getUrl();
-				//}
 			}
 			else if (isLoggedOn) {
-
-				//				String uri = application.getUrl();
 				String uri = application.getUrlByLocale(iwContext.getCurrentLocale());
 				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
 
 				Enumeration enumeration = request.getParameterNames();
 				while (enumeration.hasMoreElements()) {
 					String parameter = (String) enumeration.nextElement();
-					String value = request.getParameter(parameter);
 
-					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK) && value != null) {
-						if (uri.indexOf("?") == -1) {
-							uri += "?";
+					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK)) {
+						String[] values = request.getParameterValues(parameter);
+						if (values != null) {
+							for (int i = 0; i < values.length; i++) {
+								String value = values[i];
+								if (uri.indexOf("?") == -1) {
+									uri += "?";
+								}
+								else {
+									uri += "&";
+								}
+								uri += parameter + "=" + value;
+							}
 						}
-						else {
-							uri += "&";
-						}
-						uri += parameter + "=" + value;
 					}
 				}
 
 				return uri;
 			}
-			//			return application.getUrl();
-			return application.getUrlByLocale(iwContext.getCurrentLocale());
 
+			return application.getUrlByLocale(iwContext.getCurrentLocale());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
