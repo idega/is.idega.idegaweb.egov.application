@@ -221,6 +221,7 @@ div.checkboxSection div.formItem label {
 
 div.formItem input, div.formItem textarea, div.formItem select {
 	float: left;
+	margin: 0;
 	margin-right: 20px;
 	margin-bottom: 8px;
 }
