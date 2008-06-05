@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.33 2008/04/16 15:57:49 anton Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.34 2008/06/05 09:01:51 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -841,17 +841,12 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		List<String> sources = new ArrayList<String>();
 		
-		try {
-			Web2Business web2 = (Web2Business)WFUtil.getBeanInstance(web2beanBeanIdentifier);
-			sources.add(web2.getBundleURIToJQueryLib());
-			sources.add(CoreConstants.DWR_ENGINE_SCRIPT);
-			sources.add(APP_TYPES_HANDLER_ENGINE);
-			sources.add(getBundle(iwc).getVirtualPathWithFileNameString(APP_CREATOR_APP_TYPES));
-			
-			return sources;
-			
-		} catch (RemoteException e) {
-			throw new RuntimeException(e);
-		}
+		Web2Business web2 = (Web2Business)WFUtil.getBeanInstance(web2beanBeanIdentifier);
+		sources.add(web2.getBundleURIToJQueryLib());
+		sources.add(CoreConstants.DWR_ENGINE_SCRIPT);
+		sources.add(APP_TYPES_HANDLER_ENGINE);
+		sources.add(getBundle(iwc).getVirtualPathWithFileNameString(APP_CREATOR_APP_TYPES));
+		
+		return sources;
 	}
 }
