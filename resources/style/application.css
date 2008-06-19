@@ -205,6 +205,7 @@ div.formItem select {
 div.formItem textarea {
 	width: 352px;
 	height: 80px;
+	clear: none;
 }
 
 div.formItem input.checkbox {
@@ -496,4 +497,33 @@ div.errors, span.error {
 .appTypeHandlerContainer, .appTypeHandlerContainer div {
 	clear: both;
 	display: block;
+}
+
+/* Application editor */
+table.adminTable, form.adminForm {
+	margin-top: 16px;
+}
+
+table.adminTable tbody tr td, table.adminTable thead tr th {
+	padding: 5px 8px;
+	empty-cells: show;
+	text-align: left;
+	white-space: nowrap;
+}
+
+table.adminTable .ageFrom, table.adminTable .ageTo, table.adminTable .electronic, table.adminTable .requiresLogin, table.adminTable .new_window, table.adminTable .url {
+	display: none;
+}
+
+table.adminTable thead tr th {
+	border-top: 1px #ccc solid;
+	border-bottom: 1px #ccc solid;
+}
+
+table.adminTable tbody tr td {
+	border-bottom: 1px #ccc solid;
+}
+
+table.adminTable tbody tr.ruled {
+	background: #dfdfdf;
 }
