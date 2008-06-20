@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.14 2008/02/08 09:07:24 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.15 2008/06/20 09:55:51 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -32,13 +33,15 @@ import javax.servlet.http.HttpServletResponse;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.business.SpringBeanLookup;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
+import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
+import com.idega.util.expression.ELUtil;
+import com.idega.webface.WFUtil;
 
 public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
@@ -76,8 +79,11 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
 			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
 			IWMainApplication iwma = getIWMainApplication(request);
-			IWApplicationContext iwac = iwma.getIWApplicationContext();
-			Application application = getApplicationBusiness(iwac).getApplication(new Integer(pk));
+			
+			FacesContext fctx = WFUtil.createFacesContext(request.getSession().getServletContext(), request, response);
+			IWContext iwc = IWContext.getIWContext(fctx);
+			
+			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
 			
 			updateTimesClicked(iwma, application);
 			
@@ -86,7 +92,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 			if(application.getAppType() != null) {
 				
 				ApplicationType at = getAppTypesManager(request.getSession().getServletContext()).getApplicationType(application.getAppType());
-				url = at.getUrl(iwac, application);
+				url = at.getUrl(iwc, application);
 			} else
 				url = application.getUrl();
 			
@@ -169,6 +175,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter  {
 
 	protected ApplicationTypesManager getAppTypesManager(ServletContext ctx) {
 		
-		return (ApplicationTypesManager)SpringBeanLookup.getInstance().getSpringBean(ctx, ApplicationBlock.appTypesManagerBeanIdentifier);
+		return ELUtil.getInstance().getBean(ApplicationBlock.appTypesManagerBeanIdentifier, ctx);
 	}
 }
