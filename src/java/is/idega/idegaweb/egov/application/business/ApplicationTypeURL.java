@@ -14,15 +14,14 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  *
- * Last modified: $Date: 2008/04/18 23:35:59 $ by $Author: anton $
+ * Last modified: $Date: 2008/06/20 09:56:08 $ by $Author: civilis $
  *
  */
 public class ApplicationTypeURL implements ApplicationType, ApplicationContextAware, ApplicationListener {
@@ -81,7 +80,7 @@ public class ApplicationTypeURL implements ApplicationType, ApplicationContextAw
 		return false;
 	}
 
-	public String getUrl(IWApplicationContext iwac, Application app) {
+	public String getUrl(IWContext iwc, Application app) {
 		return app.getUrl();
 	}
 }
