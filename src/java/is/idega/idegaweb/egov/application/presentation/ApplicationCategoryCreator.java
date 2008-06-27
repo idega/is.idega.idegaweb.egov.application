@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.11 2008/01/24 07:26:16 alexis Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.12 2008/06/27 12:26:39 alexis Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +26,7 @@ import javax.ejb.FinderException;
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextHome;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLanguage;
@@ -49,6 +51,17 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 
 public class ApplicationCategoryCreator extends ApplicationBlock {
+	
+	public static final String PARAMETER_ACTION = "prm_action";
+	public static final String ACTION_CREATE = "create";
+	public static final String ACTION_EDIT = "edit";
+	public static final String ACTION_SAVE = "save";
+	public static final String ACTION_CATEGORY_UP = "category_up";
+	public static final String ACTION_CATEGORY_DOWN = "category_down";
+	public static final String ACTION_APP_UP = "app_up";
+	public static final String ACTION_APP_DOWN = "app_down";
+	public static final String ACTION_DELETE = "delete";
+	public static final String ACTION_LIST = "list";
 
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
@@ -59,6 +72,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		if(cache != null) {
 			cache.clear();
 		}
+		BuilderLogic.getInstance().clearAllCaches();
+		IWCacheManager.getInstance(iwc.getIWMainApplication()).clearAllCaches();
 	}
 
 	public void present(IWContext iwc) throws Exception {
@@ -67,15 +82,15 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		
 		List<ICLocale> locales = ICLocaleBusiness.listOfLocales();
 		
-		String action = iwc.getParameter("prm_action");
-		if ("create".equals(action)) {
+		String action = iwc.getParameter(PARAMETER_ACTION);
+		if (ACTION_CREATE.equals(action)) {
 			getCategoryCreationForm(iwc, null, locales);
 		}
-		else if ("edit".equals(action)) {
+		else if (ACTION_EDIT.equals(action)) {
 			ApplicationCategory category = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(Integer.parseInt(iwc.getParameter("id")));
 			getCategoryCreationForm(iwc, category, locales);
 		}
-		else if ("save".equals(action)) {
+		else if (ACTION_SAVE.equals(action)) {
 			String id = iwc.getParameter("id");
 			String name = iwc.getParameter("name");
 			String desc = iwc.getParameter("desc");
@@ -136,7 +151,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			}
 			listExisting(iwc);
 		}
-		else if("category_up".equals(action)) {
+		else if(ACTION_CATEGORY_UP.equals(action)) {
 			String id = iwc.getParameter("id");
 			
 			ApplicationCategory cat = null;
@@ -174,7 +189,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			
 			listExisting(iwc);
 		}
-		else if("category_down".equals(action)) {
+		else if(ACTION_CATEGORY_DOWN.equals(action)) {
 			String id = iwc.getParameter("id");
 			
 			ApplicationCategory cat = null;
@@ -212,7 +227,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			
 			listExisting(iwc);
 		}
-		else if("app_up".equals(action)) {
+		else if(ACTION_APP_UP.equals(action)) {
 			String appId = iwc.getParameter("app_id");
 			String id = iwc.getParameter("id");
 			
@@ -254,7 +269,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			
 			getCategoryCreationForm(iwc, category, locales);
 		}
-		else if("app_down".equals(action)) {
+		else if(ACTION_APP_DOWN.equals(action)) {
 			String appId = iwc.getParameter("app_id");
 			String id = iwc.getParameter("id");
 			
@@ -296,7 +311,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			
 			getCategoryCreationForm(iwc, category, locales);
 		}
-		else if ("delete".equals(action)) {
+		else if (ACTION_DELETE.equals(action)) {
 			try {
 				ApplicationCategory cat = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(
 						new Integer(iwc.getParameter("id")));
@@ -307,7 +322,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			}
 			listExisting(iwc);
 		}
-		else if ("list".equals(action)) {
+		else if (ACTION_LIST.equals(action)) {
 			listExisting(iwc);
 		}
 		else {
@@ -436,7 +451,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				cell.setStyleClass("lastColumn");
 				
 				Link up = new Link(this.iwb.getImage("previous.png", this.iwrb.getLocalizedString("previous", "Up")));
-				up.addParameter("prm_action", "app_up");
+				up.addParameter(PARAMETER_ACTION, ACTION_APP_UP);
 				up.addParameter("app_id", app.getPrimaryKey().toString());
 				up.addParameter("id", cat.getPrimaryKey().toString());
 				up.setStyleClass("flippedImageLink");
@@ -449,7 +464,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				}
 				
 				Link down = new Link(this.iwb.getImage("next.png", this.iwrb.getLocalizedString("next", "Down")));
-				down.addParameter("prm_action", "app_down");
+				down.addParameter(PARAMETER_ACTION, ACTION_APP_DOWN);
 				down.addParameter("app_id", app.getPrimaryKey().toString());
 				down.addParameter("id", cat.getPrimaryKey().toString());
 				down.setStyleClass("flippedImageLink");
@@ -473,10 +488,10 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "prm_action", "list");
+		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), PARAMETER_ACTION, "list");
 		buttonLayer.add(back);
 		
-		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
+		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), PARAMETER_ACTION, "save");
 		buttonLayer.add(save);
 
 		add(form);
@@ -539,13 +554,13 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			row = table.createRow();
 			
 			Link edit = new Link(this.iwb.getImage("edit.png", this.iwrb.getLocalizedString("edit", "Edit")));
-			edit.addParameter("prm_action", "edit");
+			edit.addParameter(PARAMETER_ACTION, ACTION_EDIT);
 			edit.addParameter("id", cat.getPrimaryKey().toString());
 			
 			Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
-			delete.addParameter("prm_action", "delete");
+			delete.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 			delete.addParameter("id", cat.getPrimaryKey().toString());
-			
+
 			if (iRow % 2 == 0) {
 				row.setStyleClass("evenRow");
 			}
@@ -566,7 +581,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			cell.setStyleClass("description");
 			
 			Link up = new Link(this.iwb.getImage("previous.png", this.iwrb.getLocalizedString("previous", "Up")));
-			up.addParameter("prm_action", "category_up");
+			up.addParameter(PARAMETER_ACTION, ACTION_CATEGORY_UP);
 			up.addParameter("id", cat.getPrimaryKey().toString());
 			up.setStyleClass("flippedImageLink");
 			cell.add(up);
@@ -578,7 +593,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			}
 			
 			Link down = new Link(this.iwb.getImage("next.png", this.iwrb.getLocalizedString("next", "Down")));
-			down.addParameter("prm_action", "category_down");
+			down.addParameter(PARAMETER_ACTION, ACTION_CATEGORY_DOWN);
 			down.addParameter("id", cat.getPrimaryKey().toString());
 			down.setStyleClass("flippedImageLink");
 			cell.add(down);
@@ -605,7 +620,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
 		
-		SubmitButton newLink = new SubmitButton(this.iwrb.getLocalizedString("new_category", "New Category"), "prm_action", "create");
+		SubmitButton newLink = new SubmitButton(this.iwrb.getLocalizedString("new_category", "New Category"), PARAMETER_ACTION, ACTION_CREATE);
 		buttonLayer.add(newLink);
 		
 		add(form);
