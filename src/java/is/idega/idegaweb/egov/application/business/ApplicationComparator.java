@@ -29,6 +29,7 @@ public class ApplicationComparator implements Comparator {
 		Application application1 = (Application) o1;
 		Application application2 = (Application) o2;
 		
-		return coll.compare(application1.getName(), application2.getName());
+//		return coll.compare(application1.getName(), application2.getName());
+		return coll.compare(application1.getNameByLocale(), application2.getNameByLocale());
 	}
 }

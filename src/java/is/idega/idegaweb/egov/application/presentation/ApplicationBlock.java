@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.19 2008/04/12 01:52:56 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.20 2008/06/27 12:26:14 alexis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -73,7 +73,6 @@ public abstract class ApplicationBlock extends Block {
 			}
 			
 			if (application.getVisible() && (!checkAges || displayApplication) && !(iwc.isLoggedOn() && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(iwc.getCurrentUser()))) {
-				
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");

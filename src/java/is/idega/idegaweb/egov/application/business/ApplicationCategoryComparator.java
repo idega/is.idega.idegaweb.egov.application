@@ -29,6 +29,6 @@ public class ApplicationCategoryComparator implements Comparator {
 		ApplicationCategory category1 = (ApplicationCategory) o1;
 		ApplicationCategory category2 = (ApplicationCategory) o2;
 		
-		return coll.compare(category1.getName(), category2.getName());
+		return coll.compare(category1.getLocalizedName(), category2.getLocalizedName());
 	}
 }
