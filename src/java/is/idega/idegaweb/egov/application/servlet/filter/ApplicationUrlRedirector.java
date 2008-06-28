@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.17 2008/06/28 06:09:39 alexis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.18 2008/06/28 06:43:04 alexis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -41,6 +41,7 @@ import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
+import com.idega.util.CoreUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.webface.WFUtil;
 
@@ -81,8 +82,9 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
 			IWMainApplication iwma = getIWMainApplication(request);
 			
-			FacesContext fctx = WFUtil.createFacesContext(request.getSession().getServletContext(), request, response);
-			IWContext iwc = IWContext.getIWContext(fctx);
+//			FacesContext fctx = WFUtil.createFacesContext(request.getSession().getServletContext(), request, response);
+			FacesContext ctx = FacesContext.getCurrentInstance();
+			IWContext iwc = IWContext.getIWContext(ctx);
 			
 			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
 			
