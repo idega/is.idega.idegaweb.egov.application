@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.16 2008/06/27 13:28:48 alexis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.17 2008/06/28 06:09:39 alexis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -114,7 +115,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					}
 					
 					String encoding = System.getProperty("file.encoding");
-					String applUrlEncoded = URLEncoder.encode(url, encoding);
+					String applUrl = application.getUrlByLocale(iwc.getCurrentLocale());
 					
 					Enumeration enumeration = request.getParameterNames();
 					while (enumeration.hasMoreElements()) {
@@ -145,7 +146,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			}
 			else if (isLoggedOn) {
 				
-				String uri = application.getUrlByLocale(iwContext.getCurrentLocale());
+				String uri = application.getUrlByLocale(iwc.getCurrentLocale());
 				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
 
 				Enumeration enumeration = request.getParameterNames();
@@ -172,7 +173,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				return url;
 			}
 
-			return application.getUrlByLocale(iwContext.getCurrentLocale());
+			return application.getUrlByLocale(iwc.getCurrentLocale());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
