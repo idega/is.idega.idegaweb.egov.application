@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.20 2008/06/30 08:30:11 alexis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.21 2008/07/02 19:30:28 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -24,7 +24,6 @@ import javax.faces.context.FacesContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -41,7 +40,6 @@ import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
-import com.idega.util.CoreUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.webface.WFUtil;
 
@@ -94,7 +92,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			
 			if(application.getAppType() != null) {
 				
-				ApplicationType at = getAppTypesManager(request.getSession().getServletContext()).getApplicationType(application.getAppType());
+				ApplicationType at = getAppTypesManager().getApplicationType(application.getAppType());
 				url = at.getUrl(iwc, application);
 			} else
 				url = application.getUrl();
@@ -119,9 +117,11 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					String encoding = System.getProperty("file.encoding");
 					String applUrl = application.getUrlByLocale(iwc.getCurrentLocale());
 					
-					Enumeration enumeration = request.getParameterNames();
+					@SuppressWarnings("unchecked")
+					Enumeration<String> enumeration = request.getParameterNames();
+					
 					while (enumeration.hasMoreElements()) {
-						String parameter = (String) enumeration.nextElement();
+						String parameter = enumeration.nextElement();
 
 						if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK)) {
 							String[] values = request.getParameterValues(parameter);
@@ -224,8 +224,8 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 		}
 	}
 
-	protected ApplicationTypesManager getAppTypesManager(ServletContext ctx) {
+	protected ApplicationTypesManager getAppTypesManager() {
 		
-		return ELUtil.getInstance().getBean(ApplicationBlock.appTypesManagerBeanIdentifier, ctx);
+		return ELUtil.getInstance().getBean(ApplicationBlock.appTypesManagerBeanIdentifier);
 	}
 }
