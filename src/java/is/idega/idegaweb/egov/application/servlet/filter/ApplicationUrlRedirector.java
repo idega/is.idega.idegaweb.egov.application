@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.21 2008/07/02 19:30:28 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.22 2008/07/04 12:08:43 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -95,7 +95,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				ApplicationType at = getAppTypesManager().getApplicationType(application.getAppType());
 				url = at.getUrl(iwc, application);
 			} else
-				url = application.getUrl();
+				url = application.getUrlByLocale(iwc.getCurrentLocale());
 			
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				//try {
@@ -146,8 +146,10 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					
 					return uri;
 			}
+			/*
 			else if (isLoggedOn) {
 				
+//				FIXME: result is not used, and this method totally crapped after merge . Alex FIX! 
 				String uri = application.getUrlByLocale(iwc.getCurrentLocale());
 				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
 
@@ -174,8 +176,9 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 				return url;
 			}
+			*/
 
-			return application.getUrlByLocale(iwc.getCurrentLocale());
+			return url;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
