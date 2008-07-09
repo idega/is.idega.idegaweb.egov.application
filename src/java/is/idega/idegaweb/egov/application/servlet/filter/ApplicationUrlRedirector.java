@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.22 2008/07/04 12:08:43 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.23 2008/07/09 13:53:50 alexis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -76,12 +76,10 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 		try {
 			LoginBusinessBean loginBusiness = getLoginBusiness(request);
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
-
 			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
 			IWMainApplication iwma = getIWMainApplication(request);
 			
 			FacesContext fctx = WFUtil.createFacesContext(request.getSession().getServletContext(), request, response);
-			
 			IWContext iwc = IWContext.getIWContext(fctx);
 			
 			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
@@ -97,63 +95,63 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			} else
 				url = application.getUrlByLocale(iwc.getCurrentLocale());
 			
+			String encoding = System.getProperty("file.encoding");
+			
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
-				//try {
+				IWMainApplicationSettings settings = iwma.getSettings();
 					
-					IWMainApplicationSettings settings = iwma.getSettings();
+				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI);
+				if (application.getLoginPageURL() != null) {
+					loginPage = application.getLoginPageURL();
+				}
 					
-					String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI);
-					if (application.getLoginPageURL() != null) {
-						loginPage = application.getLoginPageURL();
-					}
+				String uri = loginPage;
+				if (uri.indexOf("?") == -1) {
+					uri += "?";
+				} else {
+					uri += "&";
+				}
 					
-					String uri = loginPage;
-					if (uri.indexOf("?") == -1) {
-						uri += "?";
-					} else {
-						uri += "&";
-					}
+				String applUrl = application.getUrlByLocale(iwc.getCurrentLocale());
 					
-					String encoding = System.getProperty("file.encoding");
-					String applUrl = application.getUrlByLocale(iwc.getCurrentLocale());
+				@SuppressWarnings("unchecked")
+				Enumeration<String> enumeration = request.getParameterNames();
 					
-					@SuppressWarnings("unchecked")
-					Enumeration<String> enumeration = request.getParameterNames();
-					
-					while (enumeration.hasMoreElements()) {
-						String parameter = enumeration.nextElement();
+				while (enumeration.hasMoreElements()) {
+					String parameter = enumeration.nextElement();
 
-						if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK)) {
-							String[] values = request.getParameterValues(parameter);
-							if (values != null) {
-								for (int i = 0; i < values.length; i++) {
-									String value = values[i];
-									if (applUrl.indexOf("?") == -1) {
-										applUrl += "?";
-									}
-									else {
-										applUrl += "&";
-									}
-
-									applUrl += parameter + "=" + value;
+					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK)) {
+						String[] values = request.getParameterValues(parameter);
+						if (values != null) {
+							for (int i = 0; i < values.length; i++) {
+								String value = values[i];
+								if (applUrl.indexOf("?") == -1) {
+									applUrl += "?";
 								}
+								else {
+									applUrl += "&";
+								}
+
+								applUrl += parameter + "=" + value;
 							}
 						}
 					}
+				}
 
-					String applUrlEncoded = URLEncoder.encode(applUrl, encoding);
-					uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON + "=" + applUrlEncoded;
+				String applUrlEncoded = URLEncoder.encode(applUrl, encoding);
+				uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON + "=" + applUrlEncoded;
 					
-					return uri;
-			}
-			/*
-			else if (isLoggedOn) {
+				return uri;
+			} else if (isLoggedOn) {
 				
-//				FIXME: result is not used, and this method totally crapped after merge . Alex FIX! 
-				String uri = application.getUrlByLocale(iwc.getCurrentLocale());
-				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
+//				String uri = application.getUrlByLocale(iwc.getCurrentLocale());
+//				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
+				
+				String uri = "";
 
+				@SuppressWarnings("unchecked")
 				Enumeration enumeration = request.getParameterNames();
+				
 				while (enumeration.hasMoreElements()) {
 					String parameter = (String) enumeration.nextElement();
 
@@ -173,10 +171,9 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 						}
 					}
 				}
-
-				return url;
+				
+				return url += uri;
 			}
-			*/
 
 			return url;
 		}
