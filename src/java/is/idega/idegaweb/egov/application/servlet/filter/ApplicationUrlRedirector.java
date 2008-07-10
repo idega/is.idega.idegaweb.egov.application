@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.23 2008/07/09 13:53:50 alexis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.24 2008/07/10 12:06:12 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -147,32 +147,36 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 //				String uri = application.getUrlByLocale(iwc.getCurrentLocale());
 //				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
 				
-				String uri = "";
+//				TODO: replace with new uriutil from core when it's finished
+				String uri = url;
 
 				@SuppressWarnings("unchecked")
-				Enumeration enumeration = request.getParameterNames();
+				Enumeration<String> enumeration = request.getParameterNames();
 				
 				while (enumeration.hasMoreElements()) {
-					String parameter = (String) enumeration.nextElement();
+					String parameter = enumeration.nextElement();
 
 					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK)) {
+						
 						String[] values = request.getParameterValues(parameter);
+						
 						if (values != null) {
-							for (int i = 0; i < values.length; i++) {
-								String value = values[i];
+							
+							for (String paramVal : values) {
+								
 								if (uri.indexOf("?") == -1) {
 									uri += "?";
 								}
 								else {
 									uri += "&";
 								}
-								uri += parameter + "=" + value;
+								uri += parameter + "=" + paramVal;
 							}
 						}
 					}
 				}
 				
-				return url += uri;
+				return url = uri;
 			}
 
 			return url;
