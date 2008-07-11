@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.24 2008/07/10 12:06:12 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.25 2008/07/11 06:29:49 alexis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -40,6 +40,7 @@ import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
+import com.idega.util.CoreConstants;
 import com.idega.util.expression.ELUtil;
 import com.idega.webface.WFUtil;
 
@@ -47,6 +48,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 	private static final String PROP_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
 	private static final String PROP_UPDATE_TIMES_CLICKED = "egov.application.updateclicks";
+	private static final String PROP_FILE_ENCODING = "file.encoding";
 
 	private static final String PROP_VALUE_UPDATE_TIMES_CLICKED_DISABLED = "disabled";
 
@@ -95,7 +97,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			} else
 				url = application.getUrlByLocale(iwc.getCurrentLocale());
 			
-			String encoding = System.getProperty("file.encoding");
+			String encoding = System.getProperty(PROP_FILE_ENCODING);
 			
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				IWMainApplicationSettings settings = iwma.getSettings();
@@ -105,14 +107,15 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					loginPage = application.getLoginPageURL();
 				}
 					
-				String uri = loginPage;
-				if (uri.indexOf("?") == -1) {
-					uri += "?";
+				StringBuilder uri = new StringBuilder(loginPage);
+				if (loginPage.indexOf(CoreConstants.QMARK) == -1) {
+					uri.append(CoreConstants.QMARK);
 				} else {
-					uri += "&";
+					uri.append(CoreConstants.AMP);
 				}
-					
+				
 				String applUrl = application.getUrlByLocale(iwc.getCurrentLocale());
+				StringBuilder appUrlBuilder = new StringBuilder(applUrl);
 					
 				@SuppressWarnings("unchecked")
 				Enumeration<String> enumeration = request.getParameterNames();
@@ -125,30 +128,28 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 						if (values != null) {
 							for (int i = 0; i < values.length; i++) {
 								String value = values[i];
-								if (applUrl.indexOf("?") == -1) {
-									applUrl += "?";
+								if (applUrl.indexOf(CoreConstants.QMARK) == -1) {
+									appUrlBuilder.append(CoreConstants.QMARK);
 								}
 								else {
-									applUrl += "&";
+									appUrlBuilder.append(CoreConstants.AMP);
 								}
-
-								applUrl += parameter + "=" + value;
+								appUrlBuilder.append(parameter).append(CoreConstants.EQ).append(value);
 							}
 						}
 					}
 				}
 
-				String applUrlEncoded = URLEncoder.encode(applUrl, encoding);
-				uri += IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON + "=" + applUrlEncoded;
+				String applUrlEncoded = URLEncoder.encode(appUrlBuilder.toString(), encoding);
+				uri.append(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON).append(CoreConstants.EQ).append(applUrlEncoded);;
 					
-				return uri;
+				return uri.toString();
 			} else if (isLoggedOn) {
 				
 //				String uri = application.getUrlByLocale(iwc.getCurrentLocale());
 //				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
 				
-//				TODO: replace with new uriutil from core when it's finished
-				String uri = url;
+				StringBuilder appUrlBuilder = new StringBuilder(url);
 
 				@SuppressWarnings("unchecked")
 				Enumeration<String> enumeration = request.getParameterNames();
@@ -161,22 +162,22 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 						String[] values = request.getParameterValues(parameter);
 						
 						if (values != null) {
-							
+						
 							for (String paramVal : values) {
-								
-								if (uri.indexOf("?") == -1) {
-									uri += "?";
+							
+								if (appUrlBuilder.toString().indexOf(CoreConstants.QMARK) == -1) {
+									appUrlBuilder.append(CoreConstants.QMARK);
 								}
 								else {
-									uri += "&";
+									appUrlBuilder.append(CoreConstants.AMP);
 								}
-								uri += parameter + "=" + paramVal;
+								appUrlBuilder.append(parameter).append(CoreConstants.EQ).append(paramVal);
 							}
 						}
 					}
 				}
 				
-				return url = uri;
+				return url = appUrlBuilder.toString();
 			}
 
 			return url;
