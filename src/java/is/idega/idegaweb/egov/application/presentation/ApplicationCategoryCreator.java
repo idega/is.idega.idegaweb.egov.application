@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.12 2008/06/27 12:26:39 alexis Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.14 2008/07/15 11:55:20 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -575,6 +575,16 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 
 			cell = row.createCell();
 			cell.setStyleClass("description");
+			if (cat.getDescription() != null) {
+				String description = cat.getDescription();
+				if (description.length() > 35) {
+					description = description.substring(0, 35) + "...";
+				}
+				cell.add(new Text(description));
+			}
+			else {
+				cell.add(new Text(Text.NON_BREAKING_SPACE));
+			}
 			cell.add(new Text(cat.getDescription() != null ? cat.getDescription() : Text.NON_BREAKING_SPACE));
 			
 			cell = row.createCell();

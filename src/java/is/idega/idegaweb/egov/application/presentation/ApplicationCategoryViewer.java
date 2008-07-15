@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.17 2008/07/15 09:57:57 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.18 2008/07/15 11:52:13 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -100,12 +100,6 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 					Layer l = new Layer();
 					l.setStyleClass("applicationCategory");
 					
-					if (cat.getDescription() != null && cat.getDescription().length() > 0) {
-						Paragraph paragraph = new Paragraph();
-						paragraph.add(cat.getDescription());
-						l.add(paragraph);
-					}
-					
 					LocalizedText locText = cat.getLocalizedText(icLocaleId);
 					String heading = null;
 					if(locText != null) {
@@ -166,6 +160,12 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 						}
 					} else {
 						l.add(new Heading1(heading));
+						if (cat.getDescription() != null && cat.getDescription().length() > 0) {
+							Paragraph paragraph = new Paragraph();
+							paragraph.add(cat.getDescription());
+							l.add(paragraph);
+						}
+						
 						l.add(appList);
 					}
 					
