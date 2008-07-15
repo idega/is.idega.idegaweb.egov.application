@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryBMPBean.java,v 1.3 2008/06/27 12:25:59 alexis Exp $ Created on
+ * $Id: ApplicationCategoryBMPBean.java,v 1.4 2008/07/15 09:57:57 laddi Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -114,7 +114,7 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(NAME, "name", String.class, 50);
-		addAttribute(DESCRIPTION, "name", String.class);
+		addAttribute(DESCRIPTION, "name", String.class, 4000);
 		addAttribute(PRIORITY, "Priority", Integer.class);
 		
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT);

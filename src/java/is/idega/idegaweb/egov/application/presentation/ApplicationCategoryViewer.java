@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.16 2008/02/22 10:30:48 alexis Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.17 2008/07/15 09:57:57 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -22,6 +22,7 @@ import com.idega.block.text.data.LocalizedText;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.text.Heading1;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Lists;
 import com.idega.util.Age;
 
@@ -98,6 +99,12 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 					
 					Layer l = new Layer();
 					l.setStyleClass("applicationCategory");
+					
+					if (cat.getDescription() != null && cat.getDescription().length() > 0) {
+						Paragraph paragraph = new Paragraph();
+						paragraph.add(cat.getDescription());
+						l.add(paragraph);
+					}
 					
 					LocalizedText locText = cat.getLocalizedText(icLocaleId);
 					String heading = null;
