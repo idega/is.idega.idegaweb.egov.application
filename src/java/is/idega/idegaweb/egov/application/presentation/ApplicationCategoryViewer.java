@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.18 2008/07/15 11:52:13 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.19 2008/07/15 12:35:43 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -121,6 +121,11 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 						
 						if(nextCategoryApps.isEmpty()) {
 							l.add(new Heading1(heading));
+							if (cat.getDescription() != null && cat.getDescription().length() > 0) {
+								Paragraph paragraph = new Paragraph();
+								paragraph.add(cat.getDescription());
+								l.add(paragraph);
+							}
 							l.add(appList);
 							
 							nextCat = null;
@@ -130,6 +135,11 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 								Layer l1 = new Layer();
 								l1.setStyleClass("compactCategory");
 								l1.add(new Heading1(heading));
+								if (cat.getDescription() != null && cat.getDescription().length() > 0) {
+									Paragraph paragraph = new Paragraph();
+									paragraph.add(cat.getDescription());
+									l.add(paragraph);
+								}
 								l1.add(appList);
 								
 								
@@ -143,6 +153,11 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 								Layer l2 = new Layer();
 								l2.setStyleClass("compactCategory");
 								l2.add(new Heading1(heading));
+								if (nextCat.getDescription() != null && nextCat.getDescription().length() > 0) {
+									Paragraph paragraph = new Paragraph();
+									paragraph.add(nextCat.getDescription());
+									l.add(paragraph);
+								}
 								l2.add(nextAppList);
 								
 								l.add(l1);
