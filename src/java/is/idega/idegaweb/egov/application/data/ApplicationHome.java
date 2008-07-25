@@ -28,4 +28,6 @@ public interface ApplicationHome extends IDOHome {
 	public Collection findAllByCategoryOrderedByPriority(ApplicationCategory category) throws FinderException;
 	
 	public Application findByCategoryAndPriority(ApplicationCategory category, int priority) throws FinderException;
+
+	public Collection<Application> findAllByApplicationUrl(String appUrl) throws FinderException;
 }

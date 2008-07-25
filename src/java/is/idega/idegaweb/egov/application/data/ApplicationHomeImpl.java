@@ -79,4 +79,11 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
+
+	public Collection findAllByApplicationUrl(String appUrl) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindAllByApplicationUrl(appUrl);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

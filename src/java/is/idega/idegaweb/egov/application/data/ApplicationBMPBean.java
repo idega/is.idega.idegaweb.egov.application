@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -530,6 +531,17 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		query.addColumn(new Column(table, getIDColumnName()));
 		query.addOrder(new Order(new Column(table, TIMES_CLICKED), false));
 		return this.idoFindPKsByQuery(query, numberOfEntries);
+	}
+	
+	public Collection ejbFindAllByApplicationUrl(String appUrl) throws FinderException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new Column(table, getIDColumnName()));
+		query.addCriteria(new MatchCriteria(table.getColumn(URL), MatchCriteria.EQUALS, appUrl));
+		
+		log(Level.INFO, "Query to get application by URL: " + query);
+		
+		return this.idoFindPKsByQuery(query);
 	}
 		
 	private String getQueryForDeletingLocalizedTextEntries(Collection localizedNamesIds, Collection localizedUrlIds){
