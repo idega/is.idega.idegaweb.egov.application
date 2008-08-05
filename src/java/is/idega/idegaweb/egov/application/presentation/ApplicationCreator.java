@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.34 2008/06/05 09:01:51 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.35 2008/08/05 08:40:58 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlMessages;
 
@@ -52,7 +54,9 @@ import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.CoreConstants;
+import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
+import com.idega.util.StringUtil;
 import com.idega.webface.WFUtil;
 
 public class ApplicationCreator extends ApplicationBlock {
@@ -77,6 +81,8 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String NEW_WIN_INPUT = "newin";
 	private static final String HIDDEN_INPUT = "hidden";
 	
+	protected static final String APPLICATION_ID_PARAMETER = "id";
+	
 	public static final String ACTION = "prm_action";
 	public static final String SAVE_ACTION = "save";
 	public static final String CREATE_ACTION = "create";
@@ -87,7 +93,14 @@ public class ApplicationCreator extends ApplicationBlock {
 	private IWBundle iwb;
 	
 	private int urlLength = 50;
-
+	
+	private boolean requiresLogin;
+	private boolean visibleApplication;
+	private boolean hiddenFromGuests;
+	private boolean checkIfCanViewApplication;
+	
+	private List<UIComponent> additionalComponents;
+	
 	public void present(IWContext iwc) throws Exception {
 		
 		this.iwrb = super.getResourceBundle(iwc);
@@ -97,7 +110,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		List<ICLocale> locales = ICLocaleBusiness.listOfLocales();
 		
 		String action = iwc.getParameter(ACTION);
-		String id = iwc.getParameter("id");
+		String id = iwc.getParameter(APPLICATION_ID_PARAMETER);
 		
 		if (CREATE_ACTION.equals(action)) {
 			getApplicationCreationForm(iwc, -1, locales);
@@ -117,7 +130,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		} else if (DELETE_ACTION.equals(action)) {
 			try {
 				Application app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
-						new Integer(iwc.getParameter("id")));
+						new Integer(iwc.getParameter(APPLICATION_ID_PARAMETER)));
 				app.remove();
 			}
 			catch (FinderException f) {
@@ -133,13 +146,20 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 	}
 
-	private void saveApplication(IWContext iwc, List<ICLocale> locales) throws RemoteException, CreateException, FinderException, IDOAddRelationshipException {
-				
-		String id = (String) iwc.getParameter("id");
+	private String getBooleanValueInString(String value, boolean valueToUse) {
+		if (StringUtil.isEmpty(value)) {
+			return valueToUse ? "Y" : null;
+		}
+		return value;
+	}
+	
+	
+	protected String saveApplication(IWContext iwc, List<ICLocale> locales) throws RemoteException, CreateException, FinderException, IDOAddRelationshipException {
+		String id = iwc.getParameter(APPLICATION_ID_PARAMETER);
 		String name = iwc.getParameter(NAME_INPUT);
 		String appType = iwc.getParameter(APP_TYPE_INPUT);
-		String requiresLogin = iwc.getParameter(REQ_LOGIN_INPUT);
-		String visible = iwc.getParameter(VISIBLE_INPUT);
+		String requiresLogin = getBooleanValueInString(iwc.getParameter(REQ_LOGIN_INPUT), this.requiresLogin);
+		String visible = getBooleanValueInString(iwc.getParameter(VISIBLE_INPUT), this.visibleApplication);
 		
 		Integer ageFrom = null;
 		Integer ageTo = null;
@@ -158,10 +178,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		String cat = iwc.getParameter(CAT_INPUT);
 		String code = iwc.getParameter(CODE_INPUT);
 		String opensInNew = iwc.getParameter(NEW_WIN_INPUT);
-		String hiddenFromGuests = iwc.getParameter(HIDDEN_INPUT);
+		String hiddenFromGuests = getBooleanValueInString(iwc.getParameter(HIDDEN_INPUT), this.hiddenFromGuests);
 		
 		if(!validate(iwc)) {
-			return;
+			return null;
 		}
 
 		Application app = null;
@@ -250,6 +270,8 @@ public class ApplicationCreator extends ApplicationBlock {
 				}
 			}
 		}
+		
+		return app.getPrimaryKey().toString();
 	}
 	
 	protected boolean validate(IWContext iwc) {
@@ -312,10 +334,8 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 	
 	private void listExisting(IWContext iwc) throws RemoteException, FinderException {
+		Collection<Application> applications = getApplicationBusiness(iwc).getAvailableApplications(iwc);
 		
-		@SuppressWarnings("unchecked")
-		Collection<Application> applications = getApplicationBusiness(iwc).getApplicationHome().findAll();
-
 		Form form = new Form();
 		form.setID("applicationCreator");
 		form.setStyleClass("adminForm");
@@ -383,92 +403,91 @@ public class ApplicationCreator extends ApplicationBlock {
 		group = table.createBodyRowGroup();
 		int iRow = 1;
 		
-		Iterator<Application> iter = applications.iterator();
-		
-		while (iter.hasNext()) {
-			Application app = iter.next();
-			CaseCode code = app.getCaseCode();
-			
-			row = table.createRow();
-			
-			Link edit = new Link(this.iwb.getImage("edit.png", this.iwrb.getLocalizedString("edit", "Edit")));
-			edit.addParameter("prm_action", "edit");
-			edit.addParameter("id", app.getPrimaryKey().toString());
-			
-			Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
-			delete.addParameter("prm_action", "delete");
-			delete.addParameter("id", app.getPrimaryKey().toString());
-			
-
-			if (iRow % 2 == 0) {
-				row.setStyleClass("evenRow");
+		if (!ListUtil.isEmpty(applications)) {
+			for (Application app: applications) {
+				CaseCode code = app.getCaseCode();
+				
+				row = table.createRow();
+				
+				Link edit = new Link(this.iwb.getImage("edit.png", this.iwrb.getLocalizedString("edit", "Edit")));
+				edit.addParameter("prm_action", "edit");
+				edit.addParameter(APPLICATION_ID_PARAMETER, app.getPrimaryKey().toString());
+				
+				Link delete = new Link(this.iwb.getImage("delete.png", this.iwrb.getLocalizedString("remove", "Remove")));
+				delete.addParameter("prm_action", "delete");
+				delete.addParameter(APPLICATION_ID_PARAMETER, app.getPrimaryKey().toString());
+				
+	
+				if (iRow % 2 == 0) {
+					row.setStyleClass("evenRow");
+				}
+				else {
+					row.setStyleClass("oddRow");
+				}
+	
+				cell = row.createCell();
+				cell.setStyleClass("firstColumn");
+				cell.setStyleClass("application");
+				cell.add(new Text(app.getName()));
+	
+				cell = row.createCell();
+				cell.setStyleClass("category");
+				cell.add(new Text(app.getCategory().getName()));
+	
+				cell = row.createCell();
+				cell.setStyleClass("caseCode");
+				if (code != null) {
+					cell.add(new Text(code.getCode()));
+				}
+				else {
+					cell.add(new Text("-"));
+				}
+	
+				cell = row.createCell();
+				cell.setStyleClass("ageFrom");
+				cell.add(new Text(app.getAgeFrom() > -1 ? Integer.toString(app.getAgeFrom()) : "-"));
+	
+				cell = row.createCell();
+				cell.setStyleClass("ageTo");
+				cell.add(new Text(app.getAgeTo() > -1 ? Integer.toString(app.getAgeTo()) : "-"));
+	
+				cell = row.createCell();
+				cell.setStyleClass("appType");
+				
+				cell.add(new Text(getAppTypeLabel(iwc, app.getAppType())));
+				
+				cell = row.createCell();
+				cell.setStyleClass("electronic");
+				cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
+	
+				cell = row.createCell();
+				cell.setStyleClass("requiresLogin");
+				cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getRequiresLogin()), Boolean.toString(app.getRequiresLogin()))));
+	
+				cell = row.createCell();
+				cell.setStyleClass("new_window");
+				cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getOpensInNewWindow()), Boolean.toString(app.getOpensInNewWindow()))));
+	
+				
+				String URL = app.getUrl() != null ? app.getUrl() : "";
+				if (URL.length() > this.urlLength) {
+					URL = URL.substring(0, this.urlLength) + "...";
+				}
+				cell = row.createCell();
+				cell.setStyleClass("url");
+				cell.add(new Text(URL));
+	
+				cell = row.createCell();
+				cell.setStyleClass("edit");
+				cell.add(edit);
+	
+				cell = row.createCell();
+				cell.setStyleClass("lastColumn");
+				cell.setStyleClass("remove");
+				cell.add(delete);
+	
+				iRow++;
 			}
-			else {
-				row.setStyleClass("oddRow");
-			}
-
-			cell = row.createCell();
-			cell.setStyleClass("firstColumn");
-			cell.setStyleClass("application");
-			cell.add(new Text(app.getName()));
-
-			cell = row.createCell();
-			cell.setStyleClass("category");
-			cell.add(new Text(app.getCategory().getName()));
-
-			cell = row.createCell();
-			cell.setStyleClass("caseCode");
-			if (code != null) {
-				cell.add(new Text(code.getCode()));
-			}
-			else {
-				cell.add(new Text("-"));
-			}
-
-			cell = row.createCell();
-			cell.setStyleClass("ageFrom");
-			cell.add(new Text(app.getAgeFrom() > -1 ? Integer.toString(app.getAgeFrom()) : "-"));
-
-			cell = row.createCell();
-			cell.setStyleClass("ageTo");
-			cell.add(new Text(app.getAgeTo() > -1 ? Integer.toString(app.getAgeTo()) : "-"));
-
-			cell = row.createCell();
-			cell.setStyleClass("appType");
-			
-			cell.add(new Text(getAppTypeLabel(iwc, app.getAppType())));
-			
-			cell = row.createCell();
-			cell.setStyleClass("electronic");
-			cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getElectronic()), Boolean.toString(app.getElectronic()))));
-
-			cell = row.createCell();
-			cell.setStyleClass("requiresLogin");
-			cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getRequiresLogin()), Boolean.toString(app.getRequiresLogin()))));
-
-			cell = row.createCell();
-			cell.setStyleClass("new_window");
-			cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getOpensInNewWindow()), Boolean.toString(app.getOpensInNewWindow()))));
-
-			
-			String URL = app.getUrl() != null ? app.getUrl() : "";
-			if (URL.length() > this.urlLength) {
-				URL = URL.substring(0, this.urlLength) + "...";
-			}
-			cell = row.createCell();
-			cell.setStyleClass("url");
-			cell.add(new Text(URL));
-
-			cell = row.createCell();
-			cell.setStyleClass("edit");
-			cell.add(edit);
-
-			cell = row.createCell();
-			cell.setStyleClass("lastColumn");
-			cell.setStyleClass("remove");
-			cell.add(delete);
-
-			iRow++;
 		}
 
 		Layer buttonLayer = new Layer(Layer.DIV);
@@ -516,8 +535,8 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		String nameValue = iwc.getParameter(NAME_INPUT);
 		String appTypeValue = iwc.getParameter(APP_TYPE_INPUT);
-		String requiresLoginValue = iwc.getParameter(REQ_LOGIN_INPUT);
-		String visibleValue = iwc.getParameter(VISIBLE_INPUT);
+		String requiresLoginValue = getBooleanValueInString(iwc.getParameter(REQ_LOGIN_INPUT), this.requiresLogin);
+		String visibleValue = getBooleanValueInString(iwc.getParameter(VISIBLE_INPUT), this.visibleApplication);
 		
 		Integer ageFromValue = null;
 		Integer ageToValue = null;
@@ -536,7 +555,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		String catValue = iwc.getParameter(CAT_INPUT);
 		String codeValue = iwc.getParameter(CODE_INPUT);
 		String opensInNewValue = iwc.getParameter(NEW_WIN_INPUT);
-		String hiddenFromGuestsValue = iwc.getParameter(HIDDEN_INPUT);
+		String hiddenFromGuestsValue = getBooleanValueInString(iwc.getParameter(HIDDEN_INPUT), this.hiddenFromGuests);
 
 		Form form = new Form();
 		form.setID("applicationCreator");
@@ -619,7 +638,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Application application = null;
 
-		if (applicationID > 0) {
+		if (applicationID >= 0) {
 			
 			try {
 				application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(new Integer(applicationID));
@@ -634,7 +653,7 @@ public class ApplicationCreator extends ApplicationBlock {
 					caseCode.setSelectedElement(application.getCaseCode().getPrimaryKey().toString());
 				}
 				newin.setSelected(application.getOpensInNewWindow());
-				form.add(new HiddenInput("id", Integer.toString(applicationID)));
+				form.add(new HiddenInput(APPLICATION_ID_PARAMETER, Integer.toString(applicationID)));
 			}
 			catch (FinderException f) {
 				f.printStackTrace();
@@ -819,6 +838,12 @@ public class ApplicationCreator extends ApplicationBlock {
 			
 		layer.add(clearLayer);
 		
+		if (!ListUtil.isEmpty(additionalComponents)) {
+			for (UIComponent component: additionalComponents) {
+				form.add(component);
+			}
+		}
+		
 		Layer buttonLayer = new Layer(Layer.DIV);
 		buttonLayer.setStyleClass("buttonLayer");
 		form.add(buttonLayer);
@@ -832,6 +857,32 @@ public class ApplicationCreator extends ApplicationBlock {
 		add(form);
 	}
 
+	protected Layer getFormSection(String label, Map<String, List<UIComponent>> formSections) {
+		Layer formSection = new Layer();
+		formSection.setStyleClass("formSection");
+		
+		Text heading = new Text(label);
+		heading.setStyleClass("formSectionTitle");
+		formSection.add(heading);
+		
+		if (formSections != null) {
+			for (Collection<UIComponent> formSectionItems: formSections.values()) {
+				Layer formItem = new Layer(Layer.DIV);
+				formItem.setStyleClass("formItem");
+				formSection.add(formItem);
+				
+				for (UIComponent formSectionItem: formSectionItems) {
+					formItem.add(formSectionItem);
+				}
+			}
+			
+			Layer clearLayer = new Layer(Layer.DIV);
+			clearLayer.setStyleClass("Clear");
+			formSection.add(clearLayer);
+		}
+		
+		return formSection;
+	}
 	
 	public void setURLLength(int urlLength) {
 		this.urlLength = urlLength;
@@ -849,4 +900,45 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		return sources;
 	}
+
+	protected boolean isRequiresLogin() {
+		return requiresLogin;
+	}
+
+	protected void setRequiresLogin(boolean requiresLogin) {
+		this.requiresLogin = requiresLogin;
+	}
+
+	protected boolean isVisibleApplication() {
+		return visibleApplication;
+	}
+
+	protected void setVisibleApplication(boolean visibleApplication) {
+		this.visibleApplication = visibleApplication;
+	}
+
+	protected boolean isHiddenFromGuests() {
+		return hiddenFromGuests;
+	}
+
+	protected void setHiddenFromGuests(boolean hiddenFromGuests) {
+		this.hiddenFromGuests = hiddenFromGuests;
+	}
+
+	protected boolean isCheckIfCanViewApplication() {
+		return checkIfCanViewApplication;
+	}
+
+	protected void setCheckIfCanViewApplication(boolean checkIfCanViewApplication) {
+		this.checkIfCanViewApplication = checkIfCanViewApplication;
+	}
+
+	protected List<UIComponent> getAdditionalComponents() {
+		return additionalComponents;
+	}
+
+	protected void setAdditionalComponents(List<UIComponent> additionalComponents) {
+		this.additionalComponents = additionalComponents;
+	}
+	
 }
