@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.12 2008/01/09 08:04:59 alexis Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.13 2008/08/05 08:39:24 valdas Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -20,18 +20,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.ejb.FinderException;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
+import com.idega.presentation.IWContext;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
+import com.idega.util.ListUtil;
 
 public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBusiness, ApplicationBusiness {
 
@@ -261,5 +268,63 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		catch (IDOLookupException e) {
 			throw new IDORuntimeException(e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public Collection<Application> getAvailableApplications(IWContext iwc) {
+		Collection<Application> applications = null;
+		try {
+			applications = getApplicationHome().findAll();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		if (ListUtil.isEmpty(applications)) {
+			return null;
+		}
+		if (iwc.isSuperAdmin()) {
+			return applications;
+		}
+		
+		List<Application> availableApplications = new ArrayList<Application>();
+		User currentUser = null;
+		try {
+			currentUser = iwc.getCurrentUser();
+		} catch(NotLoggedOnException e) {
+			e.printStackTrace();
+		}
+		UserBusiness userBusiness = null;
+		try {
+			userBusiness = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+		}
+		
+		Collection<Group> groups = null;
+		for (Application app: applications) {
+			groups = app.getGroups();
+			
+			if (ListUtil.isEmpty(groups)) {
+				availableApplications.add(app);
+			}
+			else {
+				if (currentUser != null) {
+					boolean applicationAdded = false;
+					for (Iterator<Group> it = groups.iterator(); (it.hasNext() && !applicationAdded);) {
+						try {
+							if (userBusiness.isMemberOfGroup(Integer.valueOf(it.next().getId()), currentUser)) {
+								applicationAdded = true;
+								availableApplications.add(app);
+							}
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		
+		return availableApplications;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusiness.java,v 1.8 2008/01/09 08:04:59 alexis Exp $
+ * $Id: ApplicationBusiness.java,v 1.9 2008/08/05 08:39:24 valdas Exp $
  * Created on Jan 19, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.business.IBOService;
+import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 
@@ -25,10 +26,10 @@ import com.idega.util.Age;
  * <p>
  * TODO laddi Describe Type ApplicationBusiness
  * </p>
- *  Last modified: $Date: 2008/01/09 08:04:59 $ by $Author: alexis $
+ *  Last modified: $Date: 2008/08/05 08:39:24 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public interface ApplicationBusiness extends IBOService, CaseBusiness {
 
@@ -85,4 +86,11 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getApplicationCategoryHome
 	 */
 	public ApplicationCategoryHome getApplicationCategoryHome() throws java.rmi.RemoteException;
+	
+	/**
+	 * Returns collection of available applications for current user
+	 * @param IWContext
+	 * @return Collection<Application>
+	 */
+	public Collection<Application> getAvailableApplications(IWContext iwc);
 }
