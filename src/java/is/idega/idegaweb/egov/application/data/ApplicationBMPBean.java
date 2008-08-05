@@ -30,6 +30,7 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
@@ -37,6 +38,7 @@ import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.Group;
 
 public class ApplicationBMPBean extends GenericEntity implements Application {
 
@@ -61,6 +63,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	private static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
 	private static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
+	private static final String EGOV_APPLICATION_GROUP = "EGOV_APPLICATION_GROUP";
 	private static final String EGOV_APPLICATION_ID = "EGOV_APPLICATION_ID";
 	private static final String TX_LOCALIZED_TEXT = "TX_LOCALIZED_TEXT";
 	private static final String TX_LOCALIZED_TEXT_ID = "TX_LOCALIZED_TEXT_ID";
@@ -181,6 +184,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_NAME_LOC_TEXT);
 		addManyToManyRelationShip(LocalizedText.class,EGOV_APPLICATION_URL_LOC_TEXT);
+		addManyToManyRelationShip(Group.class, EGOV_APPLICATION_GROUP);
 	}
 	
 	public LocalizedText getLocalizedText(int icLocaleId) {
@@ -633,5 +637,23 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 			return false;
 		}		
 		return true;
+	}
+
+	public void addGroup(Group group) throws IDOAddRelationshipException {
+		this.idoAddTo(group);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Collection<Group> getGroups() {
+		try {
+			return super.idoGetRelatedEntities(Group.class);
+		} catch (IDORelationshipException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void removeGroup(Group group) throws IDORemoveRelationshipException {
+		super.idoRemoveFrom(group);
 	}
 }

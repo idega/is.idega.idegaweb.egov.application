@@ -9,6 +9,8 @@ import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.user.data.Group;
 
 public interface Application extends IDOEntity {
 	
@@ -225,4 +227,10 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#removeLocalizedEntries
 	 */
 	public boolean removeLocalizedEntries();
+	
+	public void addGroup(Group group) throws IDOAddRelationshipException;
+	
+	public Collection<Group> getGroups();
+	
+	public void removeGroup(Group group) throws IDORemoveRelationshipException;
 }
