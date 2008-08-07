@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryCreator.java,v 1.15 2008/07/15 13:29:18 laddi Exp $ Created on
+ * $Id: ApplicationCategoryCreator.java,v 1.16 2008/08/07 13:43:35 valdas Exp $ Created on
  * Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -15,7 +15,6 @@ import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextHome;
 import com.idega.builder.business.BuilderLogic;
@@ -430,7 +428,6 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			
 			while (iter.hasNext()) {
 				Application app = (Application) iter.next();
-				CaseCode code = app.getCaseCode();
 				
 				row = table.createRow();
 				
