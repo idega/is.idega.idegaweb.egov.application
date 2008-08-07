@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.35 2008/08/05 08:40:58 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.36 2008/08/07 13:44:12 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -11,6 +11,7 @@ package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.application.business.ApplicationType;
 import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -18,8 +19,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.faces.application.FacesMessage;
@@ -81,7 +80,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String NEW_WIN_INPUT = "newin";
 	private static final String HIDDEN_INPUT = "hidden";
 	
-	protected static final String APPLICATION_ID_PARAMETER = "id";
+	public static final String APPLICATION_ID_PARAMETER = "prm_application_id";
 	
 	public static final String ACTION = "prm_action";
 	public static final String SAVE_ACTION = "save";
@@ -98,6 +97,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	private boolean visibleApplication;
 	private boolean hiddenFromGuests;
 	private boolean checkIfCanViewApplication;
+	private boolean addSaveButton = true;
 	
 	private List<UIComponent> additionalComponents;
 	
@@ -432,8 +432,11 @@ public class ApplicationCreator extends ApplicationBlock {
 	
 				cell = row.createCell();
 				cell.setStyleClass("category");
-				cell.add(new Text(app.getCategory().getName()));
-	
+				ApplicationCategory category = app.getCategory();
+				if (category != null) {
+					cell.add(new Text(category.getName()));
+				}
+				
 				cell = row.createCell();
 				cell.setStyleClass("caseCode");
 				if (code != null) {
@@ -648,7 +651,9 @@ public class ApplicationCreator extends ApplicationBlock {
 				visible.setSelected(application.getVisible());
 				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : "");
 				ageTo.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeTo()) : "");
-				category.setSelectedElement(application.getCategory().getPrimaryKey().toString());
+				if (application.getCategory() != null) {
+					category.setSelectedElement(application.getCategory().getPrimaryKey().toString());
+				}
 				if (application.getCaseCode() != null) {
 					caseCode.setSelectedElement(application.getCaseCode().getPrimaryKey().toString());
 				}
@@ -851,37 +856,12 @@ public class ApplicationCreator extends ApplicationBlock {
 		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "prm_action", "list");
 		buttonLayer.add(back);
 		
-		SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
-		buttonLayer.add(save);
-		
-		add(form);
-	}
-
-	protected Layer getFormSection(String label, Map<String, List<UIComponent>> formSections) {
-		Layer formSection = new Layer();
-		formSection.setStyleClass("formSection");
-		
-		Text heading = new Text(label);
-		heading.setStyleClass("formSectionTitle");
-		formSection.add(heading);
-		
-		if (formSections != null) {
-			for (Collection<UIComponent> formSectionItems: formSections.values()) {
-				Layer formItem = new Layer(Layer.DIV);
-				formItem.setStyleClass("formItem");
-				formSection.add(formItem);
-				
-				for (UIComponent formSectionItem: formSectionItems) {
-					formItem.add(formSectionItem);
-				}
-			}
-			
-			Layer clearLayer = new Layer(Layer.DIV);
-			clearLayer.setStyleClass("Clear");
-			formSection.add(clearLayer);
+		if (addSaveButton) {
+			SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
+			buttonLayer.add(save);
 		}
 		
-		return formSection;
+		add(form);
 	}
 	
 	public void setURLLength(int urlLength) {
@@ -939,6 +919,14 @@ public class ApplicationCreator extends ApplicationBlock {
 
 	protected void setAdditionalComponents(List<UIComponent> additionalComponents) {
 		this.additionalComponents = additionalComponents;
+	}
+
+	public boolean isAddSaveButton() {
+		return addSaveButton;
+	}
+
+	public void setAddSaveButton(boolean addSaveButton) {
+		this.addSaveButton = addSaveButton;
 	}
 	
 }

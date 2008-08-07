@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.20 2008/06/27 12:26:14 alexis Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.21 2008/08/07 13:44:12 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,10 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.faces.component.UIComponent;
 
 import com.idega.block.text.data.LocalizedText;
 import com.idega.business.IBOLookup;
@@ -25,6 +29,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
@@ -107,7 +112,7 @@ public abstract class ApplicationBlock extends Block {
 		boolean first = true;
 		Iterator<ListItem> iterator = applicationList.iterator();
 		while (iterator.hasNext()) {
-			ListItem element = (ListItem) iterator.next();
+			ListItem element = iterator.next();
 			if (first) {
 				element.setStyleClass("firstChild");
 				first = false;
@@ -143,5 +148,31 @@ public abstract class ApplicationBlock extends Block {
 	
 	protected ApplicationTypesManager getAppTypesManager() {
 		return (ApplicationTypesManager)WFUtil.getBeanInstance(appTypesManagerBeanIdentifier);
+	}
+	
+	protected Layer getFormSection(String label, Map<String, List<UIComponent>> formSectionItems) {
+		Layer formSection = new Layer();
+		formSection.setStyleClass("formSection");
+		
+		Text heading = new Text(label);
+		heading.setStyleClass("formSectionTitle");
+		formSection.add(heading);
+		
+		if (formSectionItems != null) {
+			for (Collection<UIComponent> sectionItems: formSectionItems.values()) {
+				Layer formItem = new Layer(Layer.DIV);
+				formItem.setStyleClass("formItem");
+				formSection.add(formItem);
+				
+				for (UIComponent formSectionItem: sectionItems) {
+					formItem.add(formSectionItem);
+				}
+			}
+		}
+		
+		Layer clearLayer = new Layer(Layer.DIV);
+		clearLayer.setStyleClass("Clear");
+		formSection.add(clearLayer);
+		return formSection;
 	}
 }
