@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.13 2008/08/05 08:39:24 valdas Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.14 2008/08/07 13:44:37 valdas Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -15,14 +15,17 @@ import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
 import is.idega.idegaweb.egov.application.data.ApplicationHome;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.ejb.FinderException;
+
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.business.IBOLookup;
@@ -39,8 +42,11 @@ import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
+import com.idega.util.StringUtil;
 
 public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBusiness, ApplicationBusiness {
+
+	private static final long serialVersionUID = 3838991543604095561L;
 
 	public Application getApplication(String caseCode) throws FinderException {
 		return getApplicationHome().findByCaseCode(getCaseCode(caseCode));
@@ -326,5 +332,45 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 		
 		return availableApplications;
+	}
+	
+	public Collection<Application> getUnhandledApplications(String[] caseCodes) {
+		try {
+			return getApplicationHome().findAllByCaseCodesAndStatuses(caseCodes, getStatusesForOpenCases());
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Collection<Application> getApprovedApplications(String[] caseCodes) {
+		try {
+			return getApplicationHome().findAllByCaseCodesAndStatuses(caseCodes, getStatusesForApprovedCases());
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public Collection<Application> getRejectedApplications(String[] caseCodes) {
+		try {
+			return getApplicationHome().findAllByCaseCodesAndStatuses(caseCodes, getStatusesForRejectedCases());
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getApplicationName(Application application, Locale locale) {
+		String name = application.getLocalizedName(locale);
+		if (StringUtil.isEmpty(name)) {
+			name = application.getNameByLocale(locale);
+		}
+		if (StringUtil.isEmpty(name)) {
+			name = application.getName();
+		}
+		return name;
 	}
 }
