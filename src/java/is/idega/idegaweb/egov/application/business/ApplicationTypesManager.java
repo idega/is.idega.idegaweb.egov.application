@@ -6,20 +6,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
  * 
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/02/05 09:11:19 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/02 12:51:57 $ by $Author: civilis $
  *
  */
-public class ApplicationTypesManager implements ApplicationListener, ApplicationContextAware {
+@Scope("singleton")
+@Service
+public class ApplicationTypesManager implements ApplicationContextAware {
 	
 	private ApplicationContext applicationContext;
 	private Map<String, String> appTypesBeanIdentifiers;
@@ -46,24 +49,26 @@ public class ApplicationTypesManager implements ApplicationListener, Application
 		return null;
 	}
 
-	public void onApplicationEvent(ApplicationEvent applicationEvent) {
-		
-		if(applicationEvent instanceof ApplicationTypePluggedInEvent) {
-			
-			ApplicationTypePluggedInEvent ae = (ApplicationTypePluggedInEvent)applicationEvent;
-			getAppTypesBeanIdentifiers().put(ae.getAppType().getType(), ae.getAppTypeBeanIdentifier());
-		}
-	}
-
 	public void setApplicationContext(ApplicationContext applicationcontext)
 			throws BeansException {
 		applicationContext = applicationcontext;
 	}
+	
+	@Autowired(required=false)
+	public void setApplicationTypes(List<ApplicationType> appTypes) {
+		
+		appTypesBeanIdentifiers = new HashMap<String, String>(appTypes == null ? 0 : appTypes.size());
+		
+		if(appTypes != null) {
+			
+			for (ApplicationType appType : appTypes) {
+				
+				appTypesBeanIdentifiers.put(appType.getType(), appType.getBeanIdentifier());
+			}
+		}
+	}
 
 	public Map<String, String> getAppTypesBeanIdentifiers() {
-		
-		if(appTypesBeanIdentifiers == null)
-			appTypesBeanIdentifiers = new HashMap<String, String>();
 		
 		return appTypesBeanIdentifiers;
 	}

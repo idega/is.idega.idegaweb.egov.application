@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.25 2008/07/11 06:29:49 alexis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.26 2008/09/02 12:54:44 civilis Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -30,6 +30,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -51,6 +53,9 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 	private static final String PROP_FILE_ENCODING = "file.encoding";
 
 	private static final String PROP_VALUE_UPDATE_TIMES_CLICKED_DISABLED = "disabled";
+	
+	@Autowired
+	private ApplicationTypesManager applicationTypesManager;
 
 	public void init(FilterConfig arg0) {
 	}
@@ -92,7 +97,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			
 			if(application.getAppType() != null) {
 				
-				ApplicationType at = getAppTypesManager().getApplicationType(application.getAppType());
+				ApplicationType at = getApplicationTypesManager().getApplicationType(application.getAppType());
 				url = at.getUrl(iwc, application);
 			} else
 				url = application.getUrlByLocale(iwc.getCurrentLocale());
@@ -228,9 +233,12 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			throw new IBORuntimeException(e);
 		}
 	}
-
-	protected ApplicationTypesManager getAppTypesManager() {
+	
+	protected ApplicationTypesManager getApplicationTypesManager() {
 		
-		return ELUtil.getInstance().getBean(ApplicationBlock.appTypesManagerBeanIdentifier);
+		if(applicationTypesManager == null)
+			ELUtil.getInstance().autowire(this);
+		
+		return applicationTypesManager;
 	}
 }

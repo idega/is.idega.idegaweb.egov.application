@@ -7,27 +7,24 @@ import is.idega.idegaweb.egov.application.presentation.UIApplicationTypeURLHandl
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
- * Last modified: $Date: 2008/06/20 09:56:08 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/02 12:51:57 $ by $Author: civilis $
  *
  */
-public class ApplicationTypeURL implements ApplicationType, ApplicationContextAware, ApplicationListener {
+@Scope("singleton")
+@Service(ApplicationTypeURL.beanIdentifier)
+public class ApplicationTypeURL implements ApplicationType {
 
-	private ApplicationContext ctx;
-	private static final String beanIdentifier = "appTypeURL";
+	static final String beanIdentifier = "appTypeURL";
 	private static final String appType = "EGOV_URL";
 	
 	public ApplicationTypeHandlerComponent getHandlerComponent() {		
@@ -61,19 +58,8 @@ public class ApplicationTypeURL implements ApplicationType, ApplicationContextAw
 		app.setUrl(url);
 	}
 
-	public void setApplicationContext(ApplicationContext applicationcontext)
-			throws BeansException {
-		ctx = applicationcontext;		
-	}
-
-	public void onApplicationEvent(ApplicationEvent applicationevent) {
-		
-		if(applicationevent instanceof ContextRefreshedEvent) {
-			
-			ApplicationTypePluggedInEvent event = new ApplicationTypePluggedInEvent(this);
-			event.setAppTypeBeanIdentifier(beanIdentifier);
-			ctx.publishEvent(event);
-		}
+	public String getBeanIdentifier() {
+		return beanIdentifier;
 	}
 
 	public boolean afterStore(IWContext iwc, Application app) {

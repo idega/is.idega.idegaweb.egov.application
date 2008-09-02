@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.36 2008/08/07 13:44:12 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.37 2008/09/02 12:52:49 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.faces.application.FacesMessage;
@@ -209,7 +210,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 		app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
 		
-		ApplicationType applType = getAppTypesManager().getApplicationType(appType);		
+		ApplicationType applType = getApplicationTypesManager().getApplicationType(appType);		
 		if(applType != null) {
 			
 			app.setAppType(appType);
@@ -312,7 +313,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 		
 		if(!appType.equals("-1")) {
-			ApplicationType applType = getAppTypesManager().getApplicationType(appType);
+			ApplicationType applType = getApplicationTypesManager().getApplicationType(appType);
 			
 			if(applType != null) {
 				applType.getHandlerComponent().validate(iwc);
@@ -509,7 +510,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		menu.addMenuElement("-1", "Select");
 		
-		List<ApplicationType> appTypes = getAppTypesManager().getApplicationTypes();
+		List<ApplicationType> appTypes = getApplicationTypesManager().getApplicationTypes();
 		
 		for (ApplicationType appType : appTypes) {
 			
@@ -523,7 +524,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		if(appType != null && !CoreConstants.EMPTY.equals(appType)) {
 		
-			ApplicationType at = getAppTypesManager().getApplicationType(appType);
+			ApplicationType at = getApplicationTypesManager().getApplicationType(appType);
 			
 			if(at != null)
 				return at.getLabel(iwc);
@@ -677,7 +678,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		if(typeValue != null && !typeValue.trim().equals("")) {
 			appTypes.setSelectedElement(typeValue);
 			
-			ApplicationType appType = getAppTypesManager().getApplicationType(typeValue);
+			ApplicationType appType = getApplicationTypesManager().getApplicationType(typeValue);
 			
 			if(appType != null)
 				handlerContainer.add(appType.getHandlerComponent().getUIComponent(iwc, application));

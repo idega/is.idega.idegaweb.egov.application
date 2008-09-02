@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.21 2008/08/07 13:44:12 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.22 2008/09/02 12:52:49 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.faces.component.UIComponent;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.idega.block.text.data.LocalizedText;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -35,17 +37,17 @@ import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.util.Age;
-import com.idega.webface.WFUtil;
+import com.idega.util.expression.ELUtil;
 
 public abstract class ApplicationBlock extends Block {
 
-	public static final String appTypesManagerBeanIdentifier = "appTypesManager";
+	@Autowired private ApplicationTypesManager applicationTypesManager;
 	
 	public static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	public static final String PARAMETER_APPLICATION_PK = "prm_app_application_pk";
 	public static final String PARAMETER_IDENTIFIER_NAME = "prm_app_identifier_name";
 	public static final String ATTRIBUTE_USE_AGE_RESTRICTION = "application_use_age_restriction";
-
+	
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
 	}
@@ -146,10 +148,6 @@ public abstract class ApplicationBlock extends Block {
 		}
 	}
 	
-	protected ApplicationTypesManager getAppTypesManager() {
-		return (ApplicationTypesManager)WFUtil.getBeanInstance(appTypesManagerBeanIdentifier);
-	}
-	
 	protected Layer getFormSection(String label, Map<String, List<UIComponent>> formSectionItems) {
 		Layer formSection = new Layer();
 		formSection.setStyleClass("formSection");
@@ -174,5 +172,18 @@ public abstract class ApplicationBlock extends Block {
 		clearLayer.setStyleClass("Clear");
 		formSection.add(clearLayer);
 		return formSection;
+	}
+
+	public ApplicationTypesManager getApplicationTypesManager() {
+		
+		if(applicationTypesManager == null)
+			ELUtil.getInstance().autowire(this);
+		
+		return applicationTypesManager;
+	}
+
+	public void setApplicationTypesManager(
+			ApplicationTypesManager applicationTypesManager) {
+		this.applicationTypesManager = applicationTypesManager;
 	}
 }

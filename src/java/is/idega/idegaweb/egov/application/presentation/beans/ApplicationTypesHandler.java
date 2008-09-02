@@ -12,6 +12,10 @@ import java.util.logging.Logger;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -22,14 +26,16 @@ import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/02/20 17:29:27 $ by $Author: anton $
+ * Last modified: $Date: 2008/09/02 12:54:24 $ by $Author: civilis $
  *
  */
+@Scope("singleton")
+@Service("appTypesHandler")
 public class ApplicationTypesHandler {
 	
-	private ApplicationTypesManager applicationTypesManager;
+	@Autowired private ApplicationTypesManager applicationTypesManager;
 
 	public org.jdom.Document getApplicationTypeHandler(Integer appId, String applicationType) {
 		
