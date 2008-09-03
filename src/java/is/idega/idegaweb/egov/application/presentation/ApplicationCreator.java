@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.37 2008/09/02 12:52:49 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.38 2008/09/03 07:23:08 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -877,7 +877,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		sources.add(web2.getBundleURIToJQueryLib());
 		sources.add(CoreConstants.DWR_ENGINE_SCRIPT);
 		sources.add(APP_TYPES_HANDLER_ENGINE);
-		sources.add(getBundle(iwc).getVirtualPathWithFileNameString(APP_CREATOR_APP_TYPES));
+		sources.add(iwc.getIWMainApplication().getBundle(ApplicationBlock.BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString(APP_CREATOR_APP_TYPES));
 		
 		return sources;
 	}
