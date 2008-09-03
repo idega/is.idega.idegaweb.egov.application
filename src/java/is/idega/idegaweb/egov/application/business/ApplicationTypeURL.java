@@ -15,9 +15,9 @@ import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  *
- * Last modified: $Date: 2008/09/02 12:51:57 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/03 13:50:51 $ by $Author: civilis $
  *
  */
 @Scope("singleton")
@@ -56,6 +56,10 @@ public class ApplicationTypeURL implements ApplicationType {
 		
 		app.setElectronic("Y".equalsIgnoreCase(elec));
 		app.setUrl(url);
+	}
+	
+	public boolean isVisible(Application app) {
+		return true;
 	}
 
 	public String getBeanIdentifier() {
