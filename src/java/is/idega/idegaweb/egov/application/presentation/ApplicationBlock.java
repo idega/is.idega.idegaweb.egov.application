@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.22 2008/09/02 12:52:49 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.23 2008/09/03 13:51:24 civilis Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -79,7 +79,15 @@ public abstract class ApplicationBlock extends Block {
 				throw new IBORuntimeException(re);
 			}
 			
-			if (application.getVisible() && (!checkAges || displayApplication) && !(iwc.isLoggedOn() && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(iwc.getCurrentUser()))) {
+			final boolean isVisibile = 
+				application.getVisible() 
+				&& (
+						application.getAppType() == null || (
+								application.getAppType() != null && getApplicationTypesManager().getApplicationType(application.getAppType()).isVisible(application)
+								)
+					);
+			
+			if (isVisibile && (!checkAges || displayApplication) && !(iwc.isLoggedOn() && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(iwc.getCurrentUser()))) {
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");
