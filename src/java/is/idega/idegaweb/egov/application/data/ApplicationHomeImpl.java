@@ -12,6 +12,7 @@ import com.idega.data.IDOFactory;
 
 public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 
+	@Override
 	public Class getEntityInterfaceClass() {
 		return Application.class;
 	}
