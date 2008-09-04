@@ -7,6 +7,12 @@
 	</properties>
 
 	<body>
+		<release version="1.0.18" date="2008-09-04">
+			<action dev="laddi" type="update">
+				Added new getUserChooser method to allow more extension capabilities.
+			</action>
+		</release>
+
 		<release version="1.0.17" date="2008-05-02">
 			<action dev="laddi" type="update">
 				Changed so that parameters are retained if they are added to the application's URL.
