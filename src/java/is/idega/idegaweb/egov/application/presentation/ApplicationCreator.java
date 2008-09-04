@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.38 2008/09/03 07:23:08 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.39 2008/09/04 08:22:04 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -99,6 +99,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	private boolean hiddenFromGuests;
 	private boolean checkIfCanViewApplication;
 	private boolean addSaveButton = true;
+	private boolean addBackButton = true;
 	
 	private List<UIComponent> additionalComponents;
 	
@@ -850,16 +851,20 @@ public class ApplicationCreator extends ApplicationBlock {
 			}
 		}
 		
-		Layer buttonLayer = new Layer(Layer.DIV);
-		buttonLayer.setStyleClass("buttonLayer");
-		form.add(buttonLayer);
-		
-		SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "prm_action", "list");
-		buttonLayer.add(back);
-		
-		if (addSaveButton) {
-			SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
-			buttonLayer.add(save);
+		if (addSaveButton || addBackButton) {
+			Layer buttonLayer = new Layer(Layer.DIV);
+			buttonLayer.setStyleClass("buttonLayer");
+			form.add(buttonLayer);
+			
+			if (addBackButton) {
+				SubmitButton back = new SubmitButton(this.iwrb.getLocalizedString("back", "Back"), "prm_action", "list");
+				buttonLayer.add(back);
+			}
+			
+			if (addSaveButton) {
+				SubmitButton save = new SubmitButton(this.iwrb.getLocalizedString("save", "Save"), "prm_action", "save");
+				buttonLayer.add(save);
+			}
 		}
 		
 		add(form);
@@ -928,6 +933,14 @@ public class ApplicationCreator extends ApplicationBlock {
 
 	public void setAddSaveButton(boolean addSaveButton) {
 		this.addSaveButton = addSaveButton;
+	}
+
+	public boolean isAddBackButton() {
+		return addBackButton;
+	}
+
+	public void setAddBackButton(boolean addBackButton) {
+		this.addBackButton = addBackButton;
 	}
 	
 }
