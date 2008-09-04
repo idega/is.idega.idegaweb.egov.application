@@ -2,16 +2,20 @@ package is.idega.idegaweb.egov.application.data;
 
 
 import java.util.Collection;
+
 import javax.ejb.CreateException;
-import com.idega.data.IDOHome;
-import com.idega.block.process.data.CaseCode;
 import javax.ejb.FinderException;
+
+import com.idega.block.process.data.CaseCode;
+import com.idega.data.IDOHome;
 
 public interface ApplicationHome extends IDOHome {
 
 	public Application create() throws CreateException;
 
 	public Application findByPrimaryKey(Object pk) throws FinderException;
+	
+	public Collection<Application> findByMultiplePrimaryKey(Collection pk) throws FinderException;
 
 	public Application findByCaseCode(CaseCode caseCode) throws FinderException;
 

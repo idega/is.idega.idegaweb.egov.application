@@ -1,6 +1,7 @@
 package is.idega.idegaweb.egov.application.data;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.ejb.CreateException;
@@ -23,6 +24,16 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 
 	public Application findByPrimaryKey(Object pk) throws FinderException {
 		return (Application) super.findByPrimaryKeyIDO(pk);
+	}
+	
+	public Collection<Application> findByMultiplePrimaryKey(Collection pks) throws javax.ejb.FinderException{
+		Collection<Application> apps = new ArrayList<Application>();
+		
+		for(String pk : (Collection<String>)pks) {
+			apps.add(findByPrimaryKey(pk));
+		}
+		
+		return apps;
 	}
 
 	public Application findByCaseCode(CaseCode caseCode) throws FinderException {
