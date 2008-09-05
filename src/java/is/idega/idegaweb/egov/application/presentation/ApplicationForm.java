@@ -308,6 +308,10 @@ public abstract class ApplicationForm extends Block {
 		}
 		children.add(user);
 
+		return getUserChooser(iwc, applicationPK, user, chosenUser, children, parameterName, iwrb);
+	}
+	
+	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, Collection children, String parameterName, IWResourceBundle iwrb) throws RemoteException {
 		Application application = null;
 		if (applicationPK != null) {
 			try {
