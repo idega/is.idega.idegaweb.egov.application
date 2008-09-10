@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.14 2008/08/07 13:44:37 valdas Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.15 2008/09/10 13:00:34 anton Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -177,16 +177,29 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
+		Age[] ages;
+		Collection coll = null;
+		Iterator iter = null;
 		try {
-			Collection coll = famLog.getChildrenInCustodyOf(user);
-			Iterator iter = coll.iterator();
-			Age[] ages = new Age[coll.size() + 1];
-			int i = 0;
-			Date date = user.getDateOfBirth();
-			if (date != null) {
-				ages[i] = new Age(date);
-			}
-			i++;
+			coll = famLog.getChildrenInCustodyOf(user);
+			iter = coll.iterator();
+			ages = new Age[coll.size() + 1];
+		} catch (NoChildrenFound e) {
+				//User has no children...
+			ages = new Age[1];
+		} catch (RemoteException e) {
+			ages = new Age[1];
+		}
+			
+		int i = 0;
+		Date date = user.getDateOfBirth();
+		if (date != null) {
+			ages[i] = new Age(date);
+		}
+		i++;
+		if(coll != null) {
+			iter = coll.iterator();
+			
 			while (iter.hasNext()) {
 				User child = (User) iter.next();
 				date = child.getDateOfBirth();
@@ -195,15 +208,8 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 				}
 				i++;
 			}
-			return ages;
-		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
-		}
-		catch (NoChildrenFound e) {
-			//User has no children...
-		}
-		return null;
+		}		
+		return ages;
 	}
 
 	public boolean displayApplicationForAges(Application application, Age[] ages) {
