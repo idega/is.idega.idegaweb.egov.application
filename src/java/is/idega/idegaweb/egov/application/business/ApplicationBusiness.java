@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusiness.java,v 1.10 2008/08/07 13:44:37 valdas Exp $
+ * $Id: ApplicationBusiness.java,v 1.11 2008/09/25 10:33:58 valdas Exp $
  * Created on Jan 19, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.util.Age;
  * <p>
  * TODO laddi Describe Type ApplicationBusiness
  * </p>
- *  Last modified: $Date: 2008/08/07 13:44:37 $ by $Author: valdas $
+ *  Last modified: $Date: 2008/09/25 10:33:58 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface ApplicationBusiness extends IBOService, CaseBusiness {
 
@@ -95,12 +95,6 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	 * @return Collection<Application>
 	 */
 	public Collection<Application> getAvailableApplications(IWContext iwc);
-	
-	public Collection<Application> getUnhandledApplications(String[] caseCodes);
-	
-	public Collection<Application> getApprovedApplications(String[] caseCodes);
-
-	public Collection<Application> getRejectedApplications(String[] caseCodes);
 	
 	public String getApplicationName(Application application, Locale locale);
 }

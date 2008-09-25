@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.15 2008/09/10 13:00:34 anton Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.16 2008/09/25 10:33:58 valdas Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -338,35 +338,6 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 		
 		return availableApplications;
-	}
-	
-	public Collection<Application> getUnhandledApplications(String[] caseCodes) {
-		try {
-			return getApplicationHome().findAllByCaseCodesAndStatuses(caseCodes, getStatusesForOpenCases());
-		} catch (FinderException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public Collection<Application> getApprovedApplications(String[] caseCodes) {
-		try {
-			return getApplicationHome().findAllByCaseCodesAndStatuses(caseCodes, getStatusesForApprovedCases());
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public Collection<Application> getRejectedApplications(String[] caseCodes) {
-		try {
-			return getApplicationHome().findAllByCaseCodesAndStatuses(caseCodes, getStatusesForRejectedCases());
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 	
 	public String getApplicationName(Application application, Locale locale) {

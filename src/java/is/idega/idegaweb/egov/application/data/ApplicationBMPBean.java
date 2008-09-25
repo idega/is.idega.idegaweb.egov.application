@@ -20,8 +20,6 @@ import java.util.logging.Level;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import com.idega.block.process.data.Case;
-import com.idega.block.process.data.CaseBMPBean;
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextBMPBean;
@@ -35,7 +33,6 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.data.query.Column;
-import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
@@ -549,29 +546,6 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		log(Level.INFO, "Query to get application by URL: " + query);
 		
 		return this.idoFindPKsByQuery(query);
-	}
-	
-	public Collection ejbFindAllByCaseCodesAndStatuses(String[] caseCodes, String[] statuses) throws FinderException {
-		Table applicationTable = new Table(this);
-		Table processTable = new Table(Case.class);
-		Table caseCodeTable = new Table(CaseCode.class);
-		
-		SelectQuery query = new SelectQuery(applicationTable);
-		query.addColumn(applicationTable.getColumn(getIDColumnName()));
-		
-		try {
-			query.addJoin(processTable, caseCodeTable);
-			query.addJoin(applicationTable, caseCodeTable);
-		}
-		catch (IDORelationshipException ire) {
-			throw new FinderException(ire.getMessage());
-		}
-		
-		query.addCriteria(new InCriteria(applicationTable.getColumn(CASE_CODE), caseCodes));
-		query.addCriteria(new InCriteria(processTable.getColumn(CaseBMPBean.COLUMN_CASE_STATUS), statuses));
-		query.addGroupByColumn(applicationTable, getIDColumnName());
-
-		return idoFindPKsByQuery(query);
 	}
 		
 	private String getQueryForDeletingLocalizedTextEntries(Collection localizedNamesIds, Collection localizedUrlIds){

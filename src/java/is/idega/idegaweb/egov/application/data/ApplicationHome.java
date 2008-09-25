@@ -34,6 +34,4 @@ public interface ApplicationHome extends IDOHome {
 	public Application findByCategoryAndPriority(ApplicationCategory category, int priority) throws FinderException;
 
 	public Collection<Application> findAllByApplicationUrl(String appUrl) throws FinderException;
-
-	public Collection<Application> findAllByCaseCodesAndStatuses(String[] caseCodes, String[] statuses) throws FinderException;
 }
