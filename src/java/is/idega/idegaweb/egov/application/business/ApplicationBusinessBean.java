@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.16 2008/09/25 10:33:58 valdas Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.17 2008/10/02 14:26:38 valdas Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -283,10 +283,10 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	}
 
 	@SuppressWarnings("unchecked")
-	public Collection<Application> getAvailableApplications(IWContext iwc) {
+	public Collection<Application> getAvailableApplications(IWContext iwc, String caseCode) {
 		Collection<Application> applications = null;
 		try {
-			applications = getApplicationHome().findAll();
+			applications = StringUtil.isEmpty(caseCode) ? getApplicationHome().findAll() : getApplicationHome().findAllByCaseCode(caseCode);
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}

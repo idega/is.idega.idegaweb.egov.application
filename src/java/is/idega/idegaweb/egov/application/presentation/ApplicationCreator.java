@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.39 2008/09/04 08:22:04 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.40 2008/10/02 14:26:37 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -100,6 +100,8 @@ public class ApplicationCreator extends ApplicationBlock {
 	private boolean checkIfCanViewApplication;
 	private boolean addSaveButton = true;
 	private boolean addBackButton = true;
+	
+	private String caseCode;
 	
 	private List<UIComponent> additionalComponents;
 	
@@ -336,7 +338,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 	
 	private void listExisting(IWContext iwc) throws RemoteException, FinderException {
-		Collection<Application> applications = getApplicationBusiness(iwc).getAvailableApplications(iwc);
+		Collection<Application> applications = getApplicationBusiness(iwc).getAvailableApplications(iwc, getCaseCode());
 		
 		Form form = new Form();
 		form.setID("applicationCreator");
@@ -943,4 +945,11 @@ public class ApplicationCreator extends ApplicationBlock {
 		this.addBackButton = addBackButton;
 	}
 	
+	public void setCaseCode(String caseCode) {
+		this.caseCode = caseCode;
+	}
+	
+	public String getCaseCode() {
+		return caseCode;
+	}
 }
