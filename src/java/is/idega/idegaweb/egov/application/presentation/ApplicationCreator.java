@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.40 2008/10/02 14:26:37 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.41 2008/10/02 14:29:19 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -641,6 +641,9 @@ public class ApplicationCreator extends ApplicationBlock {
 		for (CaseCode code : caseCodes) {
 			caseCode.addMenuElement(code.getPrimaryKey().toString(), code.getDescriptionLocalizedKey() != null ? this.iwrb.getLocalizedString(code.getDescriptionLocalizedKey(), code.getDescription()) : code.getDescription());
 			caseCode.setSelectedElement(codeValue);
+		}
+		if (!StringUtil.isEmpty(this.caseCode)) {
+			caseCode.setSelectedElement(this.caseCode);
 		}
 		
 		Application application = null;
