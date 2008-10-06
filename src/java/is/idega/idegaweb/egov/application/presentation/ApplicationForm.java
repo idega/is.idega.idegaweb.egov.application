@@ -68,6 +68,7 @@ public abstract class ApplicationForm extends Block {
 	private Map iPhaseErrors;
 	private Map iErrors;
 
+	@Override
 	public void main(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_NO_USER)) {
 			setError(PARAMETER_NO_USER, getResourceBundle(iwc).getLocalizedString("application_error.no_user_selected", "No user selected."));
@@ -76,6 +77,7 @@ public abstract class ApplicationForm extends Block {
 		present(iwc);
 	}
 
+	@Override
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
 	}
