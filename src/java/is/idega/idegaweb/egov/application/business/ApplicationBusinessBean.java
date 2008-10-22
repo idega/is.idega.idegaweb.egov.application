@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.17 2008/10/02 14:26:38 valdas Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.18 2008/10/22 14:51:29 valdas Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -37,12 +37,14 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.group.GroupsFilterEngine;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
+import com.idega.util.expression.ELUtil;
 
 public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBusiness, ApplicationBusiness {
 
@@ -311,6 +313,9 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 			e.printStackTrace();
 		}
 		
+		GroupsFilterEngine groupsFilter = ELUtil.getInstance().getBean(GroupsFilterEngine.SPRING_BEAN_IDENTIFIER);
+		Collection<Group> userGroups = groupsFilter.getUserGroups(iwc);
+		
 		Collection<Group> groups = null;
 		for (Application app: applications) {
 			groups = app.getGroups();
@@ -321,9 +326,12 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 			else {
 				if (currentUser != null) {
 					boolean applicationAdded = false;
+					Group group = null;
 					for (Iterator<Group> it = groups.iterator(); (it.hasNext() && !applicationAdded);) {
+						group = it.next();
 						try {
-							if (userBusiness.isMemberOfGroup(Integer.valueOf(it.next().getId()), currentUser)) {
+							if (userBusiness.isGroupUnderUsersTopGroupNode(iwc, group, currentUser, userGroups) || 
+									userBusiness.isMemberOfGroup(Integer.valueOf(group.getId()), currentUser)) {
 								applicationAdded = true;
 								availableApplications.add(app);
 							}
