@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.41 2008/10/02 14:29:19 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.42 2008/11/04 12:32:08 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -105,6 +105,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	
 	private List<UIComponent> additionalComponents;
 	
+	@Override
 	public void present(IWContext iwc) throws Exception {
 		
 		this.iwrb = super.getResourceBundle(iwc);
@@ -167,6 +168,11 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Integer ageFrom = null;
 		Integer ageTo = null;
+		
+		if(!validate(iwc)) {
+			return null;
+		}
+		
 		try {
 			ageFrom = iwc.isParameterSet(AGE_FROM_INPUT) ? new Integer(iwc.getParameter(AGE_FROM_INPUT)) : null;
 		} catch(NumberFormatException exp) {
@@ -184,10 +190,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		String opensInNew = iwc.getParameter(NEW_WIN_INPUT);
 		String hiddenFromGuests = getBooleanValueInString(iwc.getParameter(HIDDEN_INPUT), this.hiddenFromGuests);
 		
-		if(!validate(iwc)) {
-			return null;
-		}
-
 		Application app = null;
 		if (id != null) {
 			try {
@@ -284,14 +286,18 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Integer ageFrom = null;
 		Integer ageTo = null;
+		int categoryId = -1;
 		
-				
+		try {
+			categoryId = iwc.isParameterSet(CAT_INPUT) ? Integer.valueOf(iwc.getParameter(CAT_INPUT)) : null;
+		} catch(NumberFormatException e) {
+			iwc.addMessage(CAT_INPUT, new FacesMessage(this.iwrb.getLocalizedString("invalid_category", "Category must be selected")));
+		}
 		try {
 			ageFrom = iwc.isParameterSet(AGE_FROM_INPUT) ? new Integer(iwc.getParameter(AGE_FROM_INPUT)) : null;
 		} catch(NumberFormatException exp) {
 			iwc.addMessage(AGE_FROM_INPUT, new FacesMessage(this.iwrb.getLocalizedString("not_number", "The value should be a number")));
 		}
-		
 		try {
 			ageTo = iwc.isParameterSet(AGE_TO_INPUT) ? new Integer(iwc.getParameter(AGE_TO_INPUT)) : null;
 		} catch(NumberFormatException exp) {
