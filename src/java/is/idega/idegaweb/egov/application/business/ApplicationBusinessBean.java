@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.18 2008/10/22 14:51:29 valdas Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.19 2008/11/04 12:42:05 valdas Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -314,7 +314,7 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 		
 		GroupsFilterEngine groupsFilter = ELUtil.getInstance().getBean(GroupsFilterEngine.SPRING_BEAN_IDENTIFIER);
-		Collection<Group> userGroups = groupsFilter.getUserGroups(iwc);
+		Collection<Group> userGroups = groupsFilter.getUserGroups(iwc, false);
 		
 		Collection<Group> groups = null;
 		for (Application app: applications) {
