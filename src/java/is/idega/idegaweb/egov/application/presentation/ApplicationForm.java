@@ -9,6 +9,7 @@ package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.NoChildrenFound;
+import is.idega.idegaweb.egov.application.ApplicationConstants;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.data.Application;
 
@@ -71,7 +72,7 @@ public abstract class ApplicationForm extends Block {
 
 	@Override
 	public void main(IWContext iwc) {
-		PresentationUtil.addStyleSheetToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("style/application.css"));
+		PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/application.css"));
 		if (iwc.isParameterSet(PARAMETER_NO_USER)) {
 			setError(PARAMETER_NO_USER, getResourceBundle(iwc).getLocalizedString("application_error.no_user_selected", "No user selected."));
 		}
