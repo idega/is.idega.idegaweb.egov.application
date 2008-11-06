@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.23 2008/09/03 13:51:24 civilis Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.24 2008/11/06 19:26:50 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -37,6 +37,7 @@ import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.util.Age;
+import com.idega.util.PresentationUtil;
 import com.idega.util.expression.ELUtil;
 
 public abstract class ApplicationBlock extends Block {
@@ -48,11 +49,14 @@ public abstract class ApplicationBlock extends Block {
 	public static final String PARAMETER_IDENTIFIER_NAME = "prm_app_identifier_name";
 	public static final String ATTRIBUTE_USE_AGE_RESTRICTION = "application_use_age_restriction";
 	
+	@Override
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
 	}
 	
+	@Override
 	public void main(IWContext iwc) throws Exception {
+		PresentationUtil.addStyleSheetToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("style/application.css"));
 		present(iwc);
 	}
 	

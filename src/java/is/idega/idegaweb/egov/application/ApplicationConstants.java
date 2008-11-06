@@ -12,6 +12,7 @@ package is.idega.idegaweb.egov.application;
 
 public class ApplicationConstants {
 
+	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	public static final String PROPERTY_SHOW_SIBLING_INFORMATION = "egov.application.sibling.info";
 	
 }

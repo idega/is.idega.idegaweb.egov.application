@@ -17,13 +17,14 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.PresentationUtil;
 
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
- * Last modified: $Date: 2008/02/21 12:15:05 $ by $Author: anton $
+ * Last modified: $Date: 2008/11/06 19:26:50 $ by $Author: laddi $
  *
  */
 public class UIApplicationTypeURLHandler extends Block implements ApplicationTypeHandlerComponent {
@@ -35,6 +36,7 @@ public class UIApplicationTypeURLHandler extends Block implements ApplicationTyp
 	@Override
 	public void main(IWContext iwc) throws Exception {		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		PresentationUtil.addStyleSheetToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("style/application.css"));
 		
 		String urlValue = iwc.getParameter(urlParam);
 		String elecValue = iwc.getParameter(elecParam);

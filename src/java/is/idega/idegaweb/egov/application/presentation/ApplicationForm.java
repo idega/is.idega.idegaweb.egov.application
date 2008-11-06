@@ -52,6 +52,7 @@ import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.PresentationUtil;
 
 public abstract class ApplicationForm extends Block {
 
@@ -70,6 +71,7 @@ public abstract class ApplicationForm extends Block {
 
 	@Override
 	public void main(IWContext iwc) {
+		PresentationUtil.addStyleSheetToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("style/application.css"));
 		if (iwc.isParameterSet(PARAMETER_NO_USER)) {
 			setError(PARAMETER_NO_USER, getResourceBundle(iwc).getLocalizedString("application_error.no_user_selected", "No user selected."));
 		}
