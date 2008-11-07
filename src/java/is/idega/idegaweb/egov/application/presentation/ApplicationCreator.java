@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.42 2008/11/04 12:32:08 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.43 2008/11/07 09:11:50 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -9,6 +9,7 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.business.ApplicationType;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
@@ -286,10 +287,9 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Integer ageFrom = null;
 		Integer ageTo = null;
-		int categoryId = -1;
 		
 		try {
-			categoryId = iwc.isParameterSet(CAT_INPUT) ? Integer.valueOf(iwc.getParameter(CAT_INPUT)) : null;
+			Integer categoryId = iwc.isParameterSet(CAT_INPUT) ? Integer.valueOf(iwc.getParameter(CAT_INPUT)) : null;
 		} catch(NumberFormatException e) {
 			iwc.addMessage(CAT_INPUT, new FacesMessage(this.iwrb.getLocalizedString("invalid_category", "Category must be selected")));
 		}
@@ -344,7 +344,8 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 	
 	private void listExisting(IWContext iwc) throws RemoteException, FinderException {
-		Collection<Application> applications = getApplicationBusiness(iwc).getAvailableApplications(iwc, getCaseCode());
+		ApplicationBusiness appBusiness = getApplicationBusiness(iwc);
+		Collection<Application> applications = appBusiness.getAvailableApplications(iwc, getCaseCode());
 		
 		Form form = new Form();
 		form.setID("applicationCreator");
@@ -414,6 +415,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		int iRow = 1;
 		
 		if (!ListUtil.isEmpty(applications)) {
+			Locale locale = iwc.getCurrentLocale();
 			for (Application app: applications) {
 				CaseCode code = app.getCaseCode();
 				
@@ -438,7 +440,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				cell = row.createCell();
 				cell.setStyleClass("firstColumn");
 				cell.setStyleClass("application");
-				cell.add(new Text(app.getName()));
+				cell.add(new Text(appBusiness.getApplicationName(app, locale)));
 	
 				cell = row.createCell();
 				cell.setStyleClass("category");
@@ -627,8 +629,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		appTypes.setOnChange("egov_AppTypes.appTypeChanged("+applicationID+", jQuery(this).val(), document.getElementById('"+handlerContainer.getId()+"'));");
 		appTypes.setSelectedElement(appTypeValue);
-		
-//		egov_AppTypes.appTypeChanged
 
 		DropdownMenu category = new DropdownMenu("cat");
 		try {
