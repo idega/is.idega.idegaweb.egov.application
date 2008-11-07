@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.19 2008/11/04 12:42:05 valdas Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.20 2008/11/07 09:09:47 valdas Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,12 @@ import javax.ejb.FinderException;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.text.data.LocalizedText;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
@@ -349,13 +351,28 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	}
 	
 	public String getApplicationName(Application application, Locale locale) {
-		String name = application.getLocalizedName(locale);
+		String name = null;
+		//	1
+		LocalizedText locText = application.getLocalizedText(ICLocaleBusiness.getLocaleId(locale));
+		if (locText != null) {
+			name = locText.getBody();
+		}
+		
+		//	2
+		if (StringUtil.isEmpty(name)) {
+			name = application.getLocalizedName(locale);
+		}
+		
+		//	3
 		if (StringUtil.isEmpty(name)) {
 			name = application.getNameByLocale(locale);
 		}
+
+		//	4
 		if (StringUtil.isEmpty(name)) {
 			name = application.getName();
 		}
+		
 		return name;
 	}
 }
