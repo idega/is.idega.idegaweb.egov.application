@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCreator.java,v 1.43 2008/11/07 09:11:50 valdas Exp $ Created on Jan 12,
+ * $Id: ApplicationCreator.java,v 1.44 2008/11/07 10:16:05 valdas Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -78,7 +78,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String AGE_FROM_INPUT = "ageFrom";
 	private static final String AGE_TO_INPUT = "ageTo";
 	private static final String CODE_INPUT = "code";
-	private static final String CAT_INPUT = "cat";
+	protected static final String CAT_INPUT = "cat";
 	private static final String NEW_WIN_INPUT = "newin";
 	private static final String HIDDEN_INPUT = "hidden";
 	
@@ -186,7 +186,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			exp.printStackTrace();
 		}
 		
-		String cat = iwc.getParameter(CAT_INPUT);
+		String cat = iwc.isParameterSet(CAT_INPUT) ? iwc.getParameter(CAT_INPUT) : null;
 		String code = iwc.getParameter(CODE_INPUT);
 		String opensInNew = iwc.getParameter(NEW_WIN_INPUT);
 		String hiddenFromGuests = getBooleanValueInString(iwc.getParameter(HIDDEN_INPUT), this.hiddenFromGuests);
@@ -214,8 +214,9 @@ public class ApplicationCreator extends ApplicationBlock {
 		if (code != null && !code.equals("-1")) {
 			app.setCaseCode(getApplicationBusiness(iwc).getCaseCode(code));
 		}
-		app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(new Integer(cat)));
-		
+		if (!StringUtil.isEmpty(cat)) {
+			app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(Integer.valueOf(cat)));
+		}
 		ApplicationType applType = getApplicationTypesManager().getApplicationType(appType);		
 		if(applType != null) {
 			
@@ -288,11 +289,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		Integer ageFrom = null;
 		Integer ageTo = null;
 		
-		try {
-			Integer categoryId = iwc.isParameterSet(CAT_INPUT) ? Integer.valueOf(iwc.getParameter(CAT_INPUT)) : null;
-		} catch(NumberFormatException e) {
-			iwc.addMessage(CAT_INPUT, new FacesMessage(this.iwrb.getLocalizedString("invalid_category", "Category must be selected")));
-		}
 		try {
 			ageFrom = iwc.isParameterSet(AGE_FROM_INPUT) ? new Integer(iwc.getParameter(AGE_FROM_INPUT)) : null;
 		} catch(NumberFormatException exp) {
