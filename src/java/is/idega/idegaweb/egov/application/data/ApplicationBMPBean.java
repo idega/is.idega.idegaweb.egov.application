@@ -33,12 +33,15 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.data.query.Column;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.JoinCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupBMPBean;
 
 public class ApplicationBMPBean extends GenericEntity implements Application {
 
@@ -69,6 +72,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	private static final String TX_LOCALIZED_TEXT_ID = "TX_LOCALIZED_TEXT_ID";
 	private static final String IC_LOCALE_ID = "IC_LOCALE_ID";
 	
+	@Override
 	public String getEntityName() {
 		return TABLE_NAME;
 	}
@@ -156,11 +160,13 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		return getUrlByLocale(iwc.getLocale());
 	}
 
+	@Override
 	public void setDefaultValues() {
 		setTimesClicked(0);
 		super.setDefaultValues();
 	}
 
+	@Override
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(NAME, "name", String.class, 50);
@@ -364,6 +370,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		}		
 	}
 
+	@Override
 	public void setName(String name) {
 		setColumn(NAME, name);
 	}
@@ -439,6 +446,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		}
 	}
 
+	@Override
 	public String getName() {
 		return getStringColumnValue(NAME);
 	}
@@ -553,6 +561,26 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new Column(table, getIDColumnName()));
 		query.addCriteria(new MatchCriteria(table.getColumn(CASE_CODE), MatchCriteria.EQUALS, caseCode));
+		return this.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllByGroups(Collection<String> ids) throws FinderException {
+		Table appsAndGroups = new Table(EGOV_APPLICATION_GROUP);
+		SelectQuery query = new SelectQuery(appsAndGroups);
+		query.addColumn(new Column(appsAndGroups, getIDColumnName()));
+		query.addCriteria(new InCriteria(appsAndGroups.getColumn(GroupBMPBean.getColumnNameGroupID()), ids));
+		return this.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllWithAssignedGroups() throws FinderException {
+		Table apps = new Table(this);
+		Table appsAndGroups = new Table(EGOV_APPLICATION_GROUP);
+		
+		SelectQuery query = new SelectQuery(apps);
+		query.addColumn(new Column(apps, getIDColumnName()));
+		
+		query.addCriteria(new JoinCriteria(apps.getColumn(getIDColumnName()), appsAndGroups.getColumn(getIDColumnName())));
+		
 		return this.idoFindPKsByQuery(query);
 	}
 		

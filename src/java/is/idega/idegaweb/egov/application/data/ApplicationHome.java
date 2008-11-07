@@ -36,4 +36,8 @@ public interface ApplicationHome extends IDOHome {
 	public Collection<Application> findAllByApplicationUrl(String appUrl) throws FinderException;
 	
 	public Collection<Application> findAllByCaseCode(String caseCode) throws FinderException;
+	
+	public Collection<Application> findAllByGroups(Collection<String> ids) throws FinderException;
+	
+	public Collection<Application> findAllWithAssignedGroups() throws FinderException;
 }

@@ -105,4 +105,18 @@ public class ApplicationHomeImpl extends IDOFactory implements ApplicationHome {
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+
+	public Collection<Application> findAllByGroups(Collection<String> groupsIds) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindAllByGroups(groupsIds);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection<Application> findAllWithAssignedGroups() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ApplicationBMPBean) entity).ejbFindAllWithAssignedGroups();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }
