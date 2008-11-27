@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBlock.java,v 1.24 2008/11/06 19:26:50 laddi Exp $ Created on Jan 12,
+ * $Id: ApplicationBlock.java,v 1.25 2008/11/27 02:41:43 laddi Exp $ Created on Jan 12,
  * 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package is.idega.idegaweb.egov.application.presentation;
 
 import is.idega.idegaweb.egov.accounting.business.CitizenBusiness;
+import is.idega.idegaweb.egov.application.ApplicationConstants;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.data.Application;
@@ -56,7 +57,7 @@ public abstract class ApplicationBlock extends Block {
 	
 	@Override
 	public void main(IWContext iwc) throws Exception {
-		PresentationUtil.addStyleSheetToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("style/application.css"));
+		PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/application.css"));
 		present(iwc);
 	}
 	
