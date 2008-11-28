@@ -435,7 +435,7 @@ div.errorLayer {
 	border-bottom: 1px #ccc solid;
 	padding: 10px;
 	height: 68px;
-	background: url(images/error_tiler.gif) repeat-x top left;
+	background: url(images/error_tiler.gif) repeat-x top left #ffedb2;
 }
 
 html>body div.errorLayer {
