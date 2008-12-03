@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.20 2008/07/15 13:28:53 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.21 2008/12/03 03:49:10 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -36,10 +36,12 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		setCacheable(getCacheKey(), (20 * 60 * 1000));
 	}
 	
+	@Override
 	public String getCacheKey() {
 		return CACHE_KEY;
 	}
 
+	@Override
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		if (useAgeRestriction(iwc) && iwc.isLoggedOn()) {
 			return cacheStatePrefix + "_" + iwc.getCurrentUser().getPrimaryKey().toString();
@@ -53,6 +55,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		return "applicationCategoryViewer";
 	}
 
+	@Override
 	public void present(IWContext iwc) throws Exception {
 		Layer mainLayer = new Layer();
 		mainLayer.setID(this.layerID);
@@ -108,7 +111,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 						heading = cat.getName();
 					}
 					Lists appList = getApplicationList(iwc, checkAges, apps, ages);
-					int temp = appList.getChildrenCount();
+					//int temp = appList.getChildrenCount();
 					
 					if(appList.getChildrenCount() < 1) {
 						i--;

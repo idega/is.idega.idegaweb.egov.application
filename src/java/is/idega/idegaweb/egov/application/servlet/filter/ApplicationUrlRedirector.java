@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.26 2008/09/02 12:54:44 civilis Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.27 2008/12/03 03:49:10 laddi Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -146,7 +146,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				}
 
 				String applUrlEncoded = URLEncoder.encode(appUrlBuilder.toString(), encoding);
-				uri.append(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON).append(CoreConstants.EQ).append(applUrlEncoded);;
+				uri.append(IWAuthenticator.PARAMETER_REDIRECT_URI_ONLOGON).append(CoreConstants.EQ).append(applUrlEncoded);
 					
 				return uri.toString();
 			} else if (isLoggedOn) {
