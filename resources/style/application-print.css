@@ -307,3 +307,7 @@ span.required {
 	line-height: 0;
 	visibility: hidden;
 }
+
+.caseNavigation {
+	display: none;
+}
