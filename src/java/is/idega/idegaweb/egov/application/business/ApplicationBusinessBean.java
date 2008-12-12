@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBusinessBean.java,v 1.20 2008/11/07 09:09:47 valdas Exp $
+ * $Id: ApplicationBusinessBean.java,v 1.21 2008/12/12 11:00:57 valdas Exp $
  * Created on Jan 12, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -374,5 +374,19 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 		
 		return name;
+	}
+
+	public Collection<Application> getApplicationsByType(String type) {
+		if (StringUtil.isEmpty(type)) {
+			return null;
+		}
+		
+		try {
+			return getApplicationHome().findAllByType(type);
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }

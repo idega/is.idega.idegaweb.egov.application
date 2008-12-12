@@ -40,4 +40,6 @@ public interface ApplicationHome extends IDOHome {
 	public Collection<Application> findAllByGroups(Collection<String> ids) throws FinderException;
 	
 	public Collection<Application> findAllWithAssignedGroups() throws FinderException;
+	
+	public Collection<Application> findAllByType(String type) throws FinderException;
 }

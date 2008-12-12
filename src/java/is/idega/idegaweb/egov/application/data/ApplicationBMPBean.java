@@ -583,6 +583,19 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		
 		return this.idoFindPKsByQuery(query);
 	}
+	
+	public Collection ejbFindAllByType(String type) throws FinderException {
+		Table apps = new Table(this);
+		
+		SelectQuery query = new SelectQuery(apps);
+		query.addColumn(apps.getColumn(getIDColumnName()));
+		
+		query.addCriteria(new MatchCriteria(apps.getColumn(APP_TYPE), MatchCriteria.EQUALS, type));
+		
+		query.addGroupByColumn(apps.getColumn(getIDColumnName()));
+		
+		return this.idoFindPKsByQuery(query);
+	}
 		
 	private String getQueryForDeletingLocalizedTextEntries(Collection localizedNamesIds, Collection localizedUrlIds){
 		String query = null;
