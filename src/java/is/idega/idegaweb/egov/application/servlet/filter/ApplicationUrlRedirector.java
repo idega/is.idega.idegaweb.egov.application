@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.27 2008/12/03 03:49:10 laddi Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.28 2009/01/30 09:56:56 juozas Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -119,8 +119,8 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					uri.append(CoreConstants.AMP);
 				}
 				
-				String applUrl = application.getUrlByLocale(iwc.getCurrentLocale());
-				StringBuilder appUrlBuilder = new StringBuilder(applUrl);
+				//String applUrl = application.getUrlByLocale(iwc.getCurrentLocale());
+				StringBuilder appUrlBuilder = new StringBuilder(url);
 					
 				@SuppressWarnings("unchecked")
 				Enumeration<String> enumeration = request.getParameterNames();
@@ -133,7 +133,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 						if (values != null) {
 							for (int i = 0; i < values.length; i++) {
 								String value = values[i];
-								if (applUrl.indexOf(CoreConstants.QMARK) == -1) {
+								if (/*applUrl*/url.indexOf(CoreConstants.QMARK) == -1) {
 									appUrlBuilder.append(CoreConstants.QMARK);
 								}
 								else {
