@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.29 2009/02/16 21:16:37 eiki Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.30 2009/02/16 21:17:26 eiki Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -111,7 +111,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				IWMainApplicationSettings settings = iwma.getSettings();
 					
 				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI,"");
-				if(!"".equals(loginPage)){
+				if("".equals(loginPage)){
 					//backup
 					loginPage = settings.getProperty(PROP_403_PAGE_URI);
 				}
