@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.28 2009/01/30 09:56:56 juozas Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.29 2009/02/16 21:16:37 eiki Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -49,6 +49,9 @@ import com.idega.webface.WFUtil;
 public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 	private static final String PROP_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
+	//@todo use the actual paramter constant for lucid 403 page property
+	private static final String PROP_403_PAGE_URI= "403_PAGE_URI";
+	
 	private static final String PROP_UPDATE_TIMES_CLICKED = "egov.application.updateclicks";
 	private static final String PROP_FILE_ENCODING = "file.encoding";
 
@@ -107,7 +110,12 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				IWMainApplicationSettings settings = iwma.getSettings();
 					
-				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI);
+				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI,"");
+				if(!"".equals(loginPage)){
+					//backup
+					loginPage = settings.getProperty(PROP_403_PAGE_URI);
+				}
+				
 				if (application.getLoginPageURL() != null) {
 					loginPage = application.getLoginPageURL();
 				}
