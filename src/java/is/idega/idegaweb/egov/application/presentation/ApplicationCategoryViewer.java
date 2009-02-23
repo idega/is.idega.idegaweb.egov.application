@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategoryViewer.java,v 1.21 2008/12/03 03:49:10 laddi Exp $
+ * $Id: ApplicationCategoryViewer.java,v 1.22 2009/02/23 17:59:24 laddi Exp $
  * Created on Jan 13, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -31,6 +31,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 	private String layerID = "applicationCategoryViewer";
 	public static final String CACHE_KEY = "app_application_category_viewer";
 	private static final int COLUMNS = 3;
+	private boolean iGroupCategories = true;
 	
 	public ApplicationCategoryViewer() {
 		setCacheable(getCacheKey(), (20 * 60 * 1000));
@@ -134,7 +135,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 							nextCat = null;
 						} else {
 							Lists nextAppList = getApplicationList(iwc, checkAges, nextCategoryApps, ages);
-							if(nextAppList.getChildCount() > 0 && appList.getChildCount() > 0 && (appList.getChildCount() + nextAppList.getChildCount() < 8)) {
+							if(isGroupCategories() && nextAppList.getChildCount() > 0 && appList.getChildCount() > 0 && (appList.getChildCount() + nextAppList.getChildCount() < 8)) {
 								Layer l1 = new Layer();
 								l1.setStyleClass("compactCategory");
 								l1.add(new Heading1(heading));
@@ -215,5 +216,20 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 
 	public void setLayerID(String id) {
 		this.layerID = id;
+	}
+
+	
+	/**
+	 * @return the groupCategories
+	 */
+	private boolean isGroupCategories() {
+		return this.iGroupCategories;
+	}
+	
+	/**
+	 * @param groupCategories the groupCategories to set
+	 */
+	public void setGroupCategories(boolean groupCategories) {
+		this.iGroupCategories = groupCategories;
 	}
 }
