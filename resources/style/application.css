@@ -508,7 +508,6 @@ table.adminTable tr td, table.adminTable tr th {
 	padding: 5px 8px;
 	empty-cells: show;
 	text-align: left;
-	white-space: nowrap;
 }
 
 table.adminTable tfoot tr td {
