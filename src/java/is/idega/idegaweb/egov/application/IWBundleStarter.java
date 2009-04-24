@@ -2,8 +2,8 @@ package is.idega.idegaweb.egov.application;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
-import com.idega.idegaweb.include.ExternalLink;
 import com.idega.idegaweb.include.GlobalIncludeManager;
+import com.idega.idegaweb.include.PageResourceConstants;
 
 /**
  * 
@@ -22,7 +22,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		cViewManager.getContentNode();
 		*/
 		
-		GlobalIncludeManager.getInstance().addBundleStyleSheet(IW_BUNDLE_IDENTIFIER, "/style/application-print.css", ExternalLink.MEDIA_PRINT);
+		GlobalIncludeManager.getInstance().addBundleStyleSheet(IW_BUNDLE_IDENTIFIER, "/style/application-print.css", PageResourceConstants.MEDIA_PRINT);
 	}
 
 	public void stop(IWBundle starterBundle) {
