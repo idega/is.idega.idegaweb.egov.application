@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationUrlRedirector.java,v 1.30 2009/02/16 21:17:26 eiki Exp $ Created on
+ * $Id: ApplicationUrlRedirector.java,v 1.31 2009/06/30 16:17:31 valdas Exp $ Created on
  * Jan 17, 2006
  * 
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -20,7 +20,6 @@ import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -44,13 +43,10 @@ import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.util.CoreConstants;
 import com.idega.util.expression.ELUtil;
-import com.idega.webface.WFUtil;
 
 public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 	private static final String PROP_LOGIN_PAGE_URI = "LOGIN_PAGE_URI";
-	//@todo use the actual paramter constant for lucid 403 page property
-	private static final String PROP_403_PAGE_URI= "403_PAGE_URI";
 	
 	private static final String PROP_UPDATE_TIMES_CLICKED = "egov.application.updateclicks";
 	private static final String PROP_FILE_ENCODING = "file.encoding";
@@ -89,8 +85,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
 			IWMainApplication iwma = getIWMainApplication(request);
 			
-			FacesContext fctx = WFUtil.createFacesContext(request.getSession().getServletContext(), request, response);
-			IWContext iwc = IWContext.getIWContext(fctx);
+			IWContext iwc = getIWContext(request, response);
 			
 			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
 			
@@ -110,10 +105,10 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				IWMainApplicationSettings settings = iwma.getSettings();
 					
-				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI,"");
-				if("".equals(loginPage)){
+				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI, CoreConstants.EMPTY);
+				if(CoreConstants.EMPTY.equals(loginPage)){
 					//backup
-					loginPage = settings.getProperty(PROP_403_PAGE_URI);
+					loginPage = settings.getProperty(CoreConstants.PAGE_ERROR_403_HANDLER_PORPERTY);
 				}
 				
 				if (application.getLoginPageURL() != null) {
