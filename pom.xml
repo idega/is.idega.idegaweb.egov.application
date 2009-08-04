@@ -49,12 +49,20 @@
       <artifactId>com.idega.block.process</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.idega.block.platform</groupId>
+      <artifactId>com.idega.workspace</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.idega.block.egov</groupId>
       <artifactId>is.idega.block.family</artifactId>
     </dependency>
     <dependency>
       <groupId>com.idega.block.egov</groupId>
-      <artifactId>is.idega.idegaweb.egov.accounting</artifactId>
+      <artifactId>is.idega.idegaweb.egov</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.idega.block.addon</groupId>
+      <artifactId>com.idega.block.text</artifactId>
     </dependency>
   </dependencies>
 </project>
