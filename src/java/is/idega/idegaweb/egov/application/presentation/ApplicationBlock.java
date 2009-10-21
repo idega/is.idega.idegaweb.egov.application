@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.faces.component.UIComponent;
 
@@ -37,7 +38,9 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
+import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.expression.ELUtil;
 
@@ -70,11 +73,17 @@ public abstract class ApplicationBlock extends Block {
 	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection<Application> applications, Age[] ages) throws RemoteException {
 		Lists list = new Lists();
 		
+		if (ListUtil.isEmpty(applications)) {
+			return list;
+		}
+		
 		Collection<ListItem> applicationList = new ArrayList<ListItem>(applications.size());
 		Iterator<Application> iter = applications.iterator();
 		
-		while (iter.hasNext()) {
-			Application application = iter.next();
+		boolean isLogged = iwc.isLoggedOn();
+		User currentUser = isLogged ? iwc.getCurrentUser() : null;
+		
+		for (Application application: applications) {
 
 			boolean displayApplication = true;
 			try {
@@ -84,15 +93,16 @@ public abstract class ApplicationBlock extends Block {
 				throw new IBORuntimeException(re);
 			}
 			
-			final boolean isVisibile = 
-				application.getVisible() 
-				&& (
-						application.getAppType() == null || (
-								application.getAppType() != null && getApplicationTypesManager().getApplicationType(application.getAppType()).isVisible(application)
-								)
-					);
+			final boolean isVisibile = application.getVisible() &&
+						(application.getAppType() == null || 
+						(application.getAppType() != null && getApplicationTypesManager().getApplicationType(application.getAppType()).isVisible(application)));
 			
-			if (isVisibile && (!checkAges || displayApplication) && !(iwc.isLoggedOn() && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(iwc.getCurrentUser()))) {
+			if (isVisibile && (!checkAges || displayApplication)) {
+				if (!isLogged && application.getHiddenFromGuests() && !getUserBusiness(iwc).hasGuestAccount(currentUser)) {
+					Logger.getLogger(ApplicationBlock.class.getName()).warning("User is not logged/doesn't have access rights to view application: " + application.getName());
+					continue;
+				}
+				
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");

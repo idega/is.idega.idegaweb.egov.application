@@ -112,7 +112,6 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 						heading = cat.getName();
 					}
 					Lists appList = getApplicationList(iwc, checkAges, apps, ages);
-					//int temp = appList.getChildrenCount();
 					
 					if(appList.getChildrenCount() < 1) {
 						i--;
