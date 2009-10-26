@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-
 import javax.faces.component.UIComponent;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,12 +95,7 @@ public abstract class ApplicationBlock extends Block {
 						(application.getAppType() == null || 
 						(application.getAppType() != null && getApplicationTypesManager().getApplicationType(application.getAppType()).isVisible(application)));
 			
-			if (isVisibile && (!checkAges || displayApplication)) {
-				if (!isLogged && application.getHiddenFromGuests() && !getUserBusiness(iwc).hasGuestAccount(currentUser)) {
-					Logger.getLogger(ApplicationBlock.class.getName()).warning("User is not logged/doesn't have access rights to view application: " + application.getName());
-					continue;
-				}
-				
+			if (isVisibile && (!checkAges || displayApplication) && !(isLogged && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(currentUser))) {
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");
