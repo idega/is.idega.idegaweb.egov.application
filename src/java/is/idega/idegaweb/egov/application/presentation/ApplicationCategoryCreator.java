@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import java.io.Serializable;
+
 import javax.ejb.FinderException;
 
 import com.idega.block.text.data.LocalizedText;
@@ -66,7 +68,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 	
 	private void clearApplicationCategoryViewerCache(IWContext iwc) {
 		IWCacheManager2 cacheManager = IWCacheManager2.getInstance(iwc.getIWMainApplication());
-		Map cache = cacheManager.getCache(ApplicationCategoryViewer.CACHE_KEY);
+		Map<Serializable, ?> cache = cacheManager.getCache(ApplicationCategoryViewer.CACHE_KEY);
 		if(cache != null) {
 			cache.clear();
 		}
@@ -74,6 +76,7 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 		IWCacheManager.getInstance(iwc.getIWMainApplication()).clearAllCaches();
 	}
 
+	@Override
 	public void present(IWContext iwc) throws Exception {
 		this.iwrb = getResourceBundle(iwc);
 		this.iwb = getBundle(iwc);
