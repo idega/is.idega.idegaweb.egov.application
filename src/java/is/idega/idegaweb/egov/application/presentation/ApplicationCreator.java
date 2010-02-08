@@ -817,7 +817,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		
 		Layer clearLayer = new Layer(Layer.DIV);
 		clearLayer.setStyleClass("Clear");
-		
 		layer.add(clearLayer);
 		
 		layer = new Layer(Layer.DIV);
@@ -849,7 +848,6 @@ public class ApplicationCreator extends ApplicationBlock {
 			
 		clearLayer = new Layer(Layer.DIV);
 		clearLayer.setStyleClass("Clear");
-			
 		layer.add(clearLayer);
 		
 		if (!ListUtil.isEmpty(additionalComponents)) {

@@ -392,9 +392,6 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			layer.add(formItem);
 		}
 		
-		Layer clearLayer = new Layer(Layer.DIV);
-		clearLayer.setStyleClass("Clear");
-		
 		List apps = null;
 		if(cat != null) {
 			try {
@@ -457,10 +454,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				up.setStyleClass("flippedImageLink");
 				cell.add(up);
 				
-				if(iRow <= 1) {
-					
+				if (iRow <= 1) {
 					up.setStyleAttribute("visibility", "hidden");
-				
 				}
 				
 				Link down = new Link(this.iwb.getImage("next.png", this.iwrb.getLocalizedString("next", "Down")));
@@ -470,15 +465,15 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 				down.setStyleClass("flippedImageLink");
 				cell.add(down);
 				
-				if(iRow >= apps.size()) {
-					
+				if (iRow >= apps.size()) {
 					down.setStyleAttribute("visibility", "hidden");
-				
 				}	
 
 				iRow++;
 			}
 			
+			Layer clearLayer = new Layer(Layer.DIV);
+			clearLayer.setStyleClass("Clear");
 			layer.add(clearLayer);
 			
 			form.add(table);
