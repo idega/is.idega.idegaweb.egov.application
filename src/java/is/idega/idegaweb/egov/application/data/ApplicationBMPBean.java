@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
-
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
@@ -550,8 +548,6 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new Column(table, getIDColumnName()));
 		query.addCriteria(new MatchCriteria(table.getColumn(URL), MatchCriteria.EQUALS, appUrl));
-		
-		log(Level.INFO, "Query to get application by URL: " + query);
 		
 		return this.idoFindPKsByQuery(query);
 	}
