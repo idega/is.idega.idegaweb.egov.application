@@ -1,0 +1,19 @@
+<html
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+>
+<ui:component>
+	<div class="phases">
+		<ul>
+			<ui:repeat value="#{applicationBean.phases}" var="phase">
+				<ui:fragment rendered="#{phase.current}">
+					<li class="current"><h:outputText value="#{phase.number}"/></li>
+				</ui:fragment>
+				<ui:fragment rendered="#{!phase.current}">
+					<li><h:outputText value="#{phase.number}"/></li>
+				</ui:fragment>
+			</ui:repeat>
+		</ul>
+	</div>
+</ui:component>
+</html>

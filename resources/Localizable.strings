@@ -1,6 +1,7 @@
 Create\ a\ category=Create category
 age_from=Age from
 age_to=Age to
+application.select_applicant=Select applicant
 appType=Application type
 app_type=Application type
 app_type.url=Url

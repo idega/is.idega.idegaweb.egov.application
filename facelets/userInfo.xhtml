@@ -1,0 +1,20 @@
+<html
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:t="http://myfaces.apache.org/tomahawk"
+		xmlns:c="http://java.sun.com/jstl/core"
+>
+<ui:component>
+	<div class="info">
+		<div id="name" class="personInfo"><t:outputText value="#{applicationBean.name}" /></div>
+		<div id="personalID" class="personInfo"><t:outputText value="#{applicationBean.personalID}" /></div>
+		<c:if test="#{applicationBean.showContactInfo}">
+			<div id="phone" class="personInfo"><t:outputText value="#{applicationBean.phone}" /></div>
+		</c:if>
+		<div id="address" class="personInfo"><t:outputText value="#{applicationBean.address}" /></div>
+		<c:if test="#{applicationBean.showContactInfo}">
+			<div id="email" class="personInfo"><t:outputText value="#{applicationBean.email}" /></div>
+		</c:if>
+		<div id="postal" class="personInfo"><t:outputText value="#{applicationBean.postal}" /></div>
+	</div>
+</ui:component>
+</html>

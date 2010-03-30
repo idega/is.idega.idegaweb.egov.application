@@ -1,0 +1,19 @@
+<html
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:c="http://java.sun.com/jstl/core"
+>
+<ui:component>
+	<c:if test="#{applicationBean.hasErrors}">
+		<div class="errorLayer">
+			<div class="errorImage"></div>
+			<h1><h:outputText value="#{localizedStrings['is.idega.idegaweb.egov.application']['application_errors_occured']}"/></h1>
+			<ul>
+				<ui:repeat value="#{applicationBean.errors}" var="error">
+					<li><h:outputText value="#{error.message}"/></li>
+				</ui:repeat>
+			</ul>
+		</div>
+	</c:if>	
+</ui:component>
+</html>

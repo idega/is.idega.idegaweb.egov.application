@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_0.dtd"
+[
+ <!ELEMENT idegaweb-info ANY>
+ <!ELEMENT builder-visible (#PCDATA)>
+ <!ELEMENT object-type (#PCDATA)>
+ <!ELEMENT component-metadata ANY>
+ <!ATTLIST component-metadata
+     component-type CDATA #IMPLIED>
+ <!ELEMENT facet-metadata ANY>
+ <!ELEMENT attribute-metadata ANY>
+ <!ELEMENT property-metadata ANY>
+ <!ELEMENT accepts-child-components (#PCDATA)>
+ <!ELEMENT attribute-values (#PCDATA)>
+ <!ELEMENT base-component-type  (#PCDATA)>
+ <!ELEMENT deprecated  (#PCDATA)>
+ <!ELEMENT display-order  (#PCDATA)>
+ <!ELEMENT expert  (#PCDATA)>
+ <!ELEMENT favorite-property  (#PCDATA)>
+ <!ELEMENT group  (#PCDATA)>
+ <!ELEMENT help-topic  (#PCDATA)>
+ <!ELEMENT hidden  (#PCDATA)>
+ <!ELEMENT initial-value  (#PCDATA)>
+ <!ELEMENT preferred  (#PCDATA)>
+ <!ELEMENT preferred-child-tags  (#PCDATA)>
+ <!ELEMENT property-editor  (#PCDATA)>
+ <!ELEMENT short-description  (#PCDATA)>
+ <!ELEMENT writable  (#PCDATA)> 
+]
+>
+<faces-config>
+	<component>
+		<component-type>egov.ApplicationErrors</component-type>
+		<component-class>is.idega.idegaweb.egov.application.component.ApplicationErrors</component-class>
+	</component>
+
+	<component>
+		<component-type>egov.ApplicationPhases</component-type>
+		<component-class>is.idega.idegaweb.egov.application.component.ApplicationPhases</component-class>
+		<property>
+			<display-name>Count</display-name>
+			<property-name>count</property-name>
+			<property-class>java.lang.Integer</property-class>
+		</property>
+		<property>
+			<display-name>Current</display-name>
+			<property-name>current</property-name>
+			<property-class>java.lang.Integer</property-class>
+		</property>
+	</component>
+
+	<component>
+		<component-type>egov.Attention</component-type>
+		<component-class>is.idega.idegaweb.egov.application.component.Attention</component-class>
+		<property>
+			<display-name>Body</display-name>
+			<property-name>body</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+	</component>
+
+	<component>
+		<component-type>egov.Button</component-type>
+		<component-class>is.idega.idegaweb.egov.application.component.Button</component-class>
+		<property>
+			<display-name>Action</display-name>
+			<property-name>action</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Value</display-name>
+			<property-name>value</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Parameter</display-name>
+			<property-name>parameter</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Form ID</display-name>
+			<property-name>formId</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Style class</display-name>
+			<property-name>styleClass</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+	</component>
+
+	<component>
+		<component-type>egov.Receipt</component-type>
+		<component-class>is.idega.idegaweb.egov.application.component.Receipt</component-class>
+		<property>
+			<display-name>Headline</display-name>
+			<property-name>headline</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Body</display-name>
+			<property-name>body</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+	</component>
+
+	<component>
+		<component-type>egov.Stop</component-type>
+		<component-class>is.idega.idegaweb.egov.application.component.Stop</component-class>
+		<property>
+			<display-name>Headline</display-name>
+			<property-name>headline</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Body</display-name>
+			<property-name>body</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+	</component>
+
+	<component>
+		<component-type>egov.UserChooser</component-type>
+		<component-class>is.idega.idegaweb.egov.application.component.UserChooser</component-class>
+		<property>
+			<display-name>Chosen user</display-name>
+			<property-name>chosenUser</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Children</display-name>
+			<property-name>children</property-name>
+			<property-class>java.util.Collecton</property-class>
+		</property>
+		<property>
+			<display-name>Parameter name</display-name>
+			<property-name>parameterName</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Application PK</display-name>
+			<property-name>applicationPK</property-name>
+			<property-class>java.lang.Object</property-class>
+		</property>
+		<property>
+			<display-name>Case code</display-name>
+			<property-name>caseCode</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Set to submit on change</display-name>
+			<property-name>setToSubmit</property-name>
+			<property-class>boolean</property-class>
+		</property>
+	</component>
+
+	<component>
+		<component-type>egov.UserInfo</component-type>
+		<component-class>is.idega.idegaweb.egov.application.component.UserInfo</component-class>
+		<property>
+			<display-name>Applicant ID</display-name>
+			<property-name>applicantId</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Applicant</display-name>
+			<property-name>applicant</property-name>
+			<property-class>is.idega.idegaweb.egov.application.bean.Applicant</property-class>
+		</property>
+		<property>
+			<display-name>Name</display-name>
+			<property-name>name</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Personal ID</display-name>
+			<property-name>personalId</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Address</display-name>
+			<property-name>address</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Postal</display-name>
+			<property-name>postal</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Phone</display-name>
+			<property-name>phone</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Email</display-name>
+			<property-name>email</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
+		<property>
+			<display-name>Show contact info</display-name>
+			<property-name>showContactInfo</property-name>
+			<property-class>boolean</property-class>
+		</property>
+	</component>
+</faces-config>
