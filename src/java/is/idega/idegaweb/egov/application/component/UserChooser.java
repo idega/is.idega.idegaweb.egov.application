@@ -22,6 +22,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PresentationUtil;
 
 public class UserChooser extends IWBaseComponent {
 
@@ -49,6 +50,8 @@ public class UserChooser extends IWBaseComponent {
 	protected void initializeComponent(FacesContext context) {
 		IWContext iwc = IWContext.getIWContext(context);
 		handleExpressions(context);
+
+		PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/application.css"));
 		IWResourceBundle iwrb = getBundle(context, getBundleIdentifier()).getResourceBundle(iwc.getCurrentLocale());
 		
 		if (children != null) {

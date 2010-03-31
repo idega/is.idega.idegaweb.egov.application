@@ -9,6 +9,7 @@ import javax.faces.context.FacesContext;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
+import com.idega.util.PresentationUtil;
 
 public abstract class DisplayLayer extends IWBaseComponent {
 
@@ -31,6 +32,8 @@ public abstract class DisplayLayer extends IWBaseComponent {
 		bean.setHeadline(getHeadline());
 		bean.setBody(getBody());
 		
+		PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/application.css"));
+
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(getBundle(context, getBundleIdentifier()).getFaceletURI(getFaceletUri()));
 		add(facelet);

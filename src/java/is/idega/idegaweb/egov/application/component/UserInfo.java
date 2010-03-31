@@ -25,6 +25,7 @@ import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.PresentationUtil;
 import com.idega.util.text.Name;
 
 public class UserInfo extends IWBaseComponent {
@@ -67,6 +68,8 @@ public class UserInfo extends IWBaseComponent {
 		bean.setPhone(getPhone());
 		bean.setEmail(getEmail());
 		bean.setShowContactInfo(isShowContactInfo());
+
+		PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/application.css"));
 
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(getBundle(context, getBundleIdentifier()).getFaceletURI("userInfo.xhtml"));

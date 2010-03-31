@@ -9,6 +9,7 @@ import javax.faces.context.FacesContext;
 import com.idega.facelets.ui.FaceletComponent;
 import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
+import com.idega.util.PresentationUtil;
 
 public class ApplicationPhases extends IWBaseComponent {
 
@@ -32,6 +33,8 @@ public class ApplicationPhases extends IWBaseComponent {
 			bean.addPhase(i, i == getCurrent());
 		}
 		
+		PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/application.css"));
+
 		FaceletComponent facelet = (FaceletComponent) iwc.getApplication().createComponent(FaceletComponent.COMPONENT_TYPE);
 		facelet.setFaceletURI(getBundle(context, getBundleIdentifier()).getFaceletURI("applicationPhases.xhtml"));
 		add(facelet);

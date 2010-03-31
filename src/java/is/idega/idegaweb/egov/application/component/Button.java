@@ -31,8 +31,24 @@ public class Button extends IWBaseComponent {
 	@Override
 	protected void initializeComponent(FacesContext context) {
 		handleExpressions(context);
-		
-		Link link = new Link(new Span(new Text(getValue())));
+
+		Span all = new Span();
+		all.setStyleClass("buttonSpan");
+
+		Span left = new Span();
+		left.setStyleClass("left");
+		all.add(left);
+
+		Span middle = new Span();
+		middle.setStyleClass("middle");
+		middle.add(new Text(getValue()));
+		all.add(middle);
+
+		Span right = new Span();
+		right.setStyleClass("right");
+		all.add(right);
+
+		Link link = new Link(all);
 		link.setStyleClass("button");
 		if (getStyleClass() != null) {
 			link.setStyleClass(getStyleClass());
