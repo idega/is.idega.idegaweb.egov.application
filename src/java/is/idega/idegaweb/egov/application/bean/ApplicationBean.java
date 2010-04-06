@@ -2,6 +2,8 @@ package is.idega.idegaweb.egov.application.bean;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class ApplicationBean {
 	private String previousAction;
 	private Collection<Parameter> parameters = new ArrayList<Parameter>();
 	
-	private String currentUser;
+	private Applicant currentUser;
 	private Collection<Applicant> children;
 	private String userParameter;
 	private Object applicationPK;
@@ -37,6 +39,7 @@ public class ApplicationBean {
 	private Parent performer;
 	
 	private boolean hasErrors = false;
+	private Map<Integer, Boolean> errorMap = new HashMap<Integer, Boolean>();
 	private Collection<Error> errors = new ArrayList<Error>();
 	
 	private Collection<Phase> phases = new ArrayList<Phase>();
@@ -166,11 +169,11 @@ public class ApplicationBean {
 		}
 	}
 
-	public String getCurrentUser() {
+	public Applicant getCurrentUser() {
 		return this.currentUser;
 	}
 	
-	public void setCurrentUser(String user) {
+	public void setCurrentUser(Applicant user) {
 		this.currentUser = user;
 	}
 	
@@ -226,6 +229,10 @@ public class ApplicationBean {
 		return hasErrors;
 	}
 	
+	public boolean hasErrors(int phase) {
+		return errorMap.containsKey(phase);
+	}
+	
 	public void setHasErrors(boolean hasErrors) {
 		this.hasErrors = hasErrors;
 	}
@@ -233,6 +240,13 @@ public class ApplicationBean {
 	public void addError(String parameter, String errorMessage) {
 		errors.add(new Error(parameter, errorMessage));
 		setHasErrors(true);
+	}
+	
+	public void addError(int phase, String parameter, String errorMessage) {
+		if (!errorMap.containsKey(phase)) {
+			errorMap.put(phase, Boolean.TRUE);
+		}
+		addError(parameter, errorMessage);
 	}
 	
 	public Collection<Error> getErrors() {

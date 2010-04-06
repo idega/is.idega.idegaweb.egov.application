@@ -128,7 +128,7 @@
 		<property>
 			<display-name>Chosen user</display-name>
 			<property-name>chosenUser</property-name>
-			<property-class>java.lang.String</property-class>
+			<property-class>is.idega.idegaweb.egov.application.bean.Applicant</property-class>
 		</property>
 		<property>
 			<display-name>Children</display-name>
