@@ -238,7 +238,10 @@ public class ApplicationBean {
 	}
 	
 	public void addError(String parameter, String errorMessage) {
-		errors.add(new Error(parameter, errorMessage));
+		Error error = new Error(parameter, errorMessage);
+		if (!errors.contains(error)) {
+			errors.add(error);
+		}
 		setHasErrors(true);
 	}
 	
@@ -269,6 +272,39 @@ public class ApplicationBean {
 
 		public String getMessage() {
 			return message;
+		}
+
+		private ApplicationBean getOuterType() {
+			return ApplicationBean.this;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result
+					+ ((parameter == null) ? 0 : parameter.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Error other = (Error) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (parameter == null) {
+				if (other.parameter != null)
+					return false;
+			} else if (!parameter.equals(other.parameter))
+				return false;
+			return true;
 		}
 	}
 	
