@@ -62,7 +62,7 @@ public class UserInfo extends IWBaseComponent {
 
 		ApplicationBean bean = getBeanInstance("applicationBean");
 		bean.setName(getName());
-		bean.setPersonalID(getPersonalID());
+		bean.setPersonalID(PersonalIDFormatter.format(getPersonalID(), iwc.getCurrentLocale()));
 		bean.setAddress(getAddress());
 		bean.setPostal(getPostal());
 		bean.setPhone(getPhone());

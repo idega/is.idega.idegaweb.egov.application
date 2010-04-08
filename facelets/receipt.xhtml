@@ -5,8 +5,8 @@
 <ui:component>
 	<div class="receipt">
 		<div class="receiptImage"></div>
-		<h1><h:outputText value="#{applicationBean.headline}" /></h1>
-		<p><h:outputText value="#{applicationBean.body}" /></p>
+		<h1><h:outputText escape="false" value="#{applicationBean.headline}" /></h1>
+		<p><h:outputText escape="false" value="#{applicationBean.body}" /></p>
 	</div>
 </ui:component>
 </html>
