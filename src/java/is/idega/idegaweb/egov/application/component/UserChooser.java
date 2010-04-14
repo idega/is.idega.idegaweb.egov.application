@@ -35,12 +35,15 @@ public class UserChooser extends IWBaseComponent {
 	private String caseCode;
 	
 	private boolean setToSubmit = false;
+	private boolean disabled = false;
 	
 	private static final String CHOSEN_USER_PROPERTY = "chosenUser";
 	private static final String CHILDREN_PROPERTY = "children";
 	private static final String PARAMETER_NAME_PROPERTY = "parameterName";
 	private static final String APPLICATION_PK_PROPERTY = "applicationPK";
 	private static final String CASE_CODE_PROPERTY = "caseCode";
+	private static final String SET_TO_SUBMIT_PROPERTY = "setToSubmit";
+	private static final String DISABLED_PROPERTY = "disabled";
 
 	public String getBundleIdentifier() {
 		return ApplicationConstants.IW_BUNDLE_IDENTIFIER;
@@ -89,6 +92,18 @@ public class UserChooser extends IWBaseComponent {
 	    	String caseCode = (String) ve.getValue(context.getELContext());
 	    	setCaseCode(caseCode);
     	}
+    	
+		ve = getValueExpression(SET_TO_SUBMIT_PROPERTY);
+    	if (ve != null) {
+	    	boolean setToSubmit = ((Boolean) ve.getValue(context.getELContext())).booleanValue();
+    		setSetToSubmit(setToSubmit);
+    	}    
+
+		ve = getValueExpression(DISABLED_PROPERTY);
+    	if (ve != null) {
+	    	boolean disabled = ((Boolean) ve.getValue(context.getELContext())).booleanValue();
+    		setDisabled(disabled);
+    	}
 	}
 
 	protected DropdownMenu getUserChooser(IWContext iwc, IWResourceBundle iwrb) {
@@ -96,6 +111,7 @@ public class UserChooser extends IWBaseComponent {
 
 		DropdownMenu menu = new DropdownMenu(parameterName);
 		menu.setToSubmit(isSetToSubmit());
+		menu.setDisabled(isDisabled());
 		menu.setStyleClass("userSelector");
 		for (Applicant child : children) {
 			boolean addUser = true;
@@ -192,5 +208,13 @@ public class UserChooser extends IWBaseComponent {
 
 	public void setSetToSubmit(boolean setToSubmit) {
 		this.setToSubmit = setToSubmit;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 }

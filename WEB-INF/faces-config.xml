@@ -155,6 +155,11 @@
 			<property-name>setToSubmit</property-name>
 			<property-class>boolean</property-class>
 		</property>
+		<property>
+			<display-name>Disabled</display-name>
+			<property-name>disabled</property-name>
+			<property-class>boolean</property-class>
+		</property>
 	</component>
 
 	<component>
