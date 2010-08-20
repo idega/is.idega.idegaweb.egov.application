@@ -17,12 +17,14 @@ public class Button extends IWBaseComponent {
 	private String parameter;
 	private String formId;
 	private String styleClass;
+	private String url;
 	
 	public static final String ACTION_PROPERTY = "action";
 	public static final String VALUE_PROPERTY = "value";
 	public static final String PARAMETER_PROPERTY = "parameter";
 	public static final String FORM_ID_PROPERTY = "formId";
 	public static final String STYLE_CLASS_PROPERTY = "styleClass";
+	public static final String URL_PROPERTY = "url";
 
 	public String getBundleIdentifier() {
 		return ApplicationConstants.IW_BUNDLE_IDENTIFIER;
@@ -59,6 +61,9 @@ public class Button extends IWBaseComponent {
 		if (getFormId() != null) {
 			link.setToFormSubmit(getFormId());
 		}
+		if (getURL() != null) {
+			link.setURL(getURL());
+		}
 		add(link);
 	}
 
@@ -91,6 +96,12 @@ public class Button extends IWBaseComponent {
     	if (ve != null) {
 	    	String styleClass = (String) ve.getValue(context.getELContext());
 	    	setStyleClass(styleClass);
+    	}    	
+
+		ve = getValueExpression(URL_PROPERTY);
+    	if (ve != null) {
+	    	String url = (String) ve.getValue(context.getELContext());
+	    	setURL(url);
     	}    	
 	}
 
@@ -132,5 +143,13 @@ public class Button extends IWBaseComponent {
 
 	public void setStyleClass(String styleClass) {
 		this.styleClass = styleClass;
+	}
+
+	public String getURL() {
+		return url;
+	}
+
+	public void setURL(String url) {
+		this.url = url;
 	}
 }
