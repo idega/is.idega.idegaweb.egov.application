@@ -18,6 +18,7 @@ public class Button extends IWBaseComponent {
 	private String formId;
 	private String styleClass;
 	private String url;
+	private String clickConfirmMessage;
 	
 	public static final String ACTION_PROPERTY = "action";
 	public static final String VALUE_PROPERTY = "value";
@@ -25,6 +26,7 @@ public class Button extends IWBaseComponent {
 	public static final String FORM_ID_PROPERTY = "formId";
 	public static final String STYLE_CLASS_PROPERTY = "styleClass";
 	public static final String URL_PROPERTY = "url";
+	public static final String CLICK_CONFIRM_PROPERTY = "clickConfirm";
 
 	public String getBundleIdentifier() {
 		return ApplicationConstants.IW_BUNDLE_IDENTIFIER;
@@ -64,6 +66,9 @@ public class Button extends IWBaseComponent {
 		if (getURL() != null) {
 			link.setURL(getURL());
 		}
+		if (getClickConfirmMessage() != null) {
+			link.setClickConfirmation(getClickConfirmMessage());
+		}
 		add(link);
 	}
 
@@ -102,6 +107,12 @@ public class Button extends IWBaseComponent {
     	if (ve != null) {
 	    	String url = (String) ve.getValue(context.getELContext());
 	    	setURL(url);
+    	}    	
+
+		ve = getValueExpression(CLICK_CONFIRM_PROPERTY);
+    	if (ve != null) {
+	    	String message = (String) ve.getValue(context.getELContext());
+	    	setClickConfirmMessage(message);
     	}    	
 	}
 
@@ -151,5 +162,13 @@ public class Button extends IWBaseComponent {
 
 	public void setURL(String url) {
 		this.url = url;
+	}
+
+	public String getClickConfirmMessage() {
+		return clickConfirmMessage;
+	}
+
+	public void setClickConfirmMessage(String clickConfirmMessage) {
+		this.clickConfirmMessage = clickConfirmMessage;
 	}
 }

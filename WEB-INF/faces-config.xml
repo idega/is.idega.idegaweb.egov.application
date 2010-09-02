@@ -68,6 +68,11 @@ version="1.2">
 			<property-name>url</property-name>
 			<property-class>java.lang.String</property-class>
 		</property>
+		<property>
+			<display-name>Click confirm</display-name>
+			<property-name>clickConfirm</property-name>
+			<property-class>java.lang.String</property-class>
+		</property>
 	</component>
 
 	<component>
