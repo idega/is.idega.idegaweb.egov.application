@@ -238,7 +238,11 @@ public class ApplicationBean {
 	}
 	
 	public void addError(String parameter, String errorMessage) {
-		Error error = new Error(parameter, errorMessage);
+		addError(parameter, errorMessage, false);
+	}
+	
+	public void addError(String parameter, String errorMessage, boolean escapeXML) {
+		Error error = new Error(parameter, errorMessage, escapeXML);
 		if (!errors.contains(error)) {
 			errors.add(error);
 		}
@@ -246,10 +250,14 @@ public class ApplicationBean {
 	}
 	
 	public void addError(int phase, String parameter, String errorMessage) {
+		addError(phase, parameter, errorMessage, false);
+	}
+	
+	public void addError(int phase, String parameter, String errorMessage, boolean escapeXML) {
 		if (!errorMap.containsKey(phase)) {
 			errorMap.put(phase, Boolean.TRUE);
 		}
-		addError(parameter, errorMessage);
+		addError(parameter, errorMessage, escapeXML);
 	}
 	
 	public Collection<Error> getErrors() {
@@ -260,10 +268,12 @@ public class ApplicationBean {
 
 		String parameter;
 		String message;
+		boolean escapeXML = false;
 
-		public Error(String parameter, String message) {
+		public Error(String parameter, String message, boolean escapeXML) {
 			this.parameter = parameter;
 			this.message = message;
+			this.escapeXML = escapeXML;
 		}
 
 		public String getParameter() {
@@ -272,6 +282,10 @@ public class ApplicationBean {
 
 		public String getMessage() {
 			return message;
+		}
+		
+		public boolean getEscapeXML() {
+			return escapeXML;
 		}
 
 		private ApplicationBean getOuterType() {

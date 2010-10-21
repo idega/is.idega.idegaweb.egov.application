@@ -10,7 +10,7 @@
 			<h1><h:outputText value="#{localizedStrings['is.idega.idegaweb.egov.application']['application_errors_occured']}"/></h1>
 			<ul>
 				<ui:repeat value="#{applicationBean.errors}" var="error">
-					<li><h:outputText escape="false" value="#{error.message}"/></li>
+					<li><h:outputText escape="#{error.escapeXML}" value="#{error.message}"/></li>
 				</ui:repeat>
 			</ul>
 		</div>
