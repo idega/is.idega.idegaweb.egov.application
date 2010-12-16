@@ -573,9 +573,10 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		Table appsAndGroups = new Table(EGOV_APPLICATION_GROUP);
 		
 		SelectQuery query = new SelectQuery(apps);
-		query.addColumn(new Column(apps, getIDColumnName()));
+		query.addColumn(apps, getIDColumnName(), true);
 		
 		query.addCriteria(new JoinCriteria(apps.getColumn(getIDColumnName()), appsAndGroups.getColumn(getIDColumnName())));
+		query.addOrder(new Order(apps.getColumn(NAME), true));
 		
 		return this.idoFindPKsByQuery(query);
 	}
