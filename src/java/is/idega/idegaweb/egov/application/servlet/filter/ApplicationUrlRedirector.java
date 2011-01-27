@@ -73,7 +73,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 	}
 
 	private boolean getIfDoRedirect(HttpServletRequest request) {
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		Map map = request.getParameterMap();
 		return map.containsKey(ApplicationBlock.PARAMETER_APPLICATION_PK);
 	}
@@ -93,8 +93,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			
 			String url;
 			
-			if(application.getAppType() != null) {
-				
+			if (application.getAppType() != null) {
 				ApplicationType at = getApplicationTypesManager().getApplicationType(application.getAppType());
 				url = at.getUrl(iwc, application);
 			} else
@@ -105,10 +104,10 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				IWMainApplicationSettings settings = iwma.getSettings();
 					
-				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI, CoreConstants.EMPTY);
+				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI, "/pages/");
 				if(CoreConstants.EMPTY.equals(loginPage)){
 					//backup
-					loginPage = settings.getProperty(CoreConstants.PAGE_ERROR_403_HANDLER_PORPERTY);
+					loginPage = settings.getProperty(CoreConstants.PAGE_ERROR_403_HANDLER_PORPERTY, "/pages/");
 				}
 				
 				if (application.getLoginPageURL() != null) {
