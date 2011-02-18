@@ -576,6 +576,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		query.addColumn(apps, getIDColumnName(), true);
 		
 		query.addCriteria(new JoinCriteria(apps.getColumn(getIDColumnName()), appsAndGroups.getColumn(getIDColumnName())));
+		query.addCriteria(new MatchCriteria(apps.getColumn(VISIBLE), MatchCriteria.EQUALS, true));
 		
 		return this.idoFindPKsByQuery(query);
 	}
