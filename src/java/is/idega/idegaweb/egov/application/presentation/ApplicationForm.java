@@ -19,7 +19,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
@@ -34,6 +37,7 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -51,6 +55,9 @@ import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.CoreConstants;
+import com.idega.util.CreditCardChecker;
+import com.idega.util.CreditCardType;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.PresentationUtil;
@@ -61,6 +68,9 @@ public abstract class ApplicationForm extends Block {
 	private static final String COOKIE_NAME = "applicationWindow_";
 
 	protected static final String PARAMETER_NO_USER = "prm_no_user";
+	
+	private static final String ATTRIBUTE_CARD_TYPES = "egov.application.card.types";
+	private static final String DEFAULT_CARD_TYPES = CreditCardType.VISA.getCode() + "," + CreditCardType.MASTERCARD.getCode();
 
 	private ICPage iWindowPage;
 	private int iWidth = 400;
@@ -493,6 +503,42 @@ public abstract class ApplicationForm extends Block {
 		layer.add(clearLayer);
 
 		return layer;
+	}
+	
+	public static DropdownMenu getCardTypeDropdown(Locale locale, String parameterName) {
+		DropdownMenu menu = new DropdownMenu(parameterName);
+		
+		IWResourceBundle iwrb = IWMainApplication.getDefaultIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+		
+		List<CreditCardType> types = getAllowedCardTypes();
+		Iterator it = types.iterator();
+		while (it.hasNext()) {
+			CreditCardType type = (CreditCardType) it.next();
+			menu.addMenuElement(type.getCode(), iwrb.getLocalizedString("application." + type.getCode(), type.getName()));
+		}
+		
+		return menu;
+	}
+	
+	public static boolean validateCardNumber(String cardNumber) {
+		return CreditCardChecker.isValid(cardNumber, getAllowedCardTypes());
+	}
+	
+	public static List<CreditCardType> getAllowedCardTypes() {
+		List<CreditCardType> types = new ArrayList<CreditCardType>();
+		
+		String allowedTypes = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty(ATTRIBUTE_CARD_TYPES, DEFAULT_CARD_TYPES);
+		StringTokenizer tokens = new StringTokenizer(allowedTypes, CoreConstants.COMMA);
+		while (tokens.hasMoreTokens()) {
+			String code = tokens.nextToken();
+			CreditCardType type = CreditCardType.getByCode(code);
+			
+			if (type != null) {
+				types.add(type);
+			}
+		}
+		
+		return types;
 	}
 
 	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) {
