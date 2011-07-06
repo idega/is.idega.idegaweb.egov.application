@@ -30,7 +30,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 
 	private String layerID = "applicationCategoryViewer";
 	public static final String CACHE_KEY = "app_application_category_viewer";
-	private static final int COLUMNS = 3;
+	private int columns = 3;
 	private boolean iGroupCategories = true;
 	
 	public ApplicationCategoryViewer() {
@@ -62,7 +62,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		mainLayer.setID(this.layerID);
 		
 		List<Layer> columnList = new ArrayList<Layer>();
-		for(int i = 0; i < COLUMNS; i++) {
+		for(int i = 0; i < this.columns; i++) {
 			Layer column = new Layer(Layer.DIV);
 			column.setStyleClass("applicationCategoryColumn");
 			column.setId("appCatColumn" + i);
@@ -230,5 +230,9 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 	 */
 	public void setGroupCategories(boolean groupCategories) {
 		this.iGroupCategories = groupCategories;
+	}
+
+	public void setColumns(int columns) {
+		this.columns = columns;
 	}
 }
