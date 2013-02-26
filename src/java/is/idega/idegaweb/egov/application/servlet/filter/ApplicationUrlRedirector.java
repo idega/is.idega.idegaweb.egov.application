@@ -104,10 +104,10 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			if (application.getElectronic() && application.getRequiresLogin() && !isLoggedOn) {
 				IWMainApplicationSettings settings = iwma.getSettings();
 					
-				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI, "/pages/");
+				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI, CoreConstants.PAGES_URI_PREFIX + CoreConstants.SLASH);
 				if(CoreConstants.EMPTY.equals(loginPage)){
 					//backup
-					loginPage = settings.getProperty(CoreConstants.PAGE_ERROR_403_HANDLER_PORPERTY, "/pages/");
+					loginPage = settings.getProperty(CoreConstants.PAGE_ERROR_403_HANDLER_PORPERTY, CoreConstants.PAGES_URI_PREFIX + CoreConstants.SLASH);
 				}
 				
 				if (application.getLoginPageURL() != null) {
@@ -121,7 +121,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					uri.append(CoreConstants.AMP);
 				}
 				
-				//String applUrl = application.getUrlByLocale(iwc.getCurrentLocale());
 				StringBuilder appUrlBuilder = new StringBuilder(url);
 					
 				@SuppressWarnings("unchecked")
@@ -152,10 +151,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					
 				return uri.toString();
 			} else if (isLoggedOn) {
-				
-//				String uri = application.getUrlByLocale(iwc.getCurrentLocale());
-//				uri = IWAuthenticator.getUriParsedWithVariables(request, uri);
-				
 				StringBuilder appUrlBuilder = new StringBuilder(url);
 
 				@SuppressWarnings("unchecked")
@@ -203,7 +198,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 	 * @param application
 	 */
 	private void updateTimesClicked(IWMainApplication iwma, Application application) {
-
 		IWApplicationContext iwc = iwma.getIWApplicationContext();
 		String prop = iwma.getSettings().getProperty(PROP_UPDATE_TIMES_CLICKED);
 		boolean updateEveryTime = true;
@@ -216,9 +210,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 		if (updateEveryTime) {
 			try {
 				getApplicationBusiness(iwc).updateTimesClicked(application);
-			}
-			catch (Exception e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -237,8 +229,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 	}
 	
 	protected ApplicationTypesManager getApplicationTypesManager() {
-		
-		if(applicationTypesManager == null)
+		if (applicationTypesManager == null)
 			ELUtil.getInstance().autowire(this);
 		
 		return applicationTypesManager;
