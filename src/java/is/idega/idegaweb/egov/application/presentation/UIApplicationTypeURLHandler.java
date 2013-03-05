@@ -1,14 +1,14 @@
 package is.idega.idegaweb.egov.application.presentation;
 
+import is.idega.idegaweb.egov.application.business.ApplicationType.ApplicationTypeHandlerComponent;
+import is.idega.idegaweb.egov.application.data.Application;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.validator.UrlValidator;
-
-import is.idega.idegaweb.egov.application.business.ApplicationType.ApplicationTypeHandlerComponent;
-import is.idega.idegaweb.egov.application.data.Application;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -17,6 +17,7 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.CoreConstants;
 import com.idega.util.PresentationUtil;
 
 
@@ -28,45 +29,45 @@ import com.idega.util.PresentationUtil;
  *
  */
 public class UIApplicationTypeURLHandler extends Block implements ApplicationTypeHandlerComponent {
-	
+
 	private Application application;
 	public static final String urlParam = "url";
 	public static final String elecParam = "elect";
-	
+
 	@Override
-	public void main(IWContext iwc) throws Exception {		
+	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		PresentationUtil.addStyleSheetToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("style/application.css"));
-		
+
 		String urlValue = iwc.getParameter(urlParam);
 		String elecValue = iwc.getParameter(elecParam);
-				
+
 		TextInput url = new TextInput(urlParam);
 		url.setId(urlParam);
 		BooleanInput electronic = new BooleanInput(elecParam);
-		if(elecValue != null && elecValue.equals("Y")) {
+		if(elecValue != null && elecValue.equals(CoreConstants.Y)) {
 			electronic.setSelected(true);
 		} else {
 			electronic.setSelected(false);
 		}
-		
-		if(application != null) {		
+
+		if(application != null) {
 			url.setContent(application.getUrl());
 			electronic.setSelected(application.getElectronic());
 		}
 		if(urlValue != null && !urlValue.trim().equals("")) {
 			url.setContent(urlValue);
 		}
-		
+
 		Layer container = new Layer(Layer.SPAN);
-		
+
 		Layer layer = new Layer(Layer.DIV);
 		layer.setStyleClass("formItem");
 		Label label = new Label(iwrb.getLocalizedString("electronic", "Electronic"), electronic);
 		layer.add(label);
 		layer.add(electronic);
 		container.add(layer);
-		
+
 		layer = new Layer(Layer.DIV);
 		layer.setStyleClass("formItem");
 		Layer errorItem = new Layer(Layer.SPAN);
@@ -79,17 +80,18 @@ public class UIApplicationTypeURLHandler extends Block implements ApplicationTyp
 		layer.add(url);
 		layer.add(errorItem);
 		container.add(layer);
-		
+
 		add(container);
 	}
 
 	public void setApplication(Application application) {
 		this.application = application;
 	}
-	
+
+	@Override
 	public boolean validate(IWContext iwc) {
 		boolean valid = true;
-		
+
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		String urlValue = iwc.getParameter(urlParam);
 
@@ -109,10 +111,11 @@ public class UIApplicationTypeURLHandler extends Block implements ApplicationTyp
 		return valid;
 	}
 
+	@Override
 	public UIComponent getUIComponent(FacesContext ctx, Application app) {
 		UIApplicationTypeURLHandler h = new UIApplicationTypeURLHandler();
 		h.setApplication(app);
-		
+
 		return h;
 	}
 }

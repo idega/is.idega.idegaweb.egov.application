@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
+import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
@@ -26,50 +27,58 @@ public class ApplicationTypeURL implements ApplicationType {
 
 	static final String beanIdentifier = "appTypeURL";
 	private static final String appType = "EGOV_URL";
-	
-	public ApplicationTypeHandlerComponent getHandlerComponent() {		
+
+	@Override
+	public ApplicationTypeHandlerComponent getHandlerComponent() {
 		UIApplicationTypeURLHandler h = new UIApplicationTypeURLHandler();
 		return h;
 	}
-	
+
 	public UIComponent getHandlerComponent(FacesContext ctx, Application app) {
-		
+
 		UIApplicationTypeURLHandler h = new UIApplicationTypeURLHandler();
 		h.setApplication(app);
 		return h;
 	}
 
+	@Override
 	public String getLabel(IWContext iwc) {
-		
+
 		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
 		return iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("app_type.url", "Url");
 	}
 
+	@Override
 	public String getType() {
 		return appType;
 	}
 
+	@Override
 	public void beforeStore(IWContext iwc, Application app) {
-		
+
 		String url = iwc.getParameter(UIApplicationTypeURLHandler.urlParam);
 		String elec = iwc.getParameter(UIApplicationTypeURLHandler.elecParam);
-		
-		app.setElectronic("Y".equalsIgnoreCase(elec));
+
+		app.setElectronic(CoreConstants.Y.equalsIgnoreCase(elec));
 		app.setUrl(url);
 	}
-	
+
+	@Override
 	public boolean isVisible(Application app) {
 		return true;
 	}
 
+	@Override
 	public String getBeanIdentifier() {
 		return beanIdentifier;
 	}
 
+	@Override
 	public boolean afterStore(IWContext iwc, Application app) {
 		return false;
 	}
 
+	@Override
 	public String getUrl(IWContext iwc, Application app) {
 		return app.getUrl();
 	}

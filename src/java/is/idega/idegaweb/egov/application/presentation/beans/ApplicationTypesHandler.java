@@ -34,38 +34,38 @@ import com.idega.presentation.IWContext;
 @Scope("singleton")
 @Service("appTypesHandler")
 public class ApplicationTypesHandler {
-	
+
 	@Autowired private ApplicationTypesManager applicationTypesManager;
 
-	public org.jdom.Document getApplicationTypeHandler(Integer appId, String applicationType) {
-		
+	public org.jdom2.Document getApplicationTypeHandler(Integer appId, String applicationType) {
+
 		ApplicationType appType = getApplicationTypesManager().getApplicationType(applicationType);
-		
+
 		if(appType == null)
 			return null;
-		
+
 		FacesContext ctx = FacesContext.getCurrentInstance();
 		IWContext iwc = IWContext.getIWContext(ctx);
-		
+
 		try {
 			Application application = appId == null || appId == -1 ? null : getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(appId);
-			
+
 			UIComponent handlerComponent = appType.getHandlerComponent().getUIComponent(ctx, application);
-			
+
 			if(handlerComponent == null)
 				return null;
-			
+
 			return getBuilderService().getRenderedComponent(iwc, handlerComponent, true);
-			
+
 		} catch (Exception e) {
-			
+
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while resolving application type handler component", e);
 			return null;
 		}
 	}
-	
+
 	protected BuilderService getBuilderService() {
-		
+
 		try {
 			return BuilderServiceFactory.getBuilderService(IWMainApplication.getDefaultIWApplicationContext());
 		} catch (RemoteException e) {
@@ -81,7 +81,7 @@ public class ApplicationTypesHandler {
 			ApplicationTypesManager applicationTypesManager) {
 		this.applicationTypesManager = applicationTypesManager;
 	}
-	
+
 	protected ApplicationBusiness getApplicationBusiness(IWContext iwc) {
 		try {
 			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwc, ApplicationBusiness.class);
