@@ -15,21 +15,21 @@ public interface ApplicationHome extends IDOHome {
 
 	public Application findByPrimaryKey(Object pk) throws FinderException;
 	
-	public Collection<Application> findByMultiplePrimaryKey(Collection pk) throws FinderException;
+	public Collection<Application> findByMultiplePrimaryKey(Collection<Object> pk) throws FinderException;
 
 	public Application findByCaseCode(CaseCode caseCode) throws FinderException;
 
 	public Application findByCaseCode(String caseCode) throws FinderException;
 
-	public Collection findAllByCategory(ApplicationCategory category) throws FinderException;
+	public Collection<Application> findAllByCategory(ApplicationCategory category) throws FinderException;
 
-	public Collection findAll() throws FinderException;
+	public Collection<Application> findAll() throws FinderException;
 
-	public Collection findElectronicApplications() throws FinderException;
+	public Collection<Application> findElectronicApplications() throws FinderException;
 
-	public Collection findMostClicked(int numberOfEntries) throws FinderException;
+	public Collection<Application> findMostClicked(int numberOfEntries) throws FinderException;
 	
-	public Collection findAllByCategoryOrderedByPriority(ApplicationCategory category) throws FinderException;
+	public Collection<Application> findAllByCategoryOrderedByPriority(ApplicationCategory category) throws FinderException;
 	
 	public Application findByCategoryAndPriority(ApplicationCategory category, int priority) throws FinderException;
 

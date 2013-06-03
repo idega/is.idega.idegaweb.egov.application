@@ -76,7 +76,7 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 
 	@Override
 	public void checkApplicationCategoryPriorityConstraint() {
-		Collection categories = null;
+		Collection<ApplicationCategory> categories = null;
 		try {
 			categories = getApplicationCategoryHome().findAllOrderedByPriority();
 		}
