@@ -10,7 +10,9 @@
 package is.idega.idegaweb.egov.application.data;
 
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import com.idega.data.IDOHome;
 
 
@@ -32,14 +34,14 @@ public interface ApplicationCategoryHome extends IDOHome {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#ejbFindAll
 	 */
-	public Collection findAll() throws FinderException;
+	public Collection<ApplicationCategory> findAll() throws FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#ejbFindAllOrderedByName
 	 */
-	public Collection findAllOrderedByName() throws FinderException;
+	public Collection<ApplicationCategory> findAllOrderedByName() throws FinderException;
 	
-	public Collection findAllOrderedByPriority() throws FinderException;
+	public Collection<ApplicationCategory> findAllOrderedByPriority() throws FinderException;
 	
 	public ApplicationCategory findByPriority(int priority) throws FinderException;
 }

@@ -142,7 +142,7 @@ public class ApplicationBean {
 		}
 	}
 	
-	public void addEventListener(Class eventListener) {
+	public <T> void addEventListener(Class<T> eventListener) {
 		addParameter(IWMainApplication.IdegaEventListenerClassParameter, IWMainApplication.getEncryptedClassName(eventListener.getName()));
 	}
 	

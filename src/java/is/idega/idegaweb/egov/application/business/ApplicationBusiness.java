@@ -13,10 +13,12 @@ import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
 import is.idega.idegaweb.egov.application.data.ApplicationHome;
+
 import java.util.Collection;
 import java.util.Locale;
 
 import javax.ejb.FinderException;
+
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.business.IBOService;
 import com.idega.presentation.IWContext;
@@ -57,12 +59,12 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getMostClickedApplications
 	 */
-	public Collection getMostClickedApplications(int numberOfEntries) throws java.rmi.RemoteException;
+	public Collection<Application> getMostClickedApplications(int numberOfEntries) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getUserApplications
 	 */
-	public Collection getUserApplications(User user) throws java.rmi.RemoteException;
+	public Collection<Application> getUserApplications(User user) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getAgesForUserAndChildren
