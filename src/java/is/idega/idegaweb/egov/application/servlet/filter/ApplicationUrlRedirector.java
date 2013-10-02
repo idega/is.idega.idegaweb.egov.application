@@ -91,7 +91,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			String pk = request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK);
 			if (!StringHandler.isNumeric(pk)) {
 				LOGGER.warning("Invalid application primary key: " + pk);
-				return null;
+				return CoreConstants.PAGES_URI_PREFIX;
 			}
 
 			IWMainApplication iwma = getIWMainApplication(request);
