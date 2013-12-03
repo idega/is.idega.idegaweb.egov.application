@@ -1,6 +1,7 @@
 package is.idega.idegaweb.egov.application.data;
 
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -13,12 +14,12 @@ import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.Group;
 
 public interface Application extends IDOEntity {
-	
+
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#setPriority
 	 */
 	public void setPriority(Integer priority);
-	
+
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#getPriority
 	 */
@@ -43,9 +44,9 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getAgeTo
 	 */
 	public int getAgeTo();
-	
+
 	public LocalizedText getLocalizedText(int icLocaleId);
-	
+
 	public void addLocalizedName(LocalizedText text) throws IDOAddRelationshipException;
 
 	/**
@@ -218,19 +219,26 @@ public interface Application extends IDOEntity {
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getHiddenFromGuests
 	 */
 	public boolean getHiddenFromGuests();
-	
+
 	public void setAppType(String appType);
-		
+
 	public String getAppType();
-	
+
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#removeLocalizedEntries
 	 */
 	public boolean removeLocalizedEntries();
-	
+
 	public void addGroup(Group group) throws IDOAddRelationshipException;
-	
+
 	public Collection<Group> getGroups();
-	
+
 	public void removeGroup(Group group) throws IDORemoveRelationshipException;
+
+	public Timestamp getEnabledFrom();
+	public void setEnabledFrom(Timestamp enabledFrom);
+
+	public Timestamp getEnabledTo();
+	public void setEnabledTo(Timestamp enabledTo);
+
 }
