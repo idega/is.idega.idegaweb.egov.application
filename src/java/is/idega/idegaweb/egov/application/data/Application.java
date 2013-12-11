@@ -241,4 +241,5 @@ public interface Application extends IDOEntity {
 	public Timestamp getEnabledTo();
 	public void setEnabledTo(Timestamp enabledTo);
 
+	public boolean isEnabled();
 }

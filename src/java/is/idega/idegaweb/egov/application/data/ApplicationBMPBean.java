@@ -38,6 +38,7 @@ import com.idega.data.query.OR;
 import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupBMPBean;
@@ -542,16 +543,18 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	}
 
 	private void addValidFromToCriteria(Table table, SelectQuery query) {
-		MatchCriteria enabledFromIsNull = new MatchCriteria(new Column(table, ENABLED_FROM), MatchCriteria.IS, MatchCriteria.NULL);
-		MatchCriteria enabledToIsNull = new MatchCriteria(new Column(table, ENABLED_TO), MatchCriteria.IS, MatchCriteria.NULL);
-		Criteria checkForNulls = new AND(enabledFromIsNull, enabledToIsNull);
+		if (IWMainApplication.getDefaultIWMainApplication().getSettings().getBoolean("app.filter_out_disabled", Boolean.FALSE)) {
+			MatchCriteria enabledFromIsNull = new MatchCriteria(new Column(table, ENABLED_FROM), MatchCriteria.IS, MatchCriteria.NULL);
+			MatchCriteria enabledToIsNull = new MatchCriteria(new Column(table, ENABLED_TO), MatchCriteria.IS, MatchCriteria.NULL);
+			Criteria checkForNulls = new AND(enabledFromIsNull, enabledToIsNull);
 
-		String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(IWTimestamp.RightNow().getDate());
-		MatchCriteria enabledFrom = new MatchCriteria(new Column(table, ENABLED_FROM), MatchCriteria.LESSEQUAL, timestamp);
-		MatchCriteria enabledTo = new MatchCriteria(new Column(table, ENABLED_TO), MatchCriteria.GREATEREQUAL, timestamp);
-		Criteria checkForDates = new AND(enabledFrom, enabledTo);
+			String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(IWTimestamp.RightNow().getDate());
+			MatchCriteria enabledFrom = new MatchCriteria(new Column(table, ENABLED_FROM), MatchCriteria.LESSEQUAL, timestamp);
+			MatchCriteria enabledTo = new MatchCriteria(new Column(table, ENABLED_TO), MatchCriteria.GREATEREQUAL, timestamp);
+			Criteria checkForDates = new AND(enabledFrom, enabledTo);
 
-		query.addCriteria(new OR(checkForNulls, checkForDates));
+			query.addCriteria(new OR(checkForNulls, checkForDates));
+		}
 	}
 
 	public Collection ejbFindAllByCategory(ApplicationCategory category) throws FinderException {
@@ -780,6 +783,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public Timestamp getEnabledFrom() {
 		return getTimestampColumnValue(ENABLED_FROM);
 	}
+	@Override
 	public void setEnabledFrom(Timestamp enabledFrom) {
 		setColumn(ENABLED_FROM, enabledFrom);
 	}
@@ -788,8 +792,22 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public Timestamp getEnabledTo() {
 		return getTimestampColumnValue(ENABLED_TO);
 	}
+	@Override
 	public void setEnabledTo(Timestamp enabledTo) {
 		setColumn(ENABLED_TO, enabledTo);
+	}
+
+	@Override
+	public boolean isEnabled() {
+		Timestamp enabledFrom = getEnabledFrom();
+		Timestamp enabledTo = getEnabledTo();
+		if (enabledFrom == null || enabledTo == null) {
+			return true;
+		}
+
+		IWTimestamp now = IWTimestamp.RightNow();
+		boolean enabled = now.isLaterThanOrEquals(new IWTimestamp(enabledFrom)) && now.isEarlierThan(new IWTimestamp(enabledTo));
+		return enabled;
 	}
 
 }
