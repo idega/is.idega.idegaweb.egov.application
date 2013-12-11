@@ -14,10 +14,12 @@ import is.idega.idegaweb.egov.application.business.ApplicationType;
 import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
+import is.idega.idegaweb.egov.application.presentation.DisabledApplicationView;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -32,10 +34,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.idega.builder.business.BuilderLogic;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
@@ -43,6 +47,7 @@ import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.util.CoreConstants;
+import com.idega.util.ListUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.expression.ELUtil;
 
@@ -104,11 +109,23 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			String url;
 
+			if (!application.isEnabled()) {
+				List<ICPage> pagesWithModule = BuilderLogic.getInstance().findPagesForModule(DisabledApplicationView.class);
+				if (ListUtil.isEmpty(pagesWithModule)) {
+					LOGGER.warning("Did not find page for module: " + DisabledApplicationView.class.getName());
+					return CoreConstants.PAGES_URI_PREFIX;
+				}
+
+				ICPage page = pagesWithModule.get(0);
+				return CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI() + "?" + DisabledApplicationView.PARAM_APP_ID + "=" + pk;
+			}
+
 			if (application.getAppType() != null) {
 				ApplicationType at = getApplicationTypesManager().getApplicationType(application.getAppType());
 				url = at.getUrl(iwc, application);
-			} else
+			} else {
 				url = application.getUrlByLocale(iwc.getCurrentLocale());
+			}
 
 			String encoding = System.getProperty(PROP_FILE_ENCODING);
 
