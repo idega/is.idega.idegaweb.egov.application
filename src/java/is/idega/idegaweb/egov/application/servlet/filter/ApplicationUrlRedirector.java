@@ -114,7 +114,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				List<ICPage> pagesWithModule = BuilderLogic.getInstance().findPagesForModule(DisabledApplicationView.class);
 				if (ListUtil.isEmpty(pagesWithModule)) {
 					uri = iwma.getSettings().getProperty("disabled_app_page", CoreConstants.PAGES_URI_PREFIX + "/ovirkumsokn/");
-					LOGGER.warning("Did not find page for module: " + DisabledApplicationView.class.getName() + ", usin app property value (" + uri
+					LOGGER.warning("Did not find page for module: " + DisabledApplicationView.class.getName() + ", using app property value (" + uri
 							+ ") for disabled app page");
 				} else {
 					ICPage page = pagesWithModule.get(0);
