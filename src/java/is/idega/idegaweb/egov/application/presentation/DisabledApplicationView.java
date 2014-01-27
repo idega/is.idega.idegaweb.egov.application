@@ -49,8 +49,6 @@ public class DisabledApplicationView extends Block {
 		container.setStyleClass("disabledApplicationView");
 		add(container);
 
-
-
 		Heading3 disabledAppHeader = StringUtil.isEmpty(appName) ?
 				new Heading3(iwrb.getLocalizedString("app_is_disabled", "Application is disabled")) :
 				new Heading3(
