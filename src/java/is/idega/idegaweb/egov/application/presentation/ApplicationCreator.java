@@ -17,6 +17,7 @@ import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -51,10 +52,13 @@ import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.IWDatePicker;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.handlers.IWDatePickerHandler;
 import com.idega.util.CoreConstants;
+import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.StringUtil;
@@ -75,6 +79,8 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String APP_TYPE_INPUT = "appType";
 	private static final String REQ_LOGIN_INPUT = "reqLogin";
 	private static final String VISIBLE_INPUT = "visible";
+	private static final String ENABLED_FROM_INPUT = "enabledFrom";
+	private static final String ENABLED_TO_INPUT = "enabledTo";
 	private static final String AGE_FROM_INPUT = "ageFrom";
 	private static final String AGE_TO_INPUT = "ageTo";
 	private static final String CODE_INPUT = "code";
@@ -165,11 +171,13 @@ public class ApplicationCreator extends ApplicationBlock {
 		String appType = iwc.getParameter(APP_TYPE_INPUT);
 		String requiresLogin = getBooleanValueInString(iwc.getParameter(REQ_LOGIN_INPUT), this.requiresLogin);
 		String visible = getBooleanValueInString(iwc.getParameter(VISIBLE_INPUT), this.visibleApplication);
+		String enabledFrom = iwc.getParameter(ENABLED_FROM_INPUT);
+		String enabledTo = iwc.getParameter(ENABLED_TO_INPUT);
 
 		Integer ageFrom = null;
 		Integer ageTo = null;
 
-		if(!validate(iwc)) {
+		if (!validate(iwc)) {
 			return null;
 		}
 
@@ -193,21 +201,49 @@ public class ApplicationCreator extends ApplicationBlock {
 		Application app = null;
 		if (id != null) {
 			try {
-				app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
-						new Integer(id));
-			}
-			catch (FinderException f) {
+				app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(new Integer(id));
+			} catch (FinderException f) {
 				f.printStackTrace();
 			}
-		}
-		else {
+		} else {
 			app = getApplicationBusiness(iwc).getApplicationHome().create();
 		}
 		app.setName(name);
-		app.setRequiresLogin(CoreConstants.Y.equalsIgnoreCase(requiresLogin));
-		app.setVisible(CoreConstants.Y.equalsIgnoreCase(visible));
-		app.setOpensInNewWindow(CoreConstants.Y.equalsIgnoreCase(opensInNew));
-		app.setHiddenFromGuests(CoreConstants.Y.equalsIgnoreCase(hiddenFromGuests));
+		app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
+		app.setVisible("Y".equalsIgnoreCase(visible));
+
+		Locale locale = iwc.getCurrentLocale();
+		if (StringUtil.isEmpty(enabledFrom)) {
+			app.setEnabledFrom(null);
+		} else {
+			Date from = IWDatePickerHandler.getParsedDate(enabledFrom, locale);
+			if (from == null) {
+				app.setEnabledFrom(null);
+			} else {
+				IWTimestamp iwFrom = new IWTimestamp(from);
+				iwFrom.setHour(0);
+				iwFrom.setMinute(0);
+				iwFrom.setSecond(0);
+				app.setEnabledFrom(iwFrom.getTimestamp());
+			}
+		}
+		if (StringUtil.isEmpty(enabledTo)) {
+			app.setEnabledTo(null);
+		} else {
+			Date to = IWDatePickerHandler.getParsedDate(enabledTo, locale);
+			if (to == null) {
+				app.setEnabledTo(null);
+			} else {
+				IWTimestamp iwTo = new IWTimestamp(to);
+				iwTo.setHour(23);
+				iwTo.setMinute(59);
+				iwTo.setSecond(59);
+				app.setEnabledTo(iwTo.getTimestamp());
+			}
+		}
+
+		app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
+		app.setHiddenFromGuests("Y".equalsIgnoreCase(hiddenFromGuests));
 		app.setAgeFrom((ageFrom == null)? -1 : ageFrom.intValue());
 		app.setAgeTo((ageTo == null)? -1 : ageTo.intValue());
 		if (code != null && !code.equals("-1")) {
@@ -217,13 +253,12 @@ public class ApplicationCreator extends ApplicationBlock {
 			app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(Integer.valueOf(cat)));
 		}
 		ApplicationType applType = getApplicationTypesManager().getApplicationType(appType);
-		if(applType != null) {
-
+		if (applType != null) {
 			app.setAppType(appType);
 			applType.beforeStore(iwc, app);
 			app.store();
 
-			if(applType.afterStore(iwc, app))
+			if (applType.afterStore(iwc, app))
 				app.store();
 
 		} else {
@@ -256,18 +291,18 @@ public class ApplicationCreator extends ApplicationBlock {
 		*/
 
 		for(Iterator<ICLocale> it = locales.iterator(); it.hasNext(); ) {
-			ICLocale locale = it.next();
-			String locName = iwc.getParameter(locale.getName() + "_locale");
+			ICLocale icLocale = it.next();
+			String locName = iwc.getParameter(icLocale.getName() + "_locale");
 
 			if(locName != null && !locName.equals("")) {
-				LocalizedText locText = app.getLocalizedText(locale.getLocaleID());
+				LocalizedText locText = app.getLocalizedText(icLocale.getLocaleID());
 				boolean newText = false;
 				if(locText == null) {
 					locText = getLocalizedTextHome().create();
 					newText = true;
 				}
 
-				locText.setLocaleId(locale.getLocaleID());
+				locText.setLocaleId(icLocale.getLocaleID());
 				locText.setBody(locName);
 
 				locText.store();
@@ -540,7 +575,6 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 
 	private void getApplicationCreationForm(IWContext iwc, int applicationID, List<ICLocale> locales) throws RemoteException {
-
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, getCreationFormJavaScriptSources(iwc));
 
 		String nameValue = iwc.getParameter(NAME_INPUT);
@@ -591,6 +625,22 @@ public class ApplicationCreator extends ApplicationBlock {
 			visible.setSelected(true);
 		} else {
 			visible.setSelected(false);
+		}
+
+		Locale locale = iwc.getCurrentLocale();
+		IWDatePicker enabledFrom = new IWDatePicker(ENABLED_FROM_INPUT);
+		String enabledFromParam = iwc.getParameter(ENABLED_FROM_INPUT);
+		if (StringUtil.isEmpty(enabledFromParam)) {
+			enabledFrom.setUseCurrentDateIfNotSet(false);
+		} else {
+			enabledFrom.setDate(IWDatePickerHandler.getParsedDate(enabledFromParam, locale));
+		}
+		IWDatePicker enabledTo = new IWDatePicker(ENABLED_TO_INPUT);
+		String enabledToParam = iwc.getParameter(ENABLED_TO_INPUT);
+		if (StringUtil.isEmpty(enabledToParam)) {
+			enabledTo.setUseCurrentDateIfNotSet(false);
+		} else {
+			enabledTo.setDate(IWDatePickerHandler.getParsedDate(enabledToParam, locale));
 		}
 
 		BooleanInput newin = new BooleanInput("newin");
@@ -649,7 +699,6 @@ public class ApplicationCreator extends ApplicationBlock {
 		Application application = null;
 
 		if (applicationID >= 0) {
-
 			try {
 				application = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(new Integer(applicationID));
 				name.setContent(application.getName());
@@ -666,6 +715,9 @@ public class ApplicationCreator extends ApplicationBlock {
 				}
 				newin.setSelected(application.getOpensInNewWindow());
 				form.add(new HiddenInput(APPLICATION_ID_PARAMETER, Integer.toString(applicationID)));
+
+				enabledFrom.setDate(application.getEnabledFrom());
+				enabledTo.setDate(application.getEnabledTo());
 			}
 			catch (FinderException f) {
 				f.printStackTrace();
@@ -773,6 +825,22 @@ public class ApplicationCreator extends ApplicationBlock {
 		formItem.add(visible);
 		layer.add(formItem);
 
+		//	Enabled from
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(this.iwrb.getLocalizedString("enabled_from", "Enabled from"), enabledFrom);
+		formItem.add(label);
+		formItem.add(enabledFrom);
+		layer.add(formItem);
+
+		//	Enabled to
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(this.iwrb.getLocalizedString("enabled_to", "Enabled to"), enabledTo);
+		formItem.add(label);
+		formItem.add(enabledTo);
+		layer.add(formItem);
+
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
 		label = new Label(this.iwrb.getLocalizedString("opens_in_new_window", "Opens in a new window"), newin);
@@ -826,13 +894,13 @@ public class ApplicationCreator extends ApplicationBlock {
 		layer.add(heading);
 
 		for(Iterator<ICLocale> it = locales.iterator(); it.hasNext(); ) {
-			ICLocale locale = it.next();
-			Locale javaLocale = ICLocaleBusiness.getLocaleFromLocaleString(locale.getLocale());
+			ICLocale icLocale = it.next();
+			Locale javaLocale = ICLocaleBusiness.getLocaleFromLocaleString(icLocale.getLocale());
 
-			TextInput locInput = new TextInput(locale.getName() + "_locale");
+			TextInput locInput = new TextInput(icLocale.getName() + "_locale");
 
 			if(application != null) {
-				LocalizedText text = application.getLocalizedText(locale.getLocaleID());
+				LocalizedText text = application.getLocalizedText(icLocale.getLocaleID());
 				locInput.setValue(text == null ? "" : text.getBody());
 			}
 
@@ -878,7 +946,6 @@ public class ApplicationCreator extends ApplicationBlock {
 	}
 
 	protected List<String> getCreationFormJavaScriptSources(IWContext iwc) {
-
 		List<String> sources = new ArrayList<String>();
 
 		Web2Business web2 = (Web2Business)WFUtil.getBeanInstance(web2beanBeanIdentifier);
