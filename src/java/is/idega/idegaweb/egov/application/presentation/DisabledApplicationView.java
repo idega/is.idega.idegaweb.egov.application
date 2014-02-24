@@ -56,7 +56,6 @@ public class DisabledApplicationView extends Block {
 				iwrb.getLocalizedString("app_is_disabled", "Application is disabled") :
 				iwrb.getLocalizedString("application", "Application") + CoreConstants.SPACE + CoreConstants.QOUTE_MARK + appName +
 					CoreConstants.QOUTE_MARK + CoreConstants.SPACE + iwrb.getLocalizedString("is_disabled", "is disabled");
-		getLogger().info("Header: '" + header + "' for application by ID: " + appId);
 		container.add(new Heading3(header));
 
 		String text = app == null ?
@@ -64,7 +63,6 @@ public class DisabledApplicationView extends Block {
 				iwrb.getLocalizedString("application_is_enabled_from", "Application is enabled from") + CoreConstants.SPACE +
 					new IWTimestamp(app.getEnabledFrom()).getLocaleDateAndTime(locale) + CoreConstants.SPACE + iwrb.getLocalizedString("to", "to") +
 					CoreConstants.SPACE + new IWTimestamp(app.getEnabledTo()).getLocaleDateAndTime(locale);
-		getLogger().info("Text: '" + text + "' for application by ID: " + appId);
 		Layer disabledAppText = new Layer();
 		container.add(disabledAppText);
 		disabledAppText.add(text);
