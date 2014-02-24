@@ -33,8 +33,6 @@ public class DisabledApplicationView extends Block {
 		Application app = null;
 		String appId = iwc.getParameter(PARAM_APP_ID);
 
-		getLogger().info("Rendering view for disabled application: " + appId + " (instance ID: '" + getBuilderService(iwc).getInstanceId(this) + "')");
-
 		if (StringHandler.isNumeric(appId)) {
 			ApplicationHome appHome = (ApplicationHome) IDOLookup.getHome(Application.class);
 			try {

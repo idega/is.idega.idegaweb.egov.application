@@ -1,8 +1,8 @@
 /*
  * $Id$ Created on Jan 12, 2006
- * 
+ *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
- * 
+ *
  * This software is the proprietary information of Idega hf. Use is subject to license terms.
  */
 package is.idega.idegaweb.egov.application.presentation;
@@ -68,7 +68,7 @@ public abstract class ApplicationForm extends Block {
 	private static final String COOKIE_NAME = "applicationWindow_";
 
 	protected static final String PARAMETER_NO_USER = "prm_no_user";
-	
+
 	private static final String ATTRIBUTE_CARD_TYPES = "egov.application.card.types";
 	private static final String DEFAULT_CARD_TYPES = CreditCardType.VISA.getCode() + "," + CreditCardType.MASTERCARD.getCode();
 
@@ -77,8 +77,8 @@ public abstract class ApplicationForm extends Block {
 	private int iHeight = 400;
 
 	private boolean iHasErrors = false;
-	private Map iPhaseErrors;
-	private Map iErrors;
+	private Map<Integer, Boolean> iPhaseErrors;
+	private Map<String, String> iErrors;
 
 	@Override
 	public void main(IWContext iwc) {
@@ -101,13 +101,13 @@ public abstract class ApplicationForm extends Block {
 
 	protected void setError(int phase, String parameter, String error) {
 		if (this.iErrors == null) {
-			this.iErrors = new LinkedHashMap();
+			this.iErrors = new LinkedHashMap<String, String>();
 		}
 
 		this.iHasErrors = true;
 		if (phase > 0) {
 			if (iPhaseErrors == null) {
-				iPhaseErrors = new HashMap();
+				iPhaseErrors = new HashMap<Integer, Boolean>();
 			}
 			iPhaseErrors.put(new Integer(phase), Boolean.TRUE);
 		}
@@ -123,7 +123,7 @@ public abstract class ApplicationForm extends Block {
 			return false;
 		}
 		else {
-			Boolean hasErrors = (Boolean) iPhaseErrors.get(new Integer(phase));
+			Boolean hasErrors = iPhaseErrors.get(new Integer(phase));
 			if (hasErrors != null) {
 				return hasErrors.booleanValue();
 			}
@@ -140,7 +140,7 @@ public abstract class ApplicationForm extends Block {
 
 	/**
 	 * Adds the errors encountered
-	 * 
+	 *
 	 * @param iwc
 	 * @param errors
 	 */
@@ -159,9 +159,8 @@ public abstract class ApplicationForm extends Block {
 			Lists list = new Lists();
 			layer.add(list);
 
-			Iterator iter = this.iErrors.values().iterator();
-			while (iter.hasNext()) {
-				String element = (String) iter.next();
+			for (Iterator<String> iter = this.iErrors.values().iterator(); iter.hasNext();) {
+				String element = iter.next();
 				ListItem item = new ListItem();
 				item.add(new Text(element));
 
@@ -314,19 +313,19 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
-		Collection children = null;
+		Collection<User> children = null;
 		try {
 			children = getMemberFamilyLogic(iwc).getChildrenInCustodyOf(user);
 		}
 		catch (NoChildrenFound e) {
-			children = new ArrayList();
+			children = new ArrayList<User>();
 		}
 		children.add(user);
 
 		return getUserChooser(iwc, applicationPK, user, chosenUser, children, parameterName, iwrb);
 	}
-	
-	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, Collection children, String parameterName, IWResourceBundle iwrb) throws RemoteException {
+
+	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, Collection<User> children, String parameterName, IWResourceBundle iwrb) throws RemoteException {
 		Application application = null;
 		if (applicationPK != null) {
 			try {
@@ -347,9 +346,8 @@ public abstract class ApplicationForm extends Block {
 
 		DropdownMenu menu = new DropdownMenu(parameterName);
 		menu.setStyleClass("userSelector");
-		Iterator iter = children.iterator();
-		while (iter.hasNext()) {
-			User element = (User) iter.next();
+		for (Iterator<User> iter = children.iterator(); iter.hasNext();) {
+			User element = iter.next();
 			boolean addUser = true;
 
 			if (application != null) {
@@ -376,7 +374,7 @@ public abstract class ApplicationForm extends Block {
 				menu.addMenuElement(element.getPrimaryKey().toString(), element.getName());
 			}
 		}
-		menu.addMenuElementFirst("", iwrb.getLocalizedString("select_applicant", "Select applicant"));
+		menu.addMenuElementFirst(CoreConstants.EMPTY, iwrb.getLocalizedString("select_applicant", "Select applicant"));
 
 		if (chosenUser != null) {
 			menu.setSelectedElement(chosenUser.getPrimaryKey().toString());
@@ -504,46 +502,45 @@ public abstract class ApplicationForm extends Block {
 
 		return layer;
 	}
-	
+
 	public static DropdownMenu getCardTypeDropdown(Locale locale, String parameterName) {
 		DropdownMenu menu = new DropdownMenu(parameterName);
-		
+
 		IWResourceBundle iwrb = IWMainApplication.getDefaultIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
-		
+
 		List<CreditCardType> types = getAllowedCardTypes();
-		Iterator it = types.iterator();
-		while (it.hasNext()) {
-			CreditCardType type = (CreditCardType) it.next();
+		for (Iterator<CreditCardType> it = types.iterator(); it.hasNext();) {
+			CreditCardType type = it.next();
 			menu.addMenuElement(type.getCode(), iwrb.getLocalizedString("application." + type.getCode(), type.getName()));
 		}
-		
+
 		return menu;
 	}
-	
+
 	public static boolean validateCardNumber(String cardNumber) {
 		return CreditCardChecker.isValid(cardNumber, getAllowedCardTypes());
 	}
-	
+
 	public static List<CreditCardType> getAllowedCardTypes() {
 		List<CreditCardType> types = new ArrayList<CreditCardType>();
-		
+
 		String allowedTypes = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty(ATTRIBUTE_CARD_TYPES, DEFAULT_CARD_TYPES);
 		StringTokenizer tokens = new StringTokenizer(allowedTypes, CoreConstants.COMMA);
 		while (tokens.hasMoreTokens()) {
 			String code = tokens.nextToken();
 			CreditCardType type = CreditCardType.getByCode(code);
-			
+
 			if (type != null) {
 				types.add(type);
 			}
 		}
-		
+
 		return types;
 	}
 
 	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) {
 		try {
-			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwac, ApplicationBusiness.class);
+			return IBOLookup.getServiceInstance(iwac, ApplicationBusiness.class);
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
@@ -552,7 +549,7 @@ public abstract class ApplicationForm extends Block {
 
 	private FamilyLogic getMemberFamilyLogic(IWApplicationContext iwac) {
 		try {
-			return (FamilyLogic) IBOLookup.getServiceInstance(iwac, FamilyLogic.class);
+			return IBOLookup.getServiceInstance(iwac, FamilyLogic.class);
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
@@ -561,7 +558,7 @@ public abstract class ApplicationForm extends Block {
 
 	protected UserBusiness getUserBusiness(IWApplicationContext iwac) {
 		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
+			return IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
