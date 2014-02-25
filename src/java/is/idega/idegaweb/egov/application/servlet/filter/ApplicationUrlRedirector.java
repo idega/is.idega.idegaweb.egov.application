@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.Filter;
@@ -111,7 +112,12 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			if (!application.isEnabled()) {
 				String uri = null;
-				List<ICPage> pagesWithModule = BuilderLogic.getInstance().findPagesForModule(DisabledApplicationView.class);
+				List<ICPage> pagesWithModule = null;
+				try {
+					pagesWithModule = BuilderLogic.getInstance().findPagesForModule(DisabledApplicationView.class);
+				} catch (Exception e) {
+					LOGGER.log(Level.WARNING, "Error looking up for pages with module " + DisabledApplicationView.class.getName(), e);
+				}
 				if (ListUtil.isEmpty(pagesWithModule)) {
 					uri = iwma.getSettings().getProperty("disabled_app_page", CoreConstants.PAGES_URI_PREFIX + "/ovirkumsokn/");
 					LOGGER.warning("Did not find page for module: " + DisabledApplicationView.class.getName() + ", using app property value (" + uri
