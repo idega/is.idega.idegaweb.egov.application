@@ -50,6 +50,7 @@ import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.util.CoreConstants;
 import com.idega.util.ListUtil;
 import com.idega.util.StringHandler;
+import com.idega.util.URIUtil;
 import com.idega.util.expression.ELUtil;
 
 public class ApplicationUrlRedirector extends BaseFilter implements Filter {
@@ -121,13 +122,16 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				if (ListUtil.isEmpty(pagesWithModule)) {
 					uri = iwma.getSettings().getProperty("disabled_app_page", CoreConstants.PAGES_URI_PREFIX + "/ovirkumsokn/");
 					LOGGER.warning("Did not find page for module: " + DisabledApplicationView.class.getName() + ", using app property value (" + uri
-							+ ") for disabled app page");
+							+ ") for disabled app page. Will clear all caches");
+					BuilderLogic.getInstance().doClearAllCaches();
 				} else {
 					ICPage page = pagesWithModule.get(0);
 					uri = CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI();
 				}
 
-				return uri + "?" + DisabledApplicationView.PARAM_APP_ID + "=" + pk;
+				URIUtil util = new URIUtil(uri);
+				util.setParameter(DisabledApplicationView.PARAM_APP_ID, pk);
+				return util.getUri();
 			}
 
 			if (application.getAppType() != null) {
