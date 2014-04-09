@@ -222,9 +222,6 @@ public class ApplicationCreator extends ApplicationBlock {
 				app.setEnabledFrom(null);
 			} else {
 				IWTimestamp iwFrom = new IWTimestamp(from);
-				iwFrom.setHour(0);
-				iwFrom.setMinute(0);
-				iwFrom.setSecond(0);
 				app.setEnabledFrom(iwFrom.getTimestamp());
 			}
 		}
@@ -236,9 +233,6 @@ public class ApplicationCreator extends ApplicationBlock {
 				app.setEnabledTo(null);
 			} else {
 				IWTimestamp iwTo = new IWTimestamp(to);
-				iwTo.setHour(23);
-				iwTo.setMinute(59);
-				iwTo.setSecond(59);
 				app.setEnabledTo(iwTo.getTimestamp());
 			}
 		}
@@ -630,6 +624,8 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		Locale locale = iwc.getCurrentLocale();
 		IWDatePicker enabledFrom = new IWDatePicker(ENABLED_FROM_INPUT);
+		enabledFrom.setVersion("1.8.17");
+		enabledFrom.setShowTime(true);
 		String enabledFromParam = iwc.getParameter(ENABLED_FROM_INPUT);
 		if (StringUtil.isEmpty(enabledFromParam)) {
 			enabledFrom.setUseCurrentDateIfNotSet(false);
@@ -637,6 +633,8 @@ public class ApplicationCreator extends ApplicationBlock {
 			enabledFrom.setDate(IWDatePickerHandler.getParsedDate(enabledFromParam, locale));
 		}
 		IWDatePicker enabledTo = new IWDatePicker(ENABLED_TO_INPUT);
+		enabledTo.setVersion("1.8.17");
+		enabledTo.setShowTime(true);
 		String enabledToParam = iwc.getParameter(ENABLED_TO_INPUT);
 		if (StringUtil.isEmpty(enabledToParam)) {
 			enabledTo.setUseCurrentDateIfNotSet(false);
