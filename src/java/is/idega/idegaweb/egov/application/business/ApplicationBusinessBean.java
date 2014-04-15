@@ -185,14 +185,14 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	public Age[] getAgesForUserAndChildren(User user) {
 		FamilyLogic famLog = null;
 		try {
-			famLog = (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
+			famLog = IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
 		}
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
 		Age[] ages;
-		Collection coll = null;
-		Iterator iter = null;
+		Collection<User> coll = null;
+		Iterator<User> iter = null;
 		try {
 			coll = famLog.getChildrenInCustodyOf(user);
 			iter = coll.iterator();
@@ -214,7 +214,7 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 			iter = coll.iterator();
 
 			while (iter.hasNext()) {
-				User child = (User) iter.next();
+				User child = iter.next();
 				date = child.getDateOfBirth();
 				if (date != null) {
 					ages[i] = new Age(date);
@@ -323,7 +323,7 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 		UserBusiness userBusiness = null;
 		try {
-			userBusiness = (UserBusiness) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), UserBusiness.class);
+			userBusiness = IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), UserBusiness.class);
 		} catch (IBOLookupException e) {
 			e.printStackTrace();
 		}

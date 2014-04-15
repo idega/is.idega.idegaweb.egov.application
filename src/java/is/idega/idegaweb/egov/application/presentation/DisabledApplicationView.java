@@ -15,7 +15,8 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
-import com.idega.presentation.text.Heading3;
+import com.idega.presentation.Span;
+import com.idega.presentation.text.Heading1;
 import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
 import com.idega.util.StringHandler;
@@ -49,23 +50,28 @@ public class DisabledApplicationView extends Block {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		Layer container = new Layer();
-		container.setStyleClass("disabledApplicationView");
+		container.setStyleClass("disabledApplicationView questions_and_answers");
 		add(container);
 
 		String header = StringUtil.isEmpty(appName) ?
 				iwrb.getLocalizedString("app_is_disabled", "Application is disabled") :
 				iwrb.getLocalizedString("application", "Application") + CoreConstants.SPACE + CoreConstants.QOUTE_MARK + appName +
 					CoreConstants.QOUTE_MARK + CoreConstants.SPACE + iwrb.getLocalizedString("is_disabled", "is disabled");
-		container.add(new Heading3(header));
+
+		Heading1 heading = new Heading1(header);
+		heading.setStyleClass("header");
+		container.add(heading);
 
 		String text = app == null ?
 				iwrb.getLocalizedString("disabled_app_text", "Application currently is disabled.") :
 				iwrb.getLocalizedString("application_is_enabled_from", "Application is enabled from") + CoreConstants.SPACE +
 					new IWTimestamp(app.getEnabledFrom()).getLocaleDateAndTime(locale) + CoreConstants.SPACE + iwrb.getLocalizedString("to", "to") +
 					CoreConstants.SPACE + new IWTimestamp(app.getEnabledTo()).getLocaleDateAndTime(locale);
-		Layer disabledAppText = new Layer();
-		container.add(disabledAppText);
-		disabledAppText.add(text);
+
+		Span disabledAppTextContainer = new Span();
+		disabledAppTextContainer.setStyleClass("disabledAppTextContainer");
+		disabledAppTextContainer.add(text);
+		container.add(disabledAppTextContainer);
 	}
 
 	@Override
