@@ -536,3 +536,7 @@ table.adminTable tbody tr td {
 table.adminTable tbody tr.ruled {
 	background: #dfdfdf;
 }
+
+h1.required {
+	background: url(images/icons/required.gif) left no-repeat;
+}
