@@ -145,6 +145,9 @@ public abstract class ApplicationForm extends Block {
 	 * @param errors
 	 */
 	protected void addErrors(IWContext iwc, UIComponent parent) {
+		addErrors(-1, iwc, parent);
+	}
+	protected void addErrors(int phase, IWContext iwc, UIComponent parent) {
 		if (this.iHasErrors) {
 			Layer layer = new Layer(Layer.DIV);
 			layer.setStyleClass("errorLayer");
@@ -153,7 +156,9 @@ public abstract class ApplicationForm extends Block {
 			image.setStyleClass("errorImage");
 			layer.add(image);
 
-			Heading1 heading = new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured", "There was a problem with the following items"));
+			Heading1 heading = phase <= 0 ?
+					new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured", "There was a problem with the following items")) :
+					new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured_" + phase, "There was a problem with the following items"));
 			layer.add(heading);
 
 			Lists list = new Lists();
