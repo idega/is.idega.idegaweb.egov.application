@@ -540,3 +540,7 @@ table.adminTable tbody tr.ruled {
 h1.required {
 	background: url(images/icons/required.gif) left no-repeat;
 }
+
+textarea.other-information-about-child, textarea.allergies-details, textarea.growth-deviation-details {
+	width: 400px;
+}
