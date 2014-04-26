@@ -321,10 +321,10 @@ public abstract class ApplicationForm extends Block {
 		Collection<User> children = null;
 		try {
 			children = getMemberFamilyLogic(iwc).getChildrenInCustodyOf(user);
-		}
-		catch (NoChildrenFound e) {
+		} catch (NoChildrenFound e) {
 			children = new ArrayList<User>();
 		}
+		children = children == null ? new ArrayList<User>() : new ArrayList<User>(children);
 		children.add(user);
 
 		return getUserChooser(iwc, applicationPK, user, chosenUser, children, parameterName, iwrb);

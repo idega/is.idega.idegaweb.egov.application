@@ -542,5 +542,5 @@ h1.required {
 }
 
 textarea.other-information-about-child, textarea.allergies-details, textarea.growth-deviation-details {
-	width: 400px;
+	width: 400px !important;
 }
