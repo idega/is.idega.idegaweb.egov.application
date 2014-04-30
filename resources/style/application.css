@@ -544,3 +544,10 @@ h1.required {
 textarea.other-information-about-child, textarea.allergies-details, textarea.growth-deviation-details {
 	width: 400px !important;
 }
+
+.courses.coursesPhaseSix .column4, .courses.coursesPhaseSix .column5{
+	width: 30px !important;
+}
+.courses.coursesPhaseSix .column4 select {
+	width: 130px !important;
+}
