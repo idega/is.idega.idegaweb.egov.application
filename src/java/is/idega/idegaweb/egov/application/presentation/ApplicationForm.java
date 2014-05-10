@@ -352,13 +352,18 @@ public abstract class ApplicationForm extends Block {
 		DropdownMenu menu = new DropdownMenu(parameterName);
 		menu.setStyleClass("userSelector");
 		for (Iterator<User> iter = children.iterator(); iter.hasNext();) {
-			User element = iter.next();
+			User child = iter.next();
+			if (child == null) {
+				getLogger().warning("Child is null! All children: " + children + " for " + user);
+				continue;
+			}
+
 			boolean addUser = true;
 
 			if (application != null) {
 				if (application.getAgeFrom() > -1 && application.getAgeTo() > -1) {
-					if (element.getDateOfBirth() != null) {
-						IWTimestamp stamp = new IWTimestamp(element.getDateOfBirth());
+					if (child.getDateOfBirth() != null) {
+						IWTimestamp stamp = new IWTimestamp(child.getDateOfBirth());
 						stamp.setDay(1);
 						stamp.setMonth(1);
 
@@ -376,7 +381,7 @@ public abstract class ApplicationForm extends Block {
 			}
 
 			if (addUser) {
-				menu.addMenuElement(element.getPrimaryKey().toString(), element.getName());
+				menu.addMenuElement(child.getPrimaryKey().toString(), child.getName());
 			}
 		}
 		menu.addMenuElementFirst(CoreConstants.EMPTY, iwrb.getLocalizedString("select_applicant", "Select applicant"));
