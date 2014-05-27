@@ -145,6 +145,9 @@ public abstract class ApplicationForm extends Block {
 	 * @param errors
 	 */
 	protected void addErrors(IWContext iwc, UIComponent parent) {
+		addErrors(-1, iwc, parent);
+	}
+	protected void addErrors(int phase, IWContext iwc, UIComponent parent) {
 		if (this.iHasErrors) {
 			Layer layer = new Layer(Layer.DIV);
 			layer.setStyleClass("errorLayer");
@@ -153,7 +156,9 @@ public abstract class ApplicationForm extends Block {
 			image.setStyleClass("errorImage");
 			layer.add(image);
 
-			Heading1 heading = new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured", "There was a problem with the following items"));
+			Heading1 heading = phase <= 0 ?
+					new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured", "There was a problem with the following items")) :
+					new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured_" + phase, "There was a problem with the following items"));
 			layer.add(heading);
 
 			Lists list = new Lists();
@@ -316,10 +321,10 @@ public abstract class ApplicationForm extends Block {
 		Collection<User> children = null;
 		try {
 			children = getMemberFamilyLogic(iwc).getChildrenInCustodyOf(user);
-		}
-		catch (NoChildrenFound e) {
+		} catch (NoChildrenFound e) {
 			children = new ArrayList<User>();
 		}
+		children = children == null ? new ArrayList<User>() : new ArrayList<User>(children);
 		children.add(user);
 
 		return getUserChooser(iwc, applicationPK, user, chosenUser, children, parameterName, iwrb);
@@ -347,13 +352,18 @@ public abstract class ApplicationForm extends Block {
 		DropdownMenu menu = new DropdownMenu(parameterName);
 		menu.setStyleClass("userSelector");
 		for (Iterator<User> iter = children.iterator(); iter.hasNext();) {
-			User element = iter.next();
+			User child = iter.next();
+			if (child == null) {
+				getLogger().warning("Child is null! All children: " + children + " for " + user);
+				continue;
+			}
+
 			boolean addUser = true;
 
 			if (application != null) {
 				if (application.getAgeFrom() > -1 && application.getAgeTo() > -1) {
-					if (element.getDateOfBirth() != null) {
-						IWTimestamp stamp = new IWTimestamp(element.getDateOfBirth());
+					if (child.getDateOfBirth() != null) {
+						IWTimestamp stamp = new IWTimestamp(child.getDateOfBirth());
 						stamp.setDay(1);
 						stamp.setMonth(1);
 
@@ -371,7 +381,7 @@ public abstract class ApplicationForm extends Block {
 			}
 
 			if (addUser) {
-				menu.addMenuElement(element.getPrimaryKey().toString(), element.getName());
+				menu.addMenuElement(child.getPrimaryKey().toString(), child.getName());
 			}
 		}
 		menu.addMenuElementFirst(CoreConstants.EMPTY, iwrb.getLocalizedString("select_applicant", "Select applicant"));
