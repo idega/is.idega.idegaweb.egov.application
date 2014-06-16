@@ -50,6 +50,7 @@ import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.util.CoreConstants;
 import com.idega.util.ListUtil;
 import com.idega.util.StringHandler;
+import com.idega.util.StringUtil;
 import com.idega.util.URIUtil;
 import com.idega.util.expression.ELUtil;
 
@@ -134,11 +135,16 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				return util.getUri();
 			}
 
-			if (application.getAppType() != null) {
-				ApplicationType at = getApplicationTypesManager().getApplicationType(application.getAppType());
-				url = at.getUrl(iwc, application);
-			} else {
+			String appType = application.getAppType();
+			if (StringUtil.isEmpty(appType)) {
 				url = application.getUrlByLocale(iwc.getCurrentLocale());
+			} else {
+				ApplicationType at = getApplicationTypesManager().getApplicationType(appType);
+				url = at.getUrl(iwc, application);
+			}
+
+			if (StringUtil.isEmpty(url)) {
+				LOGGER.warning("URL is null for " + application.getPrimaryKey() + ", app type: " + appType) ;
 			}
 
 			String encoding = System.getProperty(PROP_FILE_ENCODING);
@@ -225,8 +231,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			}
 
 			return url;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		throw new RuntimeException("Error handling redirect Url");
