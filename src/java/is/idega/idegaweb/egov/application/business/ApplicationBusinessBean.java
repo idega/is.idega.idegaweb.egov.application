@@ -300,7 +300,6 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Collection<Application> getAvailableApplications(IWContext iwc, String caseCode) {
 		Collection<Application> applications = null;
 		try {
