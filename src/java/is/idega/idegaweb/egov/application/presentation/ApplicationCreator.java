@@ -623,7 +623,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		Locale locale = iwc.getCurrentLocale();
 		IWDatePicker enabledFrom = new IWDatePicker(ENABLED_FROM_INPUT);
-		enabledFrom.setVersion("1.8.17");
+		enabledFrom.setVersion(IWDatePicker.VERSION_1_8_17);
 		enabledFrom.setShowTime(true);
 		String enabledFromParam = iwc.getParameter(ENABLED_FROM_INPUT);
 		if (StringUtil.isEmpty(enabledFromParam)) {
@@ -632,7 +632,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			enabledFrom.setDate(IWDatePickerHandler.getParsedDate(enabledFromParam, locale));
 		}
 		IWDatePicker enabledTo = new IWDatePicker(ENABLED_TO_INPUT);
-		enabledTo.setVersion("1.8.17");
+		enabledTo.setVersion(IWDatePicker.VERSION_1_8_17);
 		enabledTo.setShowTime(true);
 		String enabledToParam = iwc.getParameter(ENABLED_TO_INPUT);
 		if (StringUtil.isEmpty(enabledToParam)) {
