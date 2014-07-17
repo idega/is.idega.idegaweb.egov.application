@@ -67,7 +67,8 @@ public abstract class ApplicationForm extends Block {
 	private static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	private static final String COOKIE_NAME = "applicationWindow_";
 
-	protected static final String PARAMETER_NO_USER = "prm_no_user";
+	protected static final String	PARAMETER_NO_USER = "prm_no_user",
+									PARAMETER_NO_PROVIDER = "prm_no_provider";
 
 	private static final String ATTRIBUTE_CARD_TYPES = "egov.application.card.types";
 	private static final String DEFAULT_CARD_TYPES = CreditCardType.VISA.getCode() + "," + CreditCardType.MASTERCARD.getCode();
@@ -85,6 +86,9 @@ public abstract class ApplicationForm extends Block {
 		PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/application.css"));
 		if (iwc.isParameterSet(PARAMETER_NO_USER)) {
 			setError(PARAMETER_NO_USER, getResourceBundle(iwc).getLocalizedString("application_error.no_user_selected", "No user selected."));
+		}
+		if (iwc.isParameterSet(PARAMETER_NO_PROVIDER)) {
+			setError(PARAMETER_NO_PROVIDER, getResourceBundle(iwc).getLocalizedString("no_after_school_care_provider_found", "No after school care provider was found for the school the student is placed in."));
 		}
 
 		present(iwc);
