@@ -16,6 +16,7 @@ import is.idega.idegaweb.egov.application.data.Application;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -26,6 +27,7 @@ import java.util.StringTokenizer;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.Cookie;
 
 import com.idega.business.IBOLookup;
@@ -322,16 +324,31 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
-		Collection<User> children = null;
-		try {
-			children = getMemberFamilyLogic(iwc).getChildrenInCustodyOf(user);
-		} catch (NoChildrenFound e) {
-			children = new ArrayList<User>();
-		}
+		Collection<User> children = getChildren(iwc, chosenUser);
 		children = children == null ? new ArrayList<User>() : new ArrayList<User>(children);
 		children.add(user);
 
 		return getUserChooser(iwc, applicationPK, user, chosenUser, children, parameterName, iwrb);
+	}
+
+	/**
+	 * 
+	 * @param iwc is current {@link FacesContext}, not <code>null</code>;
+	 * @param user is {@link User} to get child for, not <code>null</code>;
+	 * @return users found or {@link Collections#emptyList()} on failure;
+	 * @throws RemoteException
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	protected Collection<User> getChildren(IWContext iwc, User user) throws RemoteException {
+		if (iwc == null || user == null) {
+			return Collections.emptyList();
+		}
+
+		try {
+			return getMemberFamilyLogic(iwc).getChildrenInCustodyOf(user);
+		} catch (NoChildrenFound e) {
+			return Collections.emptyList();
+		}
 	}
 
 	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, Collection<User> children, String parameterName, IWResourceBundle iwrb) throws RemoteException {
