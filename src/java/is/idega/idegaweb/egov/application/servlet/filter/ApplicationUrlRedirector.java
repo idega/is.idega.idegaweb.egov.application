@@ -41,12 +41,14 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
+import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
 import com.idega.util.ListUtil;
 import com.idega.util.StringHandler;
@@ -137,6 +139,19 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			String appType = application.getAppType();
 			if (StringUtil.isEmpty(appType)) {
+				LOGGER.info("App type is unknown, will execute raw query to double-check it");
+				String query = "select app_type from EGOV_APPLICATION where EGOV_APPLICATION_ID = " + pk;
+				try {
+					String[] results = SimpleQuerier.executeStringQuery(query);
+					if (!ArrayUtil.isEmpty(results)) {
+						appType = results[0];
+					}
+				} catch (Exception e) {
+					LOGGER.log(Level.WARNING, "Error gettin app type for application with ID: " + pk);
+				}
+			}
+			if (StringUtil.isEmpty(appType)) {
+				LOGGER.info("App type was not resolved");
 				url = application.getUrlByLocale(iwc.getCurrentLocale());
 			} else {
 				ApplicationType at = getApplicationTypesManager().getApplicationType(appType);

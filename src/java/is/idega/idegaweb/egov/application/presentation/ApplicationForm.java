@@ -319,39 +319,45 @@ public abstract class ApplicationForm extends Block {
 		return layer;
 	}
 
-	protected DropdownMenu getUserChooser(IWContext iwc, User user, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
-		return getUserChooser(iwc, null, user, chosenUser, parameterName, iwrb);
+	protected DropdownMenu getUserChooser(IWContext iwc, User parentOrCustodian, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
+		return getUserChooser(iwc, null, parentOrCustodian, chosenUser, parameterName, iwrb);
 	}
 
-	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
-		Collection<User> children = getChildren(iwc, chosenUser);
+	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User parentOrCustodian, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
+		Collection<User> children = getChildren(iwc, parentOrCustodian);
 		children = children == null ? new ArrayList<User>() : new ArrayList<User>(children);
-		children.add(user);
+		if (parentOrCustodian != null) {
+			children.add(parentOrCustodian);
+		}
 
-		return getUserChooser(iwc, applicationPK, user, chosenUser, children, parameterName, iwrb);
+		return getUserChooser(iwc, applicationPK, parentOrCustodian, chosenUser, children, parameterName, iwrb);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param iwc is current {@link FacesContext}, not <code>null</code>;
 	 * @param user is {@link User} to get child for, not <code>null</code>;
 	 * @return users found or {@link Collections#emptyList()} on failure;
 	 * @throws RemoteException
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
-	protected Collection<User> getChildren(IWContext iwc, User user) throws RemoteException {
-		if (iwc == null || user == null) {
+	protected Collection<User> getChildren(IWContext iwc, User custodianOrParent) throws RemoteException {
+		if (iwc == null) {
+			return Collections.emptyList();
+		}
+		if (custodianOrParent == null) {
+			getLogger().warning("Parent or custodian is not provided, unable to get children or custodians");
 			return Collections.emptyList();
 		}
 
 		try {
-			return getMemberFamilyLogic(iwc).getChildrenInCustodyOf(user);
+			return getMemberFamilyLogic(iwc).getChildrenInCustodyOf(custodianOrParent);
 		} catch (NoChildrenFound e) {
 			return Collections.emptyList();
 		}
 	}
 
-	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User user, User chosenUser, Collection<User> children, String parameterName, IWResourceBundle iwrb) throws RemoteException {
+	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User parentOrCustodian, User chosenUser, Collection<User> children, String parameterName, IWResourceBundle iwrb) throws RemoteException {
 		Application application = null;
 		if (applicationPK != null) {
 			try {
@@ -375,7 +381,7 @@ public abstract class ApplicationForm extends Block {
 		for (Iterator<User> iter = children.iterator(); iter.hasNext();) {
 			User child = iter.next();
 			if (child == null) {
-				getLogger().warning("Child is null! All children: " + children + " for " + user);
+				getLogger().warning("Child is null! All children: " + children + " for " + parentOrCustodian);
 				continue;
 			}
 
@@ -397,7 +403,7 @@ public abstract class ApplicationForm extends Block {
 				}
 			}
 
-			if (!addUser && addOveragedUser(iwc, user)) {
+			if (!addUser && addOveragedUser(iwc, parentOrCustodian)) {
 				addUser = true;
 			}
 

@@ -7,6 +7,7 @@ import is.idega.idegaweb.egov.application.presentation.UIApplicationTypeURLHandl
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ import com.idega.util.CoreConstants;
  * Last modified: $Date: 2008/09/03 13:50:51 $ by $Author: civilis $
  *
  */
-@Scope("singleton")
+@Scope(BeanDefinition.SCOPE_SINGLETON)
 @Service(ApplicationTypeURL.beanIdentifier)
 public class ApplicationTypeURL implements ApplicationType {
 
@@ -35,7 +36,6 @@ public class ApplicationTypeURL implements ApplicationType {
 	}
 
 	public UIComponent getHandlerComponent(FacesContext ctx, Application app) {
-
 		UIApplicationTypeURLHandler h = new UIApplicationTypeURLHandler();
 		h.setApplication(app);
 		return h;
@@ -43,7 +43,6 @@ public class ApplicationTypeURL implements ApplicationType {
 
 	@Override
 	public String getLabel(IWContext iwc) {
-
 		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
 		return iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("app_type.url", "Url");
 	}
@@ -55,7 +54,6 @@ public class ApplicationTypeURL implements ApplicationType {
 
 	@Override
 	public void beforeStore(IWContext iwc, Application app) {
-
 		String url = iwc.getParameter(UIApplicationTypeURLHandler.urlParam);
 		String elec = iwc.getParameter(UIApplicationTypeURLHandler.elecParam);
 
