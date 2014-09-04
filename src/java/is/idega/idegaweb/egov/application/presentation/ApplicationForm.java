@@ -14,6 +14,7 @@ import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.data.Application;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,6 +62,7 @@ import com.idega.util.CoreConstants;
 import com.idega.util.CreditCardChecker;
 import com.idega.util.CreditCardType;
 import com.idega.util.IWTimestamp;
+import com.idega.util.ListUtil;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.PresentationUtil;
 
@@ -378,37 +380,56 @@ public abstract class ApplicationForm extends Block {
 
 		DropdownMenu menu = new DropdownMenu(parameterName);
 		menu.setStyleClass("userSelector");
-		for (Iterator<User> iter = children.iterator(); iter.hasNext();) {
-			User child = iter.next();
-			if (child == null) {
-				getLogger().warning("Child is null! All children: " + children + " for " + parentOrCustodian);
-				continue;
-			}
+		if (ListUtil.isEmpty(children)) {
+			getLogger().warning("No possible applicants provided!");
+		} else {
+			for (Iterator<User> iter = children.iterator(); iter.hasNext();) {
+				User child = iter.next();
+				if (child == null) {
+					getLogger().warning("Child is null! All children: " + children + " for " + parentOrCustodian);
+					continue;
+				}
 
-			boolean addUser = true;
+				boolean addUser = true;
 
-			if (application != null) {
-				if (application.getAgeFrom() > -1 && application.getAgeTo() > -1) {
-					if (child.getDateOfBirth() != null) {
-						IWTimestamp stamp = new IWTimestamp(child.getDateOfBirth());
-						stamp.setDay(1);
-						stamp.setMonth(1);
+				int ageFrom = -1, ageTo = -1, years = -1;
+				if (application != null) {
+					ageFrom = application.getAgeFrom();
+					ageTo = application.getAgeTo();
+					if (ageFrom > -1 && ageTo > -1) {
+						Date dateOfBirthday = child.getDateOfBirth();
+						if (dateOfBirthday != null) {
+							IWTimestamp stamp = new IWTimestamp(dateOfBirthday);
+							stamp.setDay(1);
+							stamp.setMonth(1);
 
-						Age age = new Age(stamp.getDate());
-						addUser = (application.getAgeFrom() <= age.getYears() && application.getAgeTo() >= age.getYears());
+							Age age = new Age(stamp.getDate());
+							years = age.getYears();
+							addUser = ageFrom <= years && ageTo >= years;
+						} else {
+							getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() + ") because date of birth is unknown!");
+							addUser = false;
+						}
 					}
-					else {
+				}
+
+				boolean addOveragedUser = false;
+				if (!addUser) {
+					addOveragedUser = addOveragedUser(iwc, parentOrCustodian, application);
+					if (addOveragedUser) {
+						getLogger().info("Adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() + ") because it is allowed overaged applicants. Allowed from " +
+								ageFrom + " years to " + ageTo + " years. Applicant's age: " + years);
+						addUser = true;
+					} else {
+						getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() + ") because it is overaged! Allowed from " +
+								ageFrom + " years to " + ageTo + " years. Applicant's age: " + years);
 						addUser = false;
 					}
 				}
-			}
 
-			if (!addUser && addOveragedUser(iwc, parentOrCustodian)) {
-				addUser = true;
-			}
-
-			if (addUser) {
-				menu.addMenuElement(child.getPrimaryKey().toString(), child.getName());
+				if (addUser) {
+					menu.addMenuElement(child.getPrimaryKey().toString(), child.getName());
+				}
 			}
 		}
 		menu.addMenuElementFirst(CoreConstants.EMPTY, iwrb.getLocalizedString("select_applicant", "Select applicant"));
@@ -420,7 +441,7 @@ public abstract class ApplicationForm extends Block {
 		return menu;
 	}
 
-	protected boolean addOveragedUser(IWContext iwc, User user) {
+	protected boolean addOveragedUser(IWContext iwc, User user, Application application) {
 		return false;
 	}
 
