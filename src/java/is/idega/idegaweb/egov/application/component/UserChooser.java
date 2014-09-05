@@ -21,6 +21,7 @@ import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.Age;
+import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PresentationUtil;
 
@@ -36,6 +37,7 @@ public class UserChooser extends IWBaseComponent {
 	
 	private boolean setToSubmit = false;
 	private boolean disabled = false;
+	private String beforeSubmit;
 	
 	private static final String CHOSEN_USER_PROPERTY = "chosenUser";
 	private static final String CHILDREN_PROPERTY = "children";
@@ -110,7 +112,8 @@ public class UserChooser extends IWBaseComponent {
 		Application application = getApplication(iwc);
 
 		DropdownMenu menu = new DropdownMenu(parameterName);
-		menu.setToSubmit(isSetToSubmit());
+		menu.setOnChange(getBeforeSubmit(iwc) + ";this.form.submit()");
+//		menu.setToSubmit(isSetToSubmit());
 		menu.setDisabled(isDisabled());
 		menu.setStyleClass("userSelector");
 		for (Applicant child : children) {
@@ -175,7 +178,7 @@ public class UserChooser extends IWBaseComponent {
 
 	protected ApplicationBusiness getApplicationBusiness(IWApplicationContext iwac) {
 		try {
-			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwac, ApplicationBusiness.class);
+			return IBOLookup.getServiceInstance(iwac, ApplicationBusiness.class);
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
@@ -216,5 +219,21 @@ public class UserChooser extends IWBaseComponent {
 
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
+	}
+
+	public String getBeforeSubmit(FacesContext context) {
+		if(beforeSubmit == null){
+			ValueExpression ve = getValueExpression("beforeSubmit");
+			if(ve == null){
+				beforeSubmit = CoreConstants.EMPTY;
+				return beforeSubmit;
+			}
+			beforeSubmit = (String) ve.getValue(context.getELContext());
+		}
+		return beforeSubmit;
+	}
+
+	public void setBeforeSubmit(String beforeSubmit) {
+		this.beforeSubmit = beforeSubmit;
 	}
 }
