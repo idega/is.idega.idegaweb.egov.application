@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -28,6 +29,7 @@ import com.idega.data.IDOException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
+import com.idega.data.SimpleQuerier;
 import com.idega.data.query.AND;
 import com.idega.data.query.Column;
 import com.idega.data.query.Criteria;
@@ -42,7 +44,9 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupBMPBean;
+import com.idega.util.ArrayUtil;
 import com.idega.util.IWTimestamp;
+import com.idega.util.StringUtil;
 
 public class ApplicationBMPBean extends GenericEntity implements Application {
 
@@ -497,7 +501,20 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	@Override
 	public String getUrl() {
-		return getStringColumnValue(URL);
+		String url = getStringColumnValue(URL);
+		if (StringUtil.isEmpty(url)) {
+			String query = "select " + URL + " from " + getEntityName() + " where " + getIDColumnName() + " = " + getPrimaryKey().toString();
+			String[] results = null;
+			try {
+				results = SimpleQuerier.executeStringQuery(query);
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING, "Error executing query: " + query, e);
+			}
+			if (!ArrayUtil.isEmpty(results)) {
+				url = results[0];
+			}
+		}
+		return url;
 	}
 
 	@Override
