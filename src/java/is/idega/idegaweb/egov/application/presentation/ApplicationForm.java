@@ -327,7 +327,7 @@ public abstract class ApplicationForm extends Block {
 
 	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User parentOrCustodian, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
 		Collection<User> children = getChildren(iwc, parentOrCustodian);
-		children = children == null ? new ArrayList<User>() : new ArrayList<User>(children);
+		children = ListUtil.isEmpty(children) ? new ArrayList<User>() : new ArrayList<User>(children);
 		if (parentOrCustodian != null) {
 			children.add(parentOrCustodian);
 		}
@@ -429,6 +429,9 @@ public abstract class ApplicationForm extends Block {
 
 				if (addUser) {
 					menu.addMenuElement(child.getPrimaryKey().toString(), child.getName());
+				} else {
+					getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() + ")! Allowed age from " +
+							ageFrom + " years to " + ageTo + " years. Applicant's age: " + years);
 				}
 			}
 		}
