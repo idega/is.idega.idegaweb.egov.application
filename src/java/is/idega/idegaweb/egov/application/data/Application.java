@@ -242,4 +242,20 @@ public interface Application extends IDOEntity {
 	public void setEnabledTo(Timestamp enabledTo);
 
 	public boolean isEnabled();
+
+	/**
+	 * 
+	 * @param isPaymentRequired tells if {@link Application}s of this type
+	 * should be payed;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	void setPaymentRequired(boolean isPaymentRequired);
+
+	/**
+	 * 
+	 * @return flag if payment for this {@link Application} is required. 
+	 * <code>false</code> if not set;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	boolean isPaymentRequired();
 }

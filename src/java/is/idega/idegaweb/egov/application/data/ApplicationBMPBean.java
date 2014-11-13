@@ -70,6 +70,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	private static final String HIDDEN_FROM_GUESTS = "hidden_from_guests";
 	private static final String PRIORITY = "app_priority";
 	private static final String COLUMN_LOGIN_PAGE_URL = "login_page_url";
+	private static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
 
 	private static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
 	private static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
@@ -202,6 +203,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(TIMES_CLICKED, "Time clicked", Integer.class);
 		addAttribute(PRIORITY, "Priority", Integer.class);
 		addAttribute(COLUMN_LOGIN_PAGE_URL, "Login page url", String.class);
+		addAttribute(COLUMN_PAYMENT_REQUIRED, "Is payment required", Boolean.class);
 
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_NAME_LOC_TEXT);
 		addManyToManyRelationShip(LocalizedText.class,EGOV_APPLICATION_URL_LOC_TEXT);
@@ -323,6 +325,16 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	@Override
 	public boolean getVisible() {
 		return getBooleanColumnValue(VISIBLE, true);
+	}
+
+	@Override
+	public void setPaymentRequired(boolean isPaymentRequired) {
+		setColumn(COLUMN_PAYMENT_REQUIRED, isPaymentRequired);
+	}
+
+	@Override
+	public boolean isPaymentRequired() {
+		return getBooleanColumnValue(COLUMN_PAYMENT_REQUIRED, Boolean.FALSE);
 	}
 
 	private void saveAllLocalizedEntries(Map localizedEntries, boolean settingNames){

@@ -49,6 +49,7 @@ import com.idega.presentation.TableRowGroup;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BooleanInput;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -87,6 +88,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	protected static final String CAT_INPUT = "cat";
 	private static final String NEW_WIN_INPUT = "newin";
 	private static final String HIDDEN_INPUT = "hidden";
+	private static final String PAYMENT_REQUIRED_INPUT = "isPaymentRequired";
 
 	public static final String APPLICATION_ID_PARAMETER = "prm_application_id";
 
@@ -104,6 +106,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	private boolean requiresLogin;
 	private boolean visibleApplication;
 	private boolean hiddenFromGuests;
+	private boolean isPaymentRequired = false;
 	private boolean checkIfCanViewApplication;
 	private boolean addSaveButton = true;
 	private boolean addBackButton = true;
@@ -164,6 +167,14 @@ public class ApplicationCreator extends ApplicationBlock {
 		return value;
 	}
 
+	protected Boolean getBooleanValue(String value, boolean valueToUse) {
+		if (StringUtil.isEmpty(value)) {
+			return valueToUse;
+		}
+
+		return Boolean.TRUE;
+	}
+
 
 	protected String saveApplication(IWContext iwc, List<ICLocale> locales) throws RemoteException, CreateException, FinderException, IDOAddRelationshipException {
 		String id = iwc.getParameter(APPLICATION_ID_PARAMETER);
@@ -173,7 +184,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		String visible = getBooleanValueInString(iwc.getParameter(VISIBLE_INPUT), this.visibleApplication);
 		String enabledFrom = iwc.getParameter(ENABLED_FROM_INPUT);
 		String enabledTo = iwc.getParameter(ENABLED_TO_INPUT);
-
+		Boolean isPaymentRequired = getBooleanValue(iwc.getParameter(PAYMENT_REQUIRED_INPUT), this.isPaymentRequired);
 		Integer ageFrom = null;
 		Integer ageTo = null;
 
@@ -246,6 +257,9 @@ public class ApplicationCreator extends ApplicationBlock {
 		if (!StringUtil.isEmpty(cat)) {
 			app.setCategory(getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(Integer.valueOf(cat)));
 		}
+
+		app.setPaymentRequired(isPaymentRequired);
+		
 		ApplicationType applType = getApplicationTypesManager().getApplicationType(appType);
 		if (applType != null) {
 			app.setAppType(appType);
@@ -269,7 +283,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			try {
 
 				iwc.setSessionAttribute(APP_FORM_NAME_PARAM, name);
-				iwc.setSessionAttribute(APP_ID_PARAM, String.valueOf(app.getPrimaryKey()));
+				iwc.setSessionAttribute(APP_ID_ChcPARAM, String.valueOf(app.getPrimaryKey()));
 				iwc.getResponse().sendRedirect(
 						new StringBuilder(FORMBUILDER_REDIRECT_PATH)
 						.append("?")
@@ -594,6 +608,8 @@ public class ApplicationCreator extends ApplicationBlock {
 		String codeValue = iwc.getParameter(CODE_INPUT);
 		String opensInNewValue = iwc.getParameter(NEW_WIN_INPUT);
 		String hiddenFromGuestsValue = getBooleanValueInString(iwc.getParameter(HIDDEN_INPUT), this.hiddenFromGuests);
+		boolean isPaymentRequiredValue = getBooleanValue(
+				iwc.getParameter(PAYMENT_REQUIRED_INPUT), this.isPaymentRequired);
 
 		Form form = new Form();
 		form.setID("applicationCreator");
@@ -667,6 +683,11 @@ public class ApplicationCreator extends ApplicationBlock {
 			ageTo.setValue(ageToValue);
 		}
 
+		CheckBox isPaymentRequired = new CheckBox(PAYMENT_REQUIRED_INPUT, String.valueOf(isPaymentRequiredValue));
+		isPaymentRequired.setId(PAYMENT_REQUIRED_INPUT);
+		isPaymentRequired.setChecked(isPaymentRequiredValue);
+		isPaymentRequired.keepStatusOnAction(Boolean.TRUE);
+
 		Layer handlerContainer = new Layer(Layer.DIV);
 		handlerContainer.setStyleClass("appTypeHandlerContainer");
 
@@ -716,6 +737,8 @@ public class ApplicationCreator extends ApplicationBlock {
 
 				enabledFrom.setDate(application.getEnabledFrom());
 				enabledTo.setDate(application.getEnabledTo());
+				
+				isPaymentRequired.setChecked(application.isPaymentRequired());
 			}
 			catch (FinderException f) {
 				f.printStackTrace();
@@ -879,6 +902,16 @@ public class ApplicationCreator extends ApplicationBlock {
 		formItem.add(errorItem);
 		layer.add(formItem);
 
+		/* Is payment required */
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(
+				this.iwrb.getLocalizedString("is_payment_required", "Is payment required?"), 
+				isPaymentRequired);
+		formItem.add(label);
+		formItem.add(isPaymentRequired);
+		layer.add(formItem);
+
 		Layer clearLayer = new Layer(Layer.DIV);
 		clearLayer.setStyleClass("Clear");
 		layer.add(clearLayer);
@@ -961,6 +994,14 @@ public class ApplicationCreator extends ApplicationBlock {
 
 	protected void setRequiresLogin(boolean requiresLogin) {
 		this.requiresLogin = requiresLogin;
+	}
+
+	public boolean isPaymentRequired() {
+		return isPaymentRequired;
+	}
+
+	public void setPaymentRequired(boolean isPaymentRequired) {
+		this.isPaymentRequired = isPaymentRequired;
 	}
 
 	protected boolean isVisibleApplication() {
