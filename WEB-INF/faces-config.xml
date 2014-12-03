@@ -194,4 +194,32 @@ version="1.2">
 			<property-class>boolean</property-class>
 		</property>
 	</component>
+
+	<component>
+		<component-type>Application payment information viewer</component-type>
+		<component-class>is.idega.idegaweb.egov.application.presentation.ApplicationPaymentInformationViewer</component-class>
+		<component-extension>
+			<idegaweb-info>
+        		<builder-visible>true</builder-visible>
+        		<object-type>jsf.uicomponent</object-type>
+      		</idegaweb-info>
+		</component-extension>
+	</component>
+
+	<component>
+		<component-type>Application payment information editor</component-type>
+		<component-class>is.idega.idegaweb.egov.application.presentation.ApplicationPaymentInformationEditor</component-class>
+		<component-extension>
+			<idegaweb-info>
+        		<builder-visible>true</builder-visible>
+        		<object-type>jsf.uicomponent</object-type>
+      		</idegaweb-info>
+		</component-extension>
+	</component>
+
+	<managed-bean>
+		<managed-bean-name>applicationPaymentInformation</managed-bean-name>
+		<managed-bean-class>is.idega.idegaweb.egov.application.bean.ApplicationPaymentInformation</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
 </faces-config>
