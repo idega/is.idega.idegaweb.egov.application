@@ -1,9 +1,9 @@
 /*
  * $Id: ApplicationBlock.java,v 1.25 2008/11/27 02:41:43 laddi Exp $ Created on Jan 12,
  * 2006
- * 
+ *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
- * 
+ *
  * This software is the proprietary information of Idega hf. Use is subject to
  * license terms.
  */
@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.faces.component.UIComponent;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,42 +46,42 @@ import com.idega.util.expression.ELUtil;
 public abstract class ApplicationBlock extends Block {
 
 	@Autowired private ApplicationTypesManager applicationTypesManager;
-	
+
 	public static final String BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application";
 	public static final String PARAMETER_APPLICATION_PK = "prm_app_application_pk";
 	public static final String PARAMETER_IDENTIFIER_NAME = "prm_app_identifier_name";
 	public static final String ATTRIBUTE_USE_AGE_RESTRICTION = "application_use_age_restriction";
-	
+
 	@Override
 	public String getBundleIdentifier() {
 		return BUNDLE_IDENTIFIER;
 	}
-	
+
 	@Override
 	public void main(IWContext iwc) throws Exception {
 		PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(ApplicationConstants.IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/application.css"));
 		present(iwc);
 	}
-	
+
 	protected boolean useAgeRestriction(IWContext iwc) {
 		return new Boolean(iwc.getApplicationSettings().getProperty(ATTRIBUTE_USE_AGE_RESTRICTION, Boolean.TRUE.toString())).booleanValue();
 	}
-	
+
 	protected abstract void present(IWContext iwc) throws Exception;
 
 	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection<Application> applications, Age[] ages) throws RemoteException {
 		Lists list = new Lists();
-		
+
 		if (ListUtil.isEmpty(applications)) {
 			return list;
 		}
-		
+
 		Collection<ListItem> applicationList = new ArrayList<ListItem>(applications.size());
 		Iterator<Application> iter = applications.iterator();
-		
+
 		boolean isLogged = iwc.isLoggedOn();
 		User currentUser = isLogged ? iwc.getCurrentUser() : null;
-		
+
 		for (Application application: applications) {
 
 			boolean displayApplication = true;
@@ -90,11 +91,13 @@ public abstract class ApplicationBlock extends Block {
 			catch (RemoteException re) {
 				throw new IBORuntimeException(re);
 			}
-			
-			final boolean isVisibile = application.getVisible() &&
-						(application.getAppType() == null || 
+
+			boolean isVisibile = application.getVisible() &&
+						(application.getAppType() == null ||
 						(application.getAppType() != null && getApplicationTypesManager().getApplicationType(application.getAppType()).isVisible(application)));
-			
+
+			isVisibile = application.isEnabled() ? isVisibile : false;
+
 			if (isVisibile && (!checkAges || displayApplication) && !(isLogged && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(currentUser))) {
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
@@ -106,9 +109,9 @@ public abstract class ApplicationBlock extends Block {
 				if (application.getRequiresLogin()) {
 					li.setStyleClass("requiresLogin");
 				}
-				
+
 				int icLocaleId = iwc.getCurrentLocaleId();
-				
+
 				LocalizedText locText = application.getLocalizedText(icLocaleId);
 				String heading = null;
 				if(locText != null) {
@@ -116,7 +119,7 @@ public abstract class ApplicationBlock extends Block {
 				} else {
 					heading = application.getName();
 				}
-				
+
 				Link link = new Link(new Text(heading));
 				link.addParameter(PARAMETER_APPLICATION_PK, application.getPrimaryKey().toString());
 				if (application.getOpensInNewWindow()) {
@@ -126,7 +129,7 @@ public abstract class ApplicationBlock extends Block {
 				applicationList.add(li);
 			}
 		}
-		
+
 		boolean first = true;
 		Iterator<ListItem> iterator = applicationList.iterator();
 		while (iterator.hasNext()) {
@@ -135,55 +138,55 @@ public abstract class ApplicationBlock extends Block {
 				element.setStyleClass("firstChild");
 				first = false;
 			}
-			
+
 			if (!iter.hasNext()) {
 				element.setStyleClass("lastChild");
 			}
-			
+
 			list.add(element);
 		}
-		
+
 		return list;
 	}
 
 	protected ApplicationBusiness getApplicationBusiness(IWContext iwc) {
 		try {
-			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwc, ApplicationBusiness.class);
+			return IBOLookup.getServiceInstance(iwc, ApplicationBusiness.class);
 		}
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
 	}
-	
+
 	protected CitizenBusiness getUserBusiness(IWContext iwc) {
 		try {
-			return (CitizenBusiness) IBOLookup.getServiceInstance(iwc, CitizenBusiness.class);
+			return IBOLookup.getServiceInstance(iwc, CitizenBusiness.class);
 		}
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
 	}
-	
+
 	protected Layer getFormSection(String label, Map<String, List<UIComponent>> formSectionItems) {
 		Layer formSection = new Layer();
 		formSection.setStyleClass("formSection");
-		
+
 		Text heading = new Text(label);
 		heading.setStyleClass("formSectionTitle");
 		formSection.add(heading);
-		
+
 		if (formSectionItems != null) {
 			for (Collection<UIComponent> sectionItems: formSectionItems.values()) {
 				Layer formItem = new Layer(Layer.DIV);
 				formItem.setStyleClass("formItem");
 				formSection.add(formItem);
-				
+
 				for (UIComponent formSectionItem: sectionItems) {
 					formItem.add(formSectionItem);
 				}
 			}
 		}
-		
+
 		Layer clearLayer = new Layer(Layer.DIV);
 		clearLayer.setStyleClass("Clear");
 		formSection.add(clearLayer);
@@ -191,10 +194,10 @@ public abstract class ApplicationBlock extends Block {
 	}
 
 	public ApplicationTypesManager getApplicationTypesManager() {
-		
+
 		if(applicationTypesManager == null)
 			ELUtil.getInstance().autowire(this);
-		
+
 		return applicationTypesManager;
 	}
 
