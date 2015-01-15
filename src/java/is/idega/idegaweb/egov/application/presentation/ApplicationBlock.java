@@ -82,6 +82,8 @@ public abstract class ApplicationBlock extends Block {
 		boolean isLogged = iwc.isLoggedOn();
 		User currentUser = isLogged ? iwc.getCurrentUser() : null;
 
+		boolean showDisabled = iwc.getIWMainApplication().getSettings().getBoolean("app.show_disabled_applications", Boolean.TRUE);
+
 		for (Application application: applications) {
 
 			boolean displayApplication = true;
@@ -97,6 +99,9 @@ public abstract class ApplicationBlock extends Block {
 						(application.getAppType() != null && getApplicationTypesManager().getApplicationType(application.getAppType()).isVisible(application)));
 
 			isVisibile = application.isEnabled() ? isVisibile : false;
+			if (!isVisibile) {
+				isVisibile = showDisabled;
+			}
 
 			if (isVisibile && (!checkAges || displayApplication) && !(isLogged && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(currentUser))) {
 				ListItem li = new ListItem();
