@@ -146,6 +146,12 @@ public abstract class ApplicationForm extends Block {
 		return false;
 	}
 
+	protected String getErrorsLabel(IWContext iwc, int phase) {
+		return phase <= 0 ?
+				getResourceBundle(iwc).getLocalizedString("application_errors_occured", "There was a problem with the following items") :
+				getResourceBundle(iwc).getLocalizedString("application_errors_occured_" + phase, "There was a problem with the following items");
+	}
+
 	/**
 	 * Adds the errors encountered
 	 *
@@ -164,9 +170,7 @@ public abstract class ApplicationForm extends Block {
 			image.setStyleClass("errorImage");
 			layer.add(image);
 
-			Heading1 heading = phase <= 0 ?
-					new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured", "There was a problem with the following items")) :
-					new Heading1(getResourceBundle(iwc).getLocalizedString("application_errors_occured_" + phase, "There was a problem with the following items"));
+			Heading1 heading = new Heading1(getErrorsLabel(iwc, phase));
 			layer.add(heading);
 
 			Lists list = new Lists();
