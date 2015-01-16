@@ -98,12 +98,14 @@ public abstract class ApplicationBlock extends Block {
 						(application.getAppType() == null ||
 						(application.getAppType() != null && getApplicationTypesManager().getApplicationType(application.getAppType()).isVisible(application)));
 
-			isVisibile = application.isEnabled() ? isVisibile : false;
-			if (!isVisibile) {
+			if (isVisibile && !application.isEnabled()) {
 				isVisibile = showDisabled;
 			}
 
-			if (isVisibile && (!checkAges || displayApplication) && !(isLogged && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(currentUser))) {
+			if (isVisibile &&
+					(!checkAges || displayApplication) &&
+					!(isLogged && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(currentUser))
+			) {
 				ListItem li = new ListItem();
 				if (application.getElectronic()) {
 					li.setStyleClass("electronic");
