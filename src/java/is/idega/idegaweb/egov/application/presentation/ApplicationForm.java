@@ -41,6 +41,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -53,6 +54,8 @@ import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.handlers.IWDatePickerHandler;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
@@ -65,6 +68,7 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.PresentationUtil;
+import com.idega.util.StringUtil;
 
 public abstract class ApplicationForm extends Block {
 
@@ -95,7 +99,64 @@ public abstract class ApplicationForm extends Block {
 			setError(PARAMETER_NO_PROVIDER, getResourceBundle(iwc).getLocalizedString("no_after_school_care_provider_found", "No after school care provider was found for the school the student is placed in."));
 		}
 
+		if (isApplicationDisabled(iwc)) {
+			return;
+		}
+
 		present(iwc);
+	}
+
+	protected boolean isApplicationDisabled(IWContext iwc) {
+		IWMainApplicationSettings settings = iwc.getIWMainApplication().getSettings();
+
+		String disabledFrom = settings.getProperty(getClass().getSimpleName() + ".disabled_from");
+		java.util.Date from = StringUtil.isEmpty(disabledFrom) ? null : IWDatePickerHandler.getParsedDate(disabledFrom);
+		IWTimestamp iwFrom = from == null ? null : new IWTimestamp(from);
+		if (iwFrom != null) {
+			iwFrom.setHour(0);
+			iwFrom.setMinute(0);
+			iwFrom.setSecond(0);
+			iwFrom.setMilliSecond(0);
+		}
+		String disabledTo = settings.getProperty(getClass().getSimpleName() + ".disabled_to");
+		java.util.Date to = StringUtil.isEmpty(disabledTo) ? null : IWDatePickerHandler.getParsedDate(disabledTo);
+		IWTimestamp iwTo = to == null ? null : new IWTimestamp(to);
+		if (iwTo != null) {
+			iwTo.setHour(23);
+			iwTo.setMinute(59);
+			iwTo.setSecond(59);
+			iwTo.setMilliSecond(999);
+		}
+		String disabledTextLoc = settings.getProperty(getClass().getSimpleName() + ".disabled_text");
+		boolean disabled = false;
+		if (from != null && to != null) {
+			IWTimestamp now = IWTimestamp.RightNow();
+			disabled = now.isBetween(iwFrom, iwTo);
+		} else if (!StringUtil.isEmpty(disabledTextLoc)) {
+			disabled = true;
+		}
+		if (disabled) {
+			IWResourceBundle iwrb = getResourceBundle(iwc);
+
+			getLogger().info("Application " + getClass().getName() + " is disabled from " + iwFrom + " to " + iwTo + ". Key for localized text: " +
+					disabledTextLoc + ". Bundle for localization: " + iwrb.getBundleIdentifier());
+
+			Form form = new Form();
+			add(form);
+
+			form.add(
+				getStopLayer(
+					iwrb.getLocalizedString("registration_closed", "Registration is closed"),
+					StringUtil.isEmpty(disabledTextLoc) ?
+							iwrb.getLocalizedString("registration_closed_text", "Registration is closed for now.") :
+							iwrb.getLocalizedString(disabledTextLoc, "Registration is closed for now.")
+				)
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
