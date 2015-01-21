@@ -114,7 +114,7 @@ public abstract class ApplicationForm extends Block {
 			return false;
 		}
 
-		if (!iwc.getRequestURI().endsWith(disabledAppUri)) {
+		if (iwc.getRequestURI().indexOf(disabledAppUri) == -1) {
 			return false;
 		}
 
