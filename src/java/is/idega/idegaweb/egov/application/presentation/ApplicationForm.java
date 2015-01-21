@@ -109,6 +109,15 @@ public abstract class ApplicationForm extends Block {
 	protected boolean isApplicationDisabled(IWContext iwc) {
 		IWMainApplicationSettings settings = iwc.getIWMainApplication().getSettings();
 
+		String disabledAppUri = settings.getProperty(getClass().getSimpleName() + ".disabled_uri");
+		if (StringUtil.isEmpty(disabledAppUri)) {
+			return false;
+		}
+
+		if (!iwc.getRequestURI().endsWith(disabledAppUri)) {
+			return false;
+		}
+
 		String disabledFrom = settings.getProperty(getClass().getSimpleName() + ".disabled_from");
 		java.util.Date from = StringUtil.isEmpty(disabledFrom) ? null : IWDatePickerHandler.getParsedDate(disabledFrom);
 		IWTimestamp iwFrom = from == null ? null : new IWTimestamp(from);
