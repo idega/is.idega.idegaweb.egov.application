@@ -114,7 +114,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			String url;
 
-			if (!application.isEnabled()) {
+			if (!application.isEnabled() && !iwc.isSuperAdmin()) {
 				String uri = null;
 				List<ICPage> pagesWithModule = null;
 				try {
