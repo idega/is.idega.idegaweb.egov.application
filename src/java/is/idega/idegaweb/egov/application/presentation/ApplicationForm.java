@@ -100,6 +100,20 @@ public abstract class ApplicationForm extends Block {
 		}
 
 		if (isApplicationDisabled(iwc)) {
+			IWResourceBundle iwrb = getResourceBundle(iwc);
+			Form form = new Form();
+			add(form);
+
+			String disabledTextLocKey = getDisabledTextLocalization(iwc.getApplicationSettings());
+			form.add(
+				getStopLayer(
+					iwrb.getLocalizedString("registration_closed", "Registration is closed"),
+					StringUtil.isEmpty(disabledTextLocKey) ?
+							iwrb.getLocalizedString("registration_closed_text", "Registration is closed for now.") :
+							iwrb.getLocalizedString(disabledTextLocKey, "Registration is closed for now.")
+				)
+			);
+
 			return;
 		}
 
@@ -136,7 +150,7 @@ public abstract class ApplicationForm extends Block {
 			iwTo.setSecond(59);
 			iwTo.setMilliSecond(999);
 		}
-		String disabledTextLoc = settings.getProperty(getClass().getSimpleName() + ".disabled_text");
+		String disabledTextLoc = getDisabledTextLocalization(settings);
 		boolean disabled = false;
 		if (from != null && to != null) {
 			IWTimestamp now = IWTimestamp.RightNow();
@@ -146,26 +160,16 @@ public abstract class ApplicationForm extends Block {
 		}
 		if (disabled) {
 			IWResourceBundle iwrb = getResourceBundle(iwc);
-
 			getLogger().info("Application " + getClass().getName() + " is disabled from " + iwFrom + " to " + iwTo + ". Key for localized text: " +
 					disabledTextLoc + ". Bundle for localization: " + iwrb.getBundleIdentifier());
-
-			Form form = new Form();
-			add(form);
-
-			form.add(
-				getStopLayer(
-					iwrb.getLocalizedString("registration_closed", "Registration is closed"),
-					StringUtil.isEmpty(disabledTextLoc) ?
-							iwrb.getLocalizedString("registration_closed_text", "Registration is closed for now.") :
-							iwrb.getLocalizedString(disabledTextLoc, "Registration is closed for now.")
-				)
-			);
-
 			return true;
 		}
 
 		return false;
+	}
+
+	protected String getDisabledTextLocalization(IWMainApplicationSettings settings) {
+		return settings.getProperty(getClass().getSimpleName() + ".disabled_text");
 	}
 
 	@Override
