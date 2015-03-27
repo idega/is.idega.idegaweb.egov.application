@@ -118,6 +118,9 @@ public abstract class ApplicationBlock extends Block {
 				if (application.getRequiresLogin()) {
 					li.setStyleClass("requiresLogin");
 				}
+				if (application.getElectronic() && !application.getRequiresLogin()) {
+					li.setStyleClass("electronic-does-not-require-login");
+				}
 
 				int icLocaleId = iwc.getCurrentLocaleId();
 
