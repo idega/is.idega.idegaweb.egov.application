@@ -555,15 +555,28 @@ textarea.other-information-about-child, textarea.allergies-details, textarea.gro
 /** Planning applications **/
 div.planning-query-box {
 	float: left;
-	width: 49%
+}
+div.planning-query:HOVER, div.planning-application-box:HOVER {
+	background: -moz-linear-gradient(center top , #fff, #f4f4f4) repeat scroll 0 0 rgba(0, 0, 0, 0);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f4f4f4');
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#f4f4f4));
 }
 div.planning-application-box {
 	float: right;
-	width: 49%;
 }
-a.planning-query-link {
-	font-size: 16px;
+div.planning-query-box, div.planning-application-box {
+	width: 40%;
+	border: medium solid #cc5406;
+    border-radius: 25px;
+    padding: 10px;
 }
-a.planning-application-link {
+li.planning-query-label, li.planning-application-label {
+	text-align: center !important;
+}
+div.planning-query-help-text, div.planning-application-help-text {
+	line-height: 150%;
+}
+a.planning-query-link, a.planning-application-link {
 	font-size: 16px;
+	font-weight: bold;
 }

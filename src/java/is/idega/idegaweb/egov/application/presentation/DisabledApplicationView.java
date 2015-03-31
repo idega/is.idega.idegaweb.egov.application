@@ -17,6 +17,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Span;
 import com.idega.presentation.text.Heading1;
+import com.idega.presentation.ui.BackButton;
 import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
 import com.idega.util.StringHandler;
@@ -72,6 +73,13 @@ public class DisabledApplicationView extends Block {
 		disabledAppTextContainer.setStyleClass("disabledAppTextContainer");
 		disabledAppTextContainer.add(text);
 		container.add(disabledAppTextContainer);
+
+		Layer buttons = new Layer();
+		container.add(buttons);
+		buttons.setStyleClass("bottom");
+		BackButton backButton = new BackButton(iwrb.getLocalizedString("back", "Back"));
+		backButton.setStyleClass("button");
+		buttons.add(backButton);
 	}
 
 	@Override
