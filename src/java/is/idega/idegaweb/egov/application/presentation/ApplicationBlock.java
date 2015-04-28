@@ -100,8 +100,6 @@ public abstract class ApplicationBlock extends Block {
 
 			if (!application.isEnabled()) {
 				isVisibile = isVisibile || showDisabled;
-				getLogger().info("Application (" + application.getName() + ", ID: " + application.getPrimaryKey() + ") is disabled. Have to show it: " +
-						showDisabled + ". Actually showing it: " + isVisibile);
 			}
 
 			if (isVisibile &&

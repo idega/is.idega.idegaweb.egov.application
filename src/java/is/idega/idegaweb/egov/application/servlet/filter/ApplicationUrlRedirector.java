@@ -186,7 +186,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 				StringBuilder appUrlBuilder = new StringBuilder(url);
 
-				@SuppressWarnings("unchecked")
 				Enumeration<String> enumeration = request.getParameterNames();
 
 				while (enumeration.hasMoreElements()) {
@@ -216,7 +215,6 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			} else if (isLoggedOn) {
 				StringBuilder appUrlBuilder = new StringBuilder(url);
 
-				@SuppressWarnings("unchecked")
 				Enumeration<String> enumeration = request.getParameterNames();
 
 				while (enumeration.hasMoreElements()) {
