@@ -95,6 +95,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 	}
 
 	public String getNewRedirectURL(HttpServletRequest request, HttpServletResponse response) {
+		Application application = null;
 		try {
 			LoginBusinessBean loginBusiness = getLoginBusiness(request);
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
@@ -108,12 +109,11 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			IWContext iwc = getIWContext(request, response);
 
-			Application application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
+			application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
 
 			updateTimesClicked(iwma, application);
 
-			String url;
-
+			String url = null;
 			if (!application.isEnabled() && !iwc.isSuperAdmin()) {
 				String uri = null;
 				List<ICPage> pagesWithModule = null;
@@ -245,16 +245,13 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			return url;
 		} catch (Exception e) {
-			e.printStackTrace();
+			String message = "Error constructing redirect URL to application " + application;
+			LOGGER.log(Level.WARNING, message, e);
+			throw new RuntimeException(message, e);
 		}
-		throw new RuntimeException("Error handling redirect Url");
 	}
 
 	/**
-	 * <p>
-	 * TODO tryggvil describe method updateTimesClicked
-	 * </p>
-	 *
 	 * @param application
 	 */
 	private void updateTimesClicked(IWMainApplication iwma, Application application) {
