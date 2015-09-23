@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -32,6 +33,7 @@ import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.presentation.IWContext;
+import com.idega.util.StringUtil;
 
 public class ApplicationCategoryBMPBean extends GenericEntity implements ApplicationCategory {
 
@@ -233,6 +235,30 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 		else {
 			return localizedName;
 		}
+	}
+
+	/**
+	 * 
+	 * @param name is {@link ApplicationCategory#getName()}, not <code>null</code>;
+	 * @return {@link ApplicationCategory#getPrimaryKey()} or <code>null</code>
+	 * on failure;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	public Integer ejbFindByName(String name) {
+		if (!StringUtil.isEmpty(name)) {
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT eac.EGOV_APPLICATION_CATEGORY_ID ");
+			query.append("FROM EGOV_APPLICATION_CATEGORY eac ");
+			query.append("WHERE eac.CATEGORY_NAME = '").append(name).append("'");
+			try {
+				return idoFindOnePKBySQL(query.toString(), null);
+			} catch (FinderException e) {
+				getLogger().log(Level.WARNING, 
+						"Failed to get primary key by query: '" + query + "'");
+			}
+		}
+
+		return null;
 	}
 
 }

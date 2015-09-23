@@ -10,7 +10,10 @@
 package is.idega.idegaweb.egov.application.data;
 
 import java.util.Collection;
+import java.util.logging.Level;
+
 import javax.ejb.FinderException;
+
 import com.idega.data.IDOFactory;
 
 
@@ -33,8 +36,20 @@ public class ApplicationCategoryHomeImpl extends IDOFactory implements Applicati
 		return (ApplicationCategory) super.createIDO();
 	}
 
-	public ApplicationCategory findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
-		return (ApplicationCategory) super.findByPrimaryKeyIDO(pk);
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryHome#findByPrimaryKey(java.lang.Object)
+	 */
+	public ApplicationCategory findByPrimaryKey(Object pk) {
+		try {
+			return (ApplicationCategory) super.findByPrimaryKeyIDO(pk);
+		} catch (FinderException e) {
+			java.util.logging.Logger.getLogger(getClass().getName()).log(
+					Level.WARNING, "Failed to get " + getEntityInterfaceClass() + 
+					" by primary key: " + pk);
+		}
+
+		return null;
 	}
 
 	public Collection findAll() throws FinderException {
@@ -63,5 +78,16 @@ public class ApplicationCategoryHomeImpl extends IDOFactory implements Applicati
 		Object pk = ((ApplicationCategoryBMPBean) entity).ejbFindByPriority(priority);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryHome#findByName(java.lang.String)
+	 */
+	@Override
+	public ApplicationCategory findByName(String name) {
+		ApplicationCategoryBMPBean entity = (ApplicationCategoryBMPBean) idoCheckOutPooledEntity();
+		Integer primaryKey = entity.ejbFindByName(name);
+		return findByPrimaryKey(primaryKey);
 	}
 }

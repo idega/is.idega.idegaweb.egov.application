@@ -29,7 +29,14 @@ public interface ApplicationCategoryHome extends IDOHome {
 
 	public ApplicationCategory create() throws javax.ejb.CreateException;
 
-	public ApplicationCategory findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+	/**
+	 * 
+	 * @param pk is {@link ApplicationCategory#getPrimaryKey()}, 
+	 * not <code>null</code>;
+	 * @return entity or <code>null</code> on failure;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	ApplicationCategory findByPrimaryKey(Object pk);
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#ejbFindAll
@@ -44,4 +51,12 @@ public interface ApplicationCategoryHome extends IDOHome {
 	public Collection<ApplicationCategory> findAllOrderedByPriority() throws FinderException;
 	
 	public ApplicationCategory findByPriority(int priority) throws FinderException;
+
+	/**
+	 * 
+	 * @param name is {@link ApplicationCategory#getName()}, not <code>null</code>;
+	 * @return entity or <code>null</code> on failure;
+	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
+	 */
+	ApplicationCategory findByName(String name);
 }
