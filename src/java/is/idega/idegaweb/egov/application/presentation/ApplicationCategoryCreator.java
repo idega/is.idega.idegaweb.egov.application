@@ -12,6 +12,7 @@ package is.idega.idegaweb.egov.application.presentation;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,8 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import java.io.Serializable;
 
 import javax.ejb.FinderException;
 
@@ -102,13 +101,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			if (name != null && !name.trim().equals("")) {
 				ApplicationCategory cat = null;
 				if (id != null) {
-					try {
 						cat = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(
 								new Integer(iwc.getParameter("id")));
-					}
-					catch (FinderException f) {
-						f.printStackTrace();
-					}
 				}
 				else {
 					cat = getApplicationBusiness(iwc).getApplicationCategoryHome().create();
@@ -157,13 +151,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			
 			ApplicationCategory cat = null;
 			if (id != null) {
-				try {
 					cat = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(
 							new Integer(id));
-				}
-				catch (FinderException f) {
-					f.printStackTrace();
-				}
 			}
 			Integer priority = cat.getPriority();
 			ApplicationCategory upperCat = null;
@@ -195,13 +184,8 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			
 			ApplicationCategory cat = null;
 			if (id != null) {
-				try {
 					cat = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(
 							new Integer(id));
-				}
-				catch (FinderException f) {
-					f.printStackTrace();
-				}
 			}
 			Integer priority = cat.getPriority();
 			ApplicationCategory lowerCat = null;
@@ -313,14 +297,9 @@ public class ApplicationCategoryCreator extends ApplicationBlock {
 			getCategoryCreationForm(iwc, category, locales);
 		}
 		else if (ACTION_DELETE.equals(action)) {
-			try {
-				ApplicationCategory cat = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(
-						new Integer(iwc.getParameter("id")));
-				cat.remove();
-			}
-			catch (FinderException f) {
-				f.printStackTrace();
-			}
+			ApplicationCategory cat = getApplicationBusiness(iwc).getApplicationCategoryHome().findByPrimaryKey(
+					new Integer(iwc.getParameter("id")));
+			cat.remove();
 			listExisting(iwc);
 		}
 		else if (ACTION_LIST.equals(action)) {
