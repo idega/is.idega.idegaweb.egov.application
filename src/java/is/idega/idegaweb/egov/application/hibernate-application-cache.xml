@@ -1,0 +1,16 @@
+<ehcache>
+
+    <cache
+        maxElementsInMemory="5000"
+        name="is.idega.idegaweb.egov.application.data.bean.Application"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
+    />
+    <cache
+        maxElementsInMemory="5000"
+        name="is.idega.idegaweb.egov.application.data.bean.ApplicationCategory"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
+    />
+    
+</ehcache>

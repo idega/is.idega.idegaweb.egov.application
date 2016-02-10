@@ -9,11 +9,6 @@
  */
 package is.idega.idegaweb.egov.application.business;
 
-import is.idega.idegaweb.egov.application.data.Application;
-import is.idega.idegaweb.egov.application.data.ApplicationCategory;
-import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
-import is.idega.idegaweb.egov.application.data.ApplicationHome;
-
 import java.util.Collection;
 import java.util.Locale;
 
@@ -25,13 +20,19 @@ import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 
+import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.data.ApplicationCategory;
+import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
+import is.idega.idegaweb.egov.application.data.ApplicationHome;
+import is.idega.idegaweb.egov.application.model.ApplicationModel;
+
 
 /**
  * <p>
  * TODO laddi Describe Type ApplicationBusiness
  * </p>
  *  Last modified: $Date: 2008/12/12 11:00:57 $ by $Author: valdas $
- * 
+ *
  * @author <a href="mailto:laddi@idega.com">laddi</a>
  * @version $Revision: 1.13 $
  */
@@ -51,9 +52,9 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#updateTimesClicked
 	 */
 	public void updateTimesClicked(Application application) throws java.rmi.RemoteException;
-	
+
 	public void checkApplicationCategoryPriorityConstraint();
-	
+
 	public void checkApplicationPriorityConstraint(ApplicationCategory cat);
 
 	/**
@@ -74,7 +75,7 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#displayApplicationForAges
 	 */
-	public boolean displayApplicationForAges(Application application, Age[] ages) throws java.rmi.RemoteException;
+	public boolean displayApplicationForAges(ApplicationModel application, Age[] ages) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#canApplyForApplication
@@ -90,15 +91,15 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#getApplicationCategoryHome
 	 */
 	public ApplicationCategoryHome getApplicationCategoryHome() throws java.rmi.RemoteException;
-	
+
 	/**
 	 * Returns collection of available applications for current user
 	 * @param IWContext
 	 * @return Collection<Application>
 	 */
 	public Collection<Application> getAvailableApplications(IWContext iwc, String caseCode);
-	
+
 	public String getApplicationName(Application application, Locale locale);
-	
+
 	public Collection<Application> getApplicationsByType(String type);
 }

@@ -9,22 +9,11 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
-import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.data.Application;
-import is.idega.idegaweb.egov.application.data.ApplicationCategory;
-import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
-import is.idega.idegaweb.egov.application.data.ApplicationHome;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-
-import javax.ejb.FinderException;
 
 import com.idega.block.text.data.LocalizedText;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.text.Heading1;
@@ -32,6 +21,11 @@ import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Paragraph;
 import com.idega.util.Age;
 import com.idega.util.ListUtil;
+
+import is.idega.idegaweb.egov.application.ApplicationUtil;
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.model.ApplicationCategoryModel;
+import is.idega.idegaweb.egov.application.model.ApplicationModel;
 
 public class ApplicationCategoryViewer extends ApplicationBlock {
 
@@ -41,30 +35,6 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 
 	public ApplicationCategoryViewer() {
 		setCacheable(getCacheKey(), (20 * 60 * 1000));
-	}
-
-	private ApplicationHome getApplicationHome() {
-		try {
-			return (ApplicationHome) IDOLookup.getHome(Application.class);
-		} catch (IDOLookupException e) {
-			getLogger().log(Level.WARNING, 
-					"Failed to get " + ApplicationHome.class + 
-					" cause of: ", e);
-		}
-
-		return null;
-	}
-
-	private ApplicationCategoryHome getApplicationCategoryHome() {
-		try {
-			return (ApplicationCategoryHome) IDOLookup.getHome(ApplicationCategory.class);
-		} catch (IDOLookupException e) {
-			getLogger().log(Level.WARNING, 
-					"Failed to get " + ApplicationCategoryHome.class + 
-					" cause of: ", e);
-		}
-
-		return null;
 	}
 
 	@Override
@@ -102,10 +72,11 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		try {
 			int icLocaleId = iwc.getCurrentLocaleId();
 
-			Collection<ApplicationCategory> categoriesCollection = getApplicationCategoryHome().findAllOrderedByPriority();
-			for (ApplicationCategory cat : categoriesCollection) {
-				List<Application> apps = new ArrayList<Application>(getApplicationHome().findAllByCategoryOrderedByPriority(cat));
-				if(ListUtil.isEmpty(apps)) {
+			IWMainApplicationSettings settings = iwc.getApplicationSettings();
+			Collection<ApplicationCategoryModel> categoriesCollection = ApplicationUtil.getAllCategoriesOrderedByPriority(settings);
+			for (ApplicationCategoryModel cat: categoriesCollection) {
+				List<ApplicationModel> apps = ApplicationUtil.getApplicationsByCategoryOrderedByPriority(settings, cat);
+				if (ListUtil.isEmpty(apps)) {
 					continue;
 				}
 
@@ -142,8 +113,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 			mainLayer.add(clearLayer);
 
 			add(mainLayer);
-		}
-		catch (FinderException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -7,13 +7,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.idega.block.process.data.CaseCode;
+import com.idega.block.process.data.model.CaseCodeModel;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.Group;
 
-public interface Application extends IDOEntity {
+import is.idega.idegaweb.egov.application.model.ApplicationModel;
+
+public interface Application extends IDOEntity, ApplicationModel {
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationCategoryBMPBean#setPriority
@@ -33,6 +36,7 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getAgeFrom
 	 */
+	@Override
 	public int getAgeFrom();
 
 	/**
@@ -43,8 +47,10 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getAgeTo
 	 */
+	@Override
 	public int getAgeTo();
 
+	@Override
 	public LocalizedText getLocalizedText(int icLocaleId);
 
 	public void addLocalizedName(LocalizedText text) throws IDOAddRelationshipException;
@@ -77,7 +83,8 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getCaseCode
 	 */
-	public CaseCode getCaseCode();
+	@Override
+	public CaseCodeModel getCaseCode();
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setElectronic
@@ -87,6 +94,7 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getElectronic
 	 */
+	@Override
 	public boolean getElectronic();
 
 	/**
@@ -97,6 +105,7 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getRequiresLogin
 	 */
+	@Override
 	public boolean getRequiresLogin();
 
 	/**
@@ -107,6 +116,7 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getVisible
 	 */
+	@Override
 	public boolean getVisible();
 
 	/**
@@ -158,6 +168,7 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getName
 	 */
+	@Override
 	public String getName();
 
 	/**
@@ -198,6 +209,7 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrl
 	 */
+	@Override
 	public String getUrl();
 
 	/**
@@ -208,6 +220,7 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getOpensInNewWindow
 	 */
+	@Override
 	public boolean getOpensInNewWindow();
 
 	/**
@@ -218,10 +231,12 @@ public interface Application extends IDOEntity {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getHiddenFromGuests
 	 */
+	@Override
 	public boolean getHiddenFromGuests();
 
 	public void setAppType(String appType);
 
+	@Override
 	public String getAppType();
 
 	/**
@@ -235,16 +250,19 @@ public interface Application extends IDOEntity {
 
 	public void removeGroup(Group group) throws IDORemoveRelationshipException;
 
+	@Override
 	public Timestamp getEnabledFrom();
 	public void setEnabledFrom(Timestamp enabledFrom);
 
+	@Override
 	public Timestamp getEnabledTo();
 	public void setEnabledTo(Timestamp enabledTo);
 
+	@Override
 	public boolean isEnabled();
 
 	/**
-	 * 
+	 *
 	 * @param isPaymentRequired tells if {@link Application}s of this type
 	 * should be payed;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
@@ -252,8 +270,8 @@ public interface Application extends IDOEntity {
 	void setPaymentRequired(boolean isPaymentRequired);
 
 	/**
-	 * 
-	 * @return flag if payment for this {@link Application} is required. 
+	 *
+	 * @return flag if payment for this {@link Application} is required.
 	 * <code>false</code> if not set;
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */

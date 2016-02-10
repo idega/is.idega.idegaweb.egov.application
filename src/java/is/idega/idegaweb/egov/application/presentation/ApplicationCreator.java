@@ -9,11 +9,6 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
-import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.business.ApplicationType;
-import is.idega.idegaweb.egov.application.data.Application;
-import is.idega.idegaweb.egov.application.data.ApplicationCategory;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +25,7 @@ import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlMessages;
 
 import com.idega.block.process.data.CaseCode;
+import com.idega.block.process.data.model.CaseCodeModel;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextHome;
 import com.idega.block.web2.business.Web2Business;
@@ -38,7 +34,6 @@ import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -59,11 +54,17 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.handlers.IWDatePickerHandler;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.StringUtil;
 import com.idega.webface.WFUtil;
+
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.business.ApplicationType;
+import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 
 public class ApplicationCreator extends ApplicationBlock {
 
@@ -146,6 +147,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				Application app = getApplicationBusiness(iwc).getApplicationHome().findByPrimaryKey(
 						new Integer(iwc.getParameter(APPLICATION_ID_PARAMETER)));
 				app.remove();
+				CoreUtil.clearAllCaches();
 			}
 			catch (FinderException f) {
 				f.printStackTrace();
@@ -259,7 +261,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		}
 
 		app.setPaymentRequired(isPaymentRequired);
-		
+
 		ApplicationType applType = getApplicationTypesManager().getApplicationType(appType);
 		if (applType != null) {
 			app.setAppType(appType);
@@ -273,36 +275,11 @@ public class ApplicationCreator extends ApplicationBlock {
 			throw new RuntimeException("No Application type registered for: "+appType);
 		}
 
-		IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationCategoryViewer.CACHE_KEY);
-		IWCacheManager.getInstance(iwc.getIWMainApplication()).invalidateCache(ApplicationFavorites.CACHE_KEY);
-
-//			id == null means it's new app
-		/* FIXME: see FormDocument from formbuilder method save()
-		if(id == null && at == APP_TYPE_FORMBUILDER && name != null && !name.equals("")) {
-
-			try {
-
-				iwc.setSessionAttribute(APP_FORM_NAME_PARAM, name);
-				iwc.setSessionAttribute(APP_ID_ChcPARAM, String.valueOf(app.getPrimaryKey()));
-				iwc.getResponse().sendRedirect(
-						new StringBuilder(FORMBUILDER_REDIRECT_PATH)
-						.append("?")
-						.append(FROM_APP_REQ_PARAM)
-						.append("=1&encParams=1")
-						.toString()
-				);
-
-			} catch (IOException e) {
-				Logger.getLogger(getClassName()).log(Level.SEVERE, "probably some old component was used? and redirect was called when component was actually already been started rendering", e);
-			}
-		}
-		*/
-
 		for(Iterator<ICLocale> it = locales.iterator(); it.hasNext(); ) {
 			ICLocale icLocale = it.next();
 			String locName = iwc.getParameter(icLocale.getName() + "_locale");
 
-			if(locName != null && !locName.equals("")) {
+			if(locName != null && !locName.equals(CoreConstants.EMPTY)) {
 				LocalizedText locText = app.getLocalizedText(icLocale.getLocaleID());
 				boolean newText = false;
 				if(locText == null) {
@@ -320,6 +297,8 @@ public class ApplicationCreator extends ApplicationBlock {
 				}
 			}
 		}
+
+		CoreUtil.clearAllCaches();
 
 		return app.getPrimaryKey().toString();
 	}
@@ -455,7 +434,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		if (!ListUtil.isEmpty(applications)) {
 			Locale locale = iwc.getCurrentLocale();
 			for (Application app: applications) {
-				CaseCode code = app.getCaseCode();
+				CaseCodeModel code = app.getCaseCode();
 
 				row = table.createRow();
 
@@ -522,7 +501,7 @@ public class ApplicationCreator extends ApplicationBlock {
 				cell.add(new Text(this.iwrb.getLocalizedString(Boolean.toString(app.getOpensInNewWindow()), Boolean.toString(app.getOpensInNewWindow()))));
 
 
-				String URL = app.getUrl() != null ? app.getUrl() : "";
+				String URL = app.getUrl() != null ? app.getUrl() : CoreConstants.EMPTY;
 				if (URL.length() > this.urlLength) {
 					URL = URL.substring(0, this.urlLength) + "...";
 				}
@@ -724,8 +703,8 @@ public class ApplicationCreator extends ApplicationBlock {
 
 				requiresLogin.setSelected(application.getRequiresLogin());
 				visible.setSelected(application.getVisible());
-				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : "");
-				ageTo.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeTo()) : "");
+				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : CoreConstants.EMPTY);
+				ageTo.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeTo()) : CoreConstants.EMPTY);
 				if (application.getCategory() != null) {
 					category.setSelectedElement(application.getCategory().getPrimaryKey().toString());
 				}
@@ -737,7 +716,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 				enabledFrom.setDate(application.getEnabledFrom());
 				enabledTo.setDate(application.getEnabledTo());
-				
+
 				isPaymentRequired.setChecked(application.isPaymentRequired());
 			}
 			catch (FinderException f) {
@@ -754,7 +733,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			}
 		}
 
-		if(typeValue != null && !typeValue.trim().equals("")) {
+		if(typeValue != null && !typeValue.trim().equals(CoreConstants.EMPTY)) {
 			appTypes.setSelectedElement(typeValue);
 
 			ApplicationType appType = getApplicationTypesManager().getApplicationType(typeValue);
@@ -906,7 +885,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		formItem = new Layer(Layer.DIV);
 		formItem.setStyleClass("formItem");
 		label = new Label(
-				this.iwrb.getLocalizedString("is_payment_required", "Is payment required?"), 
+				this.iwrb.getLocalizedString("is_payment_required", "Is payment required?"),
 				isPaymentRequired);
 		formItem.add(label);
 		formItem.add(isPaymentRequired);
@@ -932,7 +911,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 			if(application != null) {
 				LocalizedText text = application.getLocalizedText(icLocale.getLocaleID());
-				locInput.setValue(text == null ? "" : text.getBody());
+				locInput.setValue(text == null ? CoreConstants.EMPTY : text.getBody());
 			}
 
 			formItem = new Layer(Layer.DIV);

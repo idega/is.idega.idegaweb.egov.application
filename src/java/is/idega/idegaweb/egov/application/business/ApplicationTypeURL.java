@@ -1,9 +1,5 @@
 package is.idega.idegaweb.egov.application.business;
 
-import is.idega.idegaweb.egov.application.IWBundleStarter;
-import is.idega.idegaweb.egov.application.data.Application;
-import is.idega.idegaweb.egov.application.presentation.UIApplicationTypeURLHandler;
-
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
@@ -14,6 +10,11 @@ import org.springframework.stereotype.Service;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
+
+import is.idega.idegaweb.egov.application.IWBundleStarter;
+import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.model.ApplicationModel;
+import is.idega.idegaweb.egov.application.presentation.UIApplicationTypeURLHandler;
 
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
@@ -62,7 +63,7 @@ public class ApplicationTypeURL implements ApplicationType {
 	}
 
 	@Override
-	public boolean isVisible(Application app) {
+	public boolean isVisible(ApplicationModel app) {
 		return true;
 	}
 

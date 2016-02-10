@@ -9,13 +9,6 @@
  */
 package is.idega.idegaweb.egov.application.business;
 
-import is.idega.block.family.business.FamilyLogic;
-import is.idega.block.family.business.NoChildrenFound;
-import is.idega.idegaweb.egov.application.data.Application;
-import is.idega.idegaweb.egov.application.data.ApplicationCategory;
-import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
-import is.idega.idegaweb.egov.application.data.ApplicationHome;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +41,14 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
+
+import is.idega.block.family.business.FamilyLogic;
+import is.idega.block.family.business.NoChildrenFound;
+import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.data.ApplicationCategory;
+import is.idega.idegaweb.egov.application.data.ApplicationCategoryHome;
+import is.idega.idegaweb.egov.application.data.ApplicationHome;
+import is.idega.idegaweb.egov.application.model.ApplicationModel;
 
 public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBusiness, ApplicationBusiness {
 
@@ -226,7 +227,7 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 	}
 
 	@Override
-	public boolean displayApplicationForAges(Application application, Age[] ages) {
+	public boolean displayApplicationForAges(ApplicationModel application, Age[] ages) {
 		if (ages == null) {
 			return false;
 		}

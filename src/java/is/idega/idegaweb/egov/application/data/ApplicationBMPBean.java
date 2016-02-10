@@ -48,27 +48,29 @@ import com.idega.util.ArrayUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.StringUtil;
 
+import is.idega.idegaweb.egov.application.ApplicationUtil;
+
 public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	private static final long serialVersionUID = 4244056022577759101L;
 
-	private static final String TABLE_NAME = "EGOV_APPLICATION";
-	private static final String NAME = "application_name";
-	private static final String CATEGORY = "application_category_id";
-	private static final String CASE_CODE = "case_code";
-	private static final String URL = "application_url";
-	private static final String ELECTRONIC = "is_electronic";
-	private static final String APP_TYPE = "app_type";
-	private static final String REQUIRES_LOGIN = "requires_login";
-	private static final String VISIBLE = "is_visible";
-	private static final String AGE_FROM = "age_from";
-	private static final String AGE_TO = "age_to";
-	private static final String ENABLED_FROM = "enabled_from";
-	private static final String ENABLED_TO = "enabled_to";
+	public static final String TABLE_NAME = "EGOV_APPLICATION";
+	public static final String NAME = "application_name";
+	public static final String CATEGORY = "application_category_id";
+	public static final String CASE_CODE = "case_code";
+	public static final String URL = "application_url";
+	public static final String ELECTRONIC = "is_electronic";
+	public static final String APP_TYPE = "app_type";
+	public static final String REQUIRES_LOGIN = "requires_login";
+	public static final String VISIBLE = "is_visible";
+	public static final String AGE_FROM = "age_from";
+	public static final String AGE_TO = "age_to";
+	public static final String ENABLED_FROM = "enabled_from";
+	public static final String ENABLED_TO = "enabled_to";
 	private static final String TIMES_CLICKED = "times_clicked";
-	private static final String OPENS_IN_NEW_WINDOW = "opens_in_new_window";
-	private static final String HIDDEN_FROM_GUESTS = "hidden_from_guests";
-	private static final String PRIORITY = "app_priority";
+	public static final String OPENS_IN_NEW_WINDOW = "opens_in_new_window";
+	public static final String HIDDEN_FROM_GUESTS = "hidden_from_guests";
+	public static final String PRIORITY = "app_priority";
 	private static final String COLUMN_LOGIN_PAGE_URL = "login_page_url";
 	private static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
 
@@ -212,19 +214,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	@Override
 	public LocalizedText getLocalizedText(int icLocaleId) {
-		Collection<LocalizedText> result = null;
+		return ApplicationUtil.getLocalizedText(this, icLocaleId);
+	}
+
+	public Collection<LocalizedText> getLocalizedTexts() {
 		try {
-			result = idoGetRelatedEntities(LocalizedText.class);
-		} catch(IDORelationshipException e) {
+			return idoGetRelatedEntities(LocalizedText.class);
+		} catch (IDORelationshipException e) {
 			e.printStackTrace();
-		}
-		if(result != null) {
-			for(Iterator<LocalizedText> it = result.iterator(); it.hasNext(); ) {
-				LocalizedText temp = it.next();
-				if(temp.getLocaleId() == icLocaleId) {
-					return temp;
-				}
-			}
 		}
 		return null;
 	}
@@ -840,15 +837,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	@Override
 	public boolean isEnabled() {
-		Timestamp enabledFrom = getEnabledFrom();
-		Timestamp enabledTo = getEnabledTo();
-		if (enabledFrom == null || enabledTo == null) {
-			return true;
-		}
-
-		IWTimestamp now = IWTimestamp.RightNow();
-		boolean enabled = now.isLaterThanOrEquals(new IWTimestamp(enabledFrom)) && now.isEarlierThan(new IWTimestamp(enabledTo));
-		return enabled;
+		return ApplicationUtil.isEnabled(this);
 	}
 
 }

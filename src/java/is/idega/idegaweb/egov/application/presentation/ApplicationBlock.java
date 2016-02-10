@@ -9,12 +9,6 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
-import is.idega.idegaweb.egov.accounting.business.CitizenBusiness;
-import is.idega.idegaweb.egov.application.ApplicationConstants;
-import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
-import is.idega.idegaweb.egov.application.data.Application;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +37,12 @@ import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.expression.ELUtil;
 
+import is.idega.idegaweb.egov.accounting.business.CitizenBusiness;
+import is.idega.idegaweb.egov.application.ApplicationConstants;
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
+import is.idega.idegaweb.egov.application.model.ApplicationModel;
+
 public abstract class ApplicationBlock extends Block {
 
 	@Autowired private ApplicationTypesManager applicationTypesManager;
@@ -69,7 +69,7 @@ public abstract class ApplicationBlock extends Block {
 
 	protected abstract void present(IWContext iwc) throws Exception;
 
-	protected Lists getApplicationList(IWContext iwc, boolean checkAges, Collection<Application> applications, Age[] ages) throws RemoteException {
+	protected <T extends ApplicationModel> Lists getApplicationList(IWContext iwc, boolean checkAges, Collection<T> applications, Age[] ages) throws RemoteException {
 		Lists list = new Lists();
 
 		if (ListUtil.isEmpty(applications)) {
@@ -77,62 +77,64 @@ public abstract class ApplicationBlock extends Block {
 		}
 
 		Collection<ListItem> applicationList = new ArrayList<ListItem>(applications.size());
-		Iterator<Application> iter = applications.iterator();
+		Iterator<T> iter = applications.iterator();
 
 		boolean isLogged = iwc.isLoggedOn();
 		User currentUser = isLogged ? iwc.getCurrentUser() : null;
 
 		boolean showDisabled = iwc.getIWMainApplication().getSettings().getBoolean("app.show_disabled_applications", Boolean.TRUE);
 
-		for (Application application: applications) {
+		for (T app: applications) {
+			if (app == null) {
+				continue;
+			}
 
 			boolean displayApplication = true;
 			try {
-				displayApplication = (checkAges && getApplicationBusiness(iwc).displayApplicationForAges(application, ages));
-			}
-			catch (RemoteException re) {
+				displayApplication = (checkAges && getApplicationBusiness(iwc).displayApplicationForAges(app, ages));
+			} catch (RemoteException re) {
 				throw new IBORuntimeException(re);
 			}
 
-			boolean isVisibile = application.getVisible() &&
-						(application.getAppType() == null ||
-						(application.getAppType() != null && getApplicationTypesManager().getApplicationType(application.getAppType()).isVisible(application)));
+			boolean isVisibile = app.getVisible() &&
+						(app.getAppType() == null ||
+						(app.getAppType() != null && getApplicationTypesManager().getApplicationType(app.getAppType()).isVisible(app)));
 
-			if (!application.isEnabled()) {
+			if (!app.isEnabled()) {
 				isVisibile = isVisibile || showDisabled;
 			}
 
 			if (isVisibile &&
 					(!checkAges || displayApplication) &&
-					!(isLogged && application.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(currentUser))
+					!(isLogged && app.getHiddenFromGuests() && getUserBusiness(iwc).hasGuestAccount(currentUser))
 			) {
 				ListItem li = new ListItem();
-				if (application.getElectronic()) {
+				if (app.getElectronic()) {
 					li.setStyleClass("electronic");
 				}
-				if (application.getCaseCode() != null) {
+				if (app.getCaseCode() != null) {
 					li.setStyleClass("caseConnected");
 				}
-				if (application.getRequiresLogin()) {
+				if (app.getRequiresLogin()) {
 					li.setStyleClass("requiresLogin");
 				}
-				if (application.getElectronic() && !application.getRequiresLogin()) {
+				if (app.getElectronic() && !app.getRequiresLogin()) {
 					li.setStyleClass("electronic-does-not-require-login");
 				}
 
 				int icLocaleId = iwc.getCurrentLocaleId();
 
-				LocalizedText locText = application.getLocalizedText(icLocaleId);
+				LocalizedText locText = app.getLocalizedText(icLocaleId);
 				String heading = null;
 				if(locText != null) {
 					heading = locText.getBody();
 				} else {
-					heading = application.getName();
+					heading = app.getName();
 				}
 
 				Link link = new Link(new Text(heading));
-				link.addParameter(PARAMETER_APPLICATION_PK, application.getPrimaryKey().toString());
-				if (application.getOpensInNewWindow()) {
+				link.addParameter(PARAMETER_APPLICATION_PK, app.getPrimaryKey().toString());
+				if (app.getOpensInNewWindow()) {
 					link.setTarget(Link.TARGET_BLANK_WINDOW);
 				}
 				li.add(link);
