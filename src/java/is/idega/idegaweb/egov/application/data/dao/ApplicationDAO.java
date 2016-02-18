@@ -11,8 +11,14 @@ public interface ApplicationDAO extends GenericDao {
 
 	public static final String BEAN_NAME = "egovApplicationDAO";
 
+	Application getById(Integer id);
+
 	List<ApplicationCategory> getAllCategoriesOrderedByPriority();
 
 	List<Application> getApplicationsByCategoryOrderedByPriority(ApplicationCategory category);
+
+	Application store(Application app);
+
+	Application findByUri(String uri);
 
 }

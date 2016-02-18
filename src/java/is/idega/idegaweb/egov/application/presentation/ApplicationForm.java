@@ -7,14 +7,9 @@
  */
 package is.idega.idegaweb.egov.application.presentation;
 
-import is.idega.block.family.business.FamilyLogic;
-import is.idega.block.family.business.NoChildrenFound;
-import is.idega.idegaweb.egov.application.ApplicationConstants;
-import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.data.Application;
-
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +25,8 @@ import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Cookie;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -69,6 +66,14 @@ import com.idega.util.ListUtil;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.PresentationUtil;
 import com.idega.util.StringUtil;
+import com.idega.util.expression.ELUtil;
+
+import is.idega.block.family.business.FamilyLogic;
+import is.idega.block.family.business.NoChildrenFound;
+import is.idega.idegaweb.egov.application.ApplicationConstants;
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.data.dao.ApplicationDAO;
 
 public abstract class ApplicationForm extends Block {
 
@@ -88,6 +93,32 @@ public abstract class ApplicationForm extends Block {
 	private boolean iHasErrors = false;
 	private Map<Integer, Boolean> iPhaseErrors;
 	private Map<String, String> iErrors;
+
+	@Autowired
+	private ApplicationDAO applicationDAO;
+
+	protected ApplicationDAO getApplicationDAO() {
+		if (applicationDAO == null) {
+			ELUtil.getInstance().autowire(this);
+		}
+		return applicationDAO;
+	}
+
+	protected is.idega.idegaweb.egov.application.data.bean.Application getApplication(IWContext iwc) {
+		String uri = iwc.getRequestURI();
+		is.idega.idegaweb.egov.application.data.bean.Application app = getApplicationDAO().findByUri(uri);
+		if (app != null) {
+			return app;
+		}
+
+		Object id = iwc.getSessionAttribute(ApplicationBlock.PARAMETER_APPLICATION_PK);
+		if (id instanceof Integer) {
+			app = getApplicationDAO().getById((Integer) id);
+		}
+		iwc.removeSessionAttribute(ApplicationBlock.PARAMETER_APPLICATION_PK);
+
+		return app;
+	}
 
 	@Override
 	public void main(IWContext iwc) {
@@ -121,43 +152,65 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	protected boolean isApplicationDisabled(IWContext iwc) {
+		if (iwc.isSuperAdmin()) {
+			return false;
+		}
+
 		IWMainApplicationSettings settings = iwc.getIWMainApplication().getSettings();
 
-		String disabledAppUri = settings.getProperty(getClass().getSimpleName() + ".disabled_uri");
-		if (StringUtil.isEmpty(disabledAppUri)) {
-			return false;
-		}
+		is.idega.idegaweb.egov.application.data.bean.Application app = getApplication(iwc);
 
-		if (iwc.getRequestURI().indexOf(disabledAppUri) == -1) {
-			return false;
-		}
-
-		String disabledFrom = settings.getProperty(getClass().getSimpleName() + ".disabled_from");
-		java.util.Date from = StringUtil.isEmpty(disabledFrom) ? null : IWDatePickerHandler.getParsedDate(disabledFrom);
-		IWTimestamp iwFrom = from == null ? null : new IWTimestamp(from);
-		if (iwFrom != null) {
-			iwFrom.setHour(0);
-			iwFrom.setMinute(0);
-			iwFrom.setSecond(0);
-			iwFrom.setMilliSecond(0);
-		}
-		String disabledTo = settings.getProperty(getClass().getSimpleName() + ".disabled_to");
-		java.util.Date to = StringUtil.isEmpty(disabledTo) ? null : IWDatePickerHandler.getParsedDate(disabledTo);
-		IWTimestamp iwTo = to == null ? null : new IWTimestamp(to);
-		if (iwTo != null) {
-			iwTo.setHour(23);
-			iwTo.setMinute(59);
-			iwTo.setSecond(59);
-			iwTo.setMilliSecond(999);
-		}
-		String disabledTextLoc = getDisabledTextLocalization(settings);
 		boolean disabled = false;
-		if (from != null && to != null) {
-			IWTimestamp now = IWTimestamp.RightNow();
-			disabled = now.isBetween(iwFrom, iwTo);
-		} else if (!StringUtil.isEmpty(disabledTextLoc)) {
-			disabled = true;
+		String disabledTextLoc = null;
+		IWTimestamp iwFrom = null, iwTo = null;
+		if (app == null) {
+			String disabledAppUri = settings.getProperty(getClass().getSimpleName() + ".disabled_uri");
+			if (StringUtil.isEmpty(disabledAppUri)) {
+				return false;
+			}
+
+			if (iwc.getRequestURI().indexOf(disabledAppUri) == -1) {
+				return false;
+			}
+
+			disabledTextLoc = getDisabledTextLocalization(settings);
+			String disabledFrom = settings.getProperty(getClass().getSimpleName() + ".disabled_from");
+			java.util.Date from = StringUtil.isEmpty(disabledFrom) ? null : IWDatePickerHandler.getParsedDate(disabledFrom);
+			iwFrom = from == null ? null : new IWTimestamp(from);
+			if (iwFrom != null) {
+				iwFrom.setHour(0);
+				iwFrom.setMinute(0);
+				iwFrom.setSecond(0);
+				iwFrom.setMilliSecond(0);
+			}
+			String disabledTo = settings.getProperty(getClass().getSimpleName() + ".disabled_to");
+			java.util.Date to = StringUtil.isEmpty(disabledTo) ? null : IWDatePickerHandler.getParsedDate(disabledTo);
+			iwTo = to == null ? null : new IWTimestamp(to);
+			if (iwTo != null) {
+				iwTo.setHour(23);
+				iwTo.setMinute(59);
+				iwTo.setSecond(59);
+				iwTo.setMilliSecond(999);
+			}
+			if (from != null && to != null) {
+				IWTimestamp now = IWTimestamp.RightNow();
+				disabled = now.isBetween(iwFrom, iwTo);
+			} else if (!StringUtil.isEmpty(disabledTextLoc)) {
+				disabled = true;
+			}
+		} else {
+			disabled = !app.getVisible() || !app.isEnabled();
+			if (!iwc.isLoggedOn() && !disabled) {
+				disabled = app.getRequiresLogin();
+			}
+			if (disabled) {
+				Timestamp from = app.getEnabledFrom(), to = app.getEnabledTo();
+				iwFrom = from == null ? null : new IWTimestamp(from);
+				iwTo = to == null ? null : new IWTimestamp(to);
+				disabledTextLoc = getDisabledTextLocalization(settings);
+			}
 		}
+
 		if (disabled) {
 			IWResourceBundle iwrb = getResourceBundle(iwc);
 			getLogger().info("Application " + getClass().getName() + " is disabled from " + iwFrom + " to " + iwTo + ". Key for localized text: " +

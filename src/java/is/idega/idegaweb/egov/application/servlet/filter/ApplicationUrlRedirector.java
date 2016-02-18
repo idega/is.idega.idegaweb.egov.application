@@ -9,13 +9,6 @@
  */
 package is.idega.idegaweb.egov.application.servlet.filter;
 
-import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.business.ApplicationType;
-import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
-import is.idega.idegaweb.egov.application.data.Application;
-import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
-import is.idega.idegaweb.egov.application.presentation.DisabledApplicationView;
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Enumeration;
@@ -56,6 +49,16 @@ import com.idega.util.StringUtil;
 import com.idega.util.URIUtil;
 import com.idega.util.expression.ELUtil;
 
+import is.idega.idegaweb.egov.application.ApplicationUtil;
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.business.ApplicationType;
+import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
+import is.idega.idegaweb.egov.application.data.dao.ApplicationDAO;
+import is.idega.idegaweb.egov.application.model.ApplicationModel;
+//import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
+import is.idega.idegaweb.egov.application.presentation.DisabledApplicationView;
+
 public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 	private static final Logger LOGGER = Logger.getLogger(ApplicationUrlRedirector.class.getName());
@@ -95,7 +98,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 	}
 
 	public String getNewRedirectURL(HttpServletRequest request, HttpServletResponse response) {
-		Application application = null;
+		ApplicationModel application = null;
 		try {
 			LoginBusinessBean loginBusiness = getLoginBusiness(request);
 			boolean isLoggedOn = loginBusiness.isLoggedOn(request);
@@ -109,12 +112,15 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			IWContext iwc = getIWContext(request, response);
 
-			application = getApplicationBusiness(iwc).getApplication(new Integer(pk));
+			ApplicationDAO applicationDAO = ELUtil.getInstance().getBean(ApplicationDAO.BEAN_NAME);
+			Integer id = Integer.valueOf(pk);
+			iwc.setSessionAttribute(ApplicationBlock.PARAMETER_APPLICATION_PK, id);
+			application = ApplicationUtil.isHibernateTurnedOn(iwc.getApplicationSettings()) ? applicationDAO.getById(id) : getApplicationBusiness(iwc).getApplication(id);
 
 			updateTimesClicked(iwma, application);
 
 			String url = null;
-			if (!application.isEnabled() && !iwc.isSuperAdmin()) {
+			if ((!application.isEnabled() || !application.getVisible()) && !iwc.isSuperAdmin()) {
 				String uri = null;
 				List<ICPage> pagesWithModule = null;
 				try {
@@ -123,7 +129,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					LOGGER.log(Level.WARNING, "Error looking up for pages with module " + DisabledApplicationView.class.getName(), e);
 				}
 				if (ListUtil.isEmpty(pagesWithModule)) {
-					uri = iwma.getSettings().getProperty("disabled_app_page", CoreConstants.PAGES_URI_PREFIX + "/ovirkumsokn/");
+					uri = iwma.getSettings().getProperty("disabled_app_page", CoreConstants.PAGES_URI_PREFIX);
 					LOGGER.warning("Did not find page for module: " + DisabledApplicationView.class.getName() + ", using app property value (" + uri
 							+ ") for disabled app page. Will clear all caches");
 					BuilderLogic.getInstance().doClearAllCaches();
@@ -168,7 +174,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 				IWMainApplicationSettings settings = iwma.getSettings();
 
 				String loginPage = settings.getProperty(PROP_LOGIN_PAGE_URI, CoreConstants.PAGES_URI_PREFIX + CoreConstants.SLASH);
-				if(CoreConstants.EMPTY.equals(loginPage)){
+				if (CoreConstants.EMPTY.equals(loginPage)) {
 					//backup
 					loginPage = settings.getProperty(CoreConstants.PAGE_ERROR_403_HANDLER_PORPERTY, CoreConstants.PAGES_URI_PREFIX + CoreConstants.SLASH);
 				}
@@ -254,7 +260,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 	/**
 	 * @param application
 	 */
-	private void updateTimesClicked(IWMainApplication iwma, Application application) {
+	private void updateTimesClicked(IWMainApplication iwma, ApplicationModel application) {
 		IWApplicationContext iwc = iwma.getIWApplicationContext();
 		String prop = iwma.getSettings().getProperty(PROP_UPDATE_TIMES_CLICKED);
 		boolean updateEveryTime = true;
