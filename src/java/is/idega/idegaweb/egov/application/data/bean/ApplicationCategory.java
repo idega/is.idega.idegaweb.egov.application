@@ -1,16 +1,25 @@
 package is.idega.idegaweb.egov.application.data.bean;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.LocalizedTextBMPBean;
+import com.idega.block.text.data.bean.LocalizedText;
+import com.idega.block.text.model.LocalizedTextModel;
+import com.idega.util.DBUtil;
 import com.idega.util.StringUtil;
 
 import is.idega.idegaweb.egov.application.ApplicationUtil;
@@ -20,7 +29,6 @@ import is.idega.idegaweb.egov.application.model.ApplicationCategoryModel;
 @Entity
 @Table(name = ApplicationCategoryBMPBean.TABLE_NAME)
 @Cacheable
-
 public class ApplicationCategory implements Serializable, ApplicationCategoryModel {
 
 	private static final long serialVersionUID = 5182475755851708707L;
@@ -38,6 +46,13 @@ public class ApplicationCategory implements Serializable, ApplicationCategoryMod
 
 	@Column(name = ApplicationCategoryBMPBean.PRIORITY)
 	private Integer priority;
+
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = ApplicationCategoryBMPBean.EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT,
+		joinColumns = @JoinColumn(name = ApplicationCategoryBMPBean.TABLE_NAME + "_ID"),
+		inverseJoinColumns = @JoinColumn(name = LocalizedTextBMPBean.TABLE_NAME + "_ID")
+	)
+	private List<LocalizedText> localizedTexts;
 
 	public Integer getId() {
 		return id;
@@ -58,7 +73,7 @@ public class ApplicationCategory implements Serializable, ApplicationCategoryMod
 	}
 
 	@Override
-	public LocalizedText getLocalizedText(int icLocaleId) {
+	public LocalizedTextModel getLocalizedText(int icLocaleId) {
 		return ApplicationUtil.getLocalizedText(this, icLocaleId);
 	}
 
@@ -106,6 +121,17 @@ public class ApplicationCategory implements Serializable, ApplicationCategoryMod
 
 	public void setPriority(Integer priority) {
 		this.priority = priority;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<LocalizedText> getLocalizedTexts() {
+		localizedTexts = DBUtil.getInstance().lazyLoad(localizedTexts);
+		return localizedTexts;
+	}
+
+	public void setLocalizedTexts(List<LocalizedText> localizedTexts) {
+		this.localizedTexts = localizedTexts;
 	}
 
 }

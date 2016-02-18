@@ -20,7 +20,7 @@ import javax.faces.component.UIComponent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.model.LocalizedTextModel;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -124,7 +124,7 @@ public abstract class ApplicationBlock extends Block {
 
 				int icLocaleId = iwc.getCurrentLocaleId();
 
-				LocalizedText locText = app.getLocalizedText(icLocaleId);
+				LocalizedTextModel locText = app.getLocalizedText(icLocaleId);
 				String heading = null;
 				if(locText != null) {
 					heading = locText.getBody();

@@ -12,7 +12,7 @@ package is.idega.idegaweb.egov.application.presentation;
 import java.util.Collection;
 import java.util.List;
 
-import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.model.LocalizedTextModel;
 import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -29,9 +29,13 @@ import is.idega.idegaweb.egov.application.model.ApplicationModel;
 
 public class ApplicationCategoryViewer extends ApplicationBlock {
 
-	private String layerID = "applicationCategoryViewer";
 	public static final String CACHE_KEY = "app_application_category_viewer";
+
 	private boolean iGroupCategories = true;
+
+	private int columns;
+
+	private String layerID = "applicationCategoryViewer";
 
 	public ApplicationCategoryViewer() {
 		setCacheable(getCacheKey(), (20 * 60 * 1000));
@@ -83,7 +87,7 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 				Layer l = new Layer();
 				l.setStyleClass("applicationCategory");
 
-				LocalizedText locText = cat.getLocalizedText(icLocaleId);
+				LocalizedTextModel locText = cat.getLocalizedText(icLocaleId);
 				String heading = null;
 				if(locText != null) {
 					heading = locText.getBody();
@@ -122,11 +126,18 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 		this.layerID = id;
 	}
 
+	public int getColumns() {
+		return columns;
+	}
+
+	public void setColumns(int columns) {
+		this.columns = columns;
+	}
 
 	/**
 	 * @return the groupCategories
 	 */
-	private boolean isGroupCategories() {
+	public boolean isGroupCategories() {
 		return this.iGroupCategories;
 	}
 
@@ -136,4 +147,17 @@ public class ApplicationCategoryViewer extends ApplicationBlock {
 	public void setGroupCategories(boolean groupCategories) {
 		this.iGroupCategories = groupCategories;
 	}
+
+	public boolean isiGroupCategories() {
+		return iGroupCategories;
+	}
+
+	public void setiGroupCategories(boolean iGroupCategories) {
+		this.iGroupCategories = iGroupCategories;
+	}
+
+	public String getLayerID() {
+		return layerID;
+	}
+
 }

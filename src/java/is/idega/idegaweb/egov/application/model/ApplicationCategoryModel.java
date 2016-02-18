@@ -1,12 +1,14 @@
 package is.idega.idegaweb.egov.application.model;
 
-import com.idega.block.text.data.LocalizedText;
+import java.util.Collection;
+
+import com.idega.block.text.model.LocalizedTextModel;
 
 public interface ApplicationCategoryModel {
 
 	Object getPrimaryKey();
 
-	LocalizedText getLocalizedText(int icLocaleId);
+	LocalizedTextModel getLocalizedText(int icLocaleId);
 
 	String getName();
 
@@ -16,5 +18,7 @@ public interface ApplicationCategoryModel {
 	String getLocalizedName(int icLocaleId);
 
 	String getDefaultName();
+
+	<T extends LocalizedTextModel, L extends Collection<T>> L getLocalizedTexts();
 
 }

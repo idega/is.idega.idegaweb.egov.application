@@ -51,7 +51,7 @@ public interface ApplicationBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see is.idega.idegaweb.egov.application.business.ApplicationBusinessBean#updateTimesClicked
 	 */
-	public void updateTimesClicked(Application application) throws java.rmi.RemoteException;
+	public void updateTimesClicked(ApplicationModel application) throws java.rmi.RemoteException;
 
 	public void checkApplicationCategoryPriorityConstraint();
 

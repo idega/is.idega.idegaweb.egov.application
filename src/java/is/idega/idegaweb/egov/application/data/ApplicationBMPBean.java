@@ -45,6 +45,7 @@ import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupBMPBean;
 import com.idega.util.ArrayUtil;
+import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
 import com.idega.util.StringUtil;
 
@@ -67,94 +68,87 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String AGE_TO = "age_to";
 	public static final String ENABLED_FROM = "enabled_from";
 	public static final String ENABLED_TO = "enabled_to";
-	private static final String TIMES_CLICKED = "times_clicked";
+	public static final String TIMES_CLICKED = "times_clicked";
 	public static final String OPENS_IN_NEW_WINDOW = "opens_in_new_window";
 	public static final String HIDDEN_FROM_GUESTS = "hidden_from_guests";
 	public static final String PRIORITY = "app_priority";
-	private static final String COLUMN_LOGIN_PAGE_URL = "login_page_url";
+	public static final String COLUMN_LOGIN_PAGE_URL = "login_page_url";
 	private static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
 
-	private static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
-	private static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
+	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
+	public static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
 	private static final String EGOV_APPLICATION_GROUP = "EGOV_APPLICATION_GROUP";
-	private static final String EGOV_APPLICATION_ID = "EGOV_APPLICATION_ID";
-	private static final String TX_LOCALIZED_TEXT = "TX_LOCALIZED_TEXT";
-	private static final String TX_LOCALIZED_TEXT_ID = "TX_LOCALIZED_TEXT_ID";
-	private static final String IC_LOCALE_ID = "IC_LOCALE_ID";
+	public static final String EGOV_APPLICATION_ID = "EGOV_APPLICATION_ID";
+	public static final String TX_LOCALIZED_TEXT = "TX_LOCALIZED_TEXT";
+	public static final String TX_LOCALIZED_TEXT_ID = "TX_LOCALIZED_TEXT_ID";
+	public static final String IC_LOCALE_ID = "IC_LOCALE_ID";
 
 	@Override
 	public String getEntityName() {
 		return TABLE_NAME;
 	}
 
-	private String getNameOrUrlByLocale(String table, Locale currentLocale){
-		Collection<?> localNamesIds = null;
+	public String getNameOrUrlByLocale(Locale currentLocale) {
+		Collection<LocalizedText> localNamesIds = null;
 		Collection<LocalizedTextBMPBean> localizedName = null;
 
-		try { //getting ids of entries representing selected headline
-
-			String sqlQuery = "select * from " + table +" where "+EGOV_APPLICATION_ID+" = "+getID();
+		try {
+			//	Getting IDs of entries representing selected headline
+			String sqlQuery = "select * from " + ApplicationBMPBean.EGOV_APPLICATION_URL_LOC_TEXT +" where "+ApplicationBMPBean.EGOV_APPLICATION_ID+" = "+ getPrimaryKey();
 			localNamesIds = idoGetRelatedEntitiesBySQL(LocalizedText.class, sqlQuery);
-			if(localNamesIds == null || localNamesIds.isEmpty())
+			if (localNamesIds == null || localNamesIds.isEmpty()) {
 				return null;
+			}
 		} catch (IDORelationshipException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
 
-		try { //getting localized headline
-
+		try {
+			//	Getting localized headline
 			localizedName = idoGetRelatedEntitiesBySQL(LocalizedTextBMPBean.class, getQueryForTxLocalizedText(ICLocaleBusiness.getLocaleId(currentLocale), localNamesIds));
 			if (localizedName == null || localizedName.isEmpty()) {
 				return null;
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			return null;
 		}
-		return ((LocalizedTextBMPBean)(localizedName.toArray()[0])).getHeadline();
+		return ((LocalizedText) localizedName.toArray()[0]).getHeadline();
 	}
 
 	@Override
 	public String getUrlByLocale(Locale locale){
-		String localizedName = getNameOrUrlByLocale(EGOV_APPLICATION_URL_LOC_TEXT, locale);
-		if(localizedName != null){
-			return localizedName;
-		}
-		else {
-			return getStringColumnValue(URL);
-		}
+		return ApplicationUtil.getUrlByLocale(this, locale);
 	}
 
 	//	returns url by current locale, if local url is null, then returns empty string
 	@Override
 	public String getLocalizedUrl(Locale locale){
-		String localizedName = getNameOrUrlByLocale(EGOV_APPLICATION_URL_LOC_TEXT, locale);
+		String localizedName = getNameOrUrlByLocale(locale);
 		if(localizedName != null){
 			return localizedName;
 		}
 		else {
-			return "";
+			return CoreConstants.EMPTY;
 		}
 	}
 
 	//returns name by locale, if name is not set then returns empty string
 	@Override
 	public String getLocalizedName(Locale locale){
-		String localizedName = getNameOrUrlByLocale(EGOV_APPLICATION_NAME_LOC_TEXT, locale);
+		String localizedName = getNameOrUrlByLocale(locale);
 		if(localizedName != null){
 			return localizedName;
 		}
 		else {
-			return "";
+			return CoreConstants.EMPTY;
 		}
 	}
 
 	@Override
 	public String getNameByLocale(Locale locale){
-		String localizedName = getNameOrUrlByLocale(EGOV_APPLICATION_NAME_LOC_TEXT, locale);
+		String localizedName = getNameOrUrlByLocale(locale);
 		if(localizedName != null){
 			return localizedName;
 		}
@@ -208,7 +202,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(COLUMN_PAYMENT_REQUIRED, "Is payment required", Boolean.class);
 
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_NAME_LOC_TEXT);
-		addManyToManyRelationShip(LocalizedText.class,EGOV_APPLICATION_URL_LOC_TEXT);
+		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_URL_LOC_TEXT);
 		addManyToManyRelationShip(Group.class, EGOV_APPLICATION_GROUP);
 	}
 
@@ -217,6 +211,8 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		return ApplicationUtil.getLocalizedText(this, icLocaleId);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
 	public Collection<LocalizedText> getLocalizedTexts() {
 		try {
 			return idoGetRelatedEntities(LocalizedText.class);
@@ -438,17 +434,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	@Override
 	public String getQueryForTxLocalizedText(int localeId, Collection localNamesIds){
-		String queryForLocalizedEntry = "select * from "+TX_LOCALIZED_TEXT+" where "+IC_LOCALE_ID+" = "+localeId+" AND (";
-		for (Iterator localNameIdsIterator = localNamesIds.iterator(); localNameIdsIterator.hasNext();) {
-			LocalizedText element = (LocalizedText) localNameIdsIterator.next();
-			if(localNameIdsIterator.hasNext()){
-				queryForLocalizedEntry += TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey()+ " OR ";
-			}
-			else{
-				queryForLocalizedEntry += TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey()+")";
-			}
-		}
-		return queryForLocalizedEntry;
+		return ApplicationUtil.getQueryForTxLocalizedText(localeId, localNamesIds);
 	}
 
 	@Override
@@ -469,7 +455,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 
 	@Override
 	public void insertLocalizedTextEntry(int localeId, String headline, boolean settingNames){
-		if(headline == null || headline.equals("")){
+		if(headline == null || headline.equals(CoreConstants.EMPTY)){
 			return;
 		}
 		LocalizedText localizedText = ((LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();

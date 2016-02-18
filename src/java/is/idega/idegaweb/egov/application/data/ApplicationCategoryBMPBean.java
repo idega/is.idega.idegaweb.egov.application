@@ -42,9 +42,9 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 	public static final String	TABLE_NAME = "EGOV_APPLICATION_CATEGORY",
 								NAME = "category_name",
 								DESCRIPTION = "category_description",
-								PRIORITY = "category_priority";
+								PRIORITY = "category_priority",
 
-	private static final String EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT = "EGOV_APPLICATION_CATEGORY_NAME";
+								EGOV_APPLICATION_CATEGORY_NAME_LOC_TEXT = "EGOV_APPLICATION_CATEGORY_NAME";
 
 	@Override
 	public String getEntityName() {
@@ -249,6 +249,7 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 		return null;
 	}
 
+	@Override
 	public Collection<LocalizedText> getLocalizedTexts() {
 		try {
 			return idoGetRelatedEntities(LocalizedText.class);

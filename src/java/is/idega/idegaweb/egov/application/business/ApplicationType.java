@@ -41,7 +41,7 @@ public interface ApplicationType {
 	 */
 	public abstract boolean afterStore(IWContext iwc, Application app);
 
-	public abstract String getUrl(IWContext iwc, Application app);
+	public abstract String getUrl(IWContext iwc, ApplicationModel app);
 
 	public abstract boolean isVisible(ApplicationModel app);
 

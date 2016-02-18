@@ -78,7 +78,8 @@ public class ApplicationTypeURL implements ApplicationType {
 	}
 
 	@Override
-	public String getUrl(IWContext iwc, Application app) {
+	public String getUrl(IWContext iwc, ApplicationModel app) {
 		return app.getUrl();
 	}
+
 }
