@@ -68,9 +68,6 @@ import is.idega.idegaweb.egov.application.data.ApplicationCategory;
 
 public class ApplicationCreator extends ApplicationBlock {
 
-//	public static final String APP_FORM_NAME_PARAM = FormDocument.APP_FORM_NAME_PARAM;
-//	public static final String APP_ID_PARAM = FormDocument.APP_ID_PARAM;
-//	public static final String FROM_APP_REQ_PARAM = FormDocument.FROM_APP_REQ_PARAM;
 	public static final String FORMBUILDER_REDIRECT_PATH = "/workspace/forms/formbuilder/";
 
 	private static final String APP_TYPES_HANDLER_ENGINE = "/dwr/interface/ApplicationTypesHandler.js";
@@ -673,12 +670,11 @@ public class ApplicationCreator extends ApplicationBlock {
 		appTypes.setOnChange("egov_AppTypes.appTypeChanged("+applicationID+", jQuery(this).val(), document.getElementById('"+handlerContainer.getId()+"'));");
 		appTypes.setSelectedElement(appTypeValue);
 
-		DropdownMenu category = new DropdownMenu("cat");
+		DropdownMenu category = new DropdownMenu(CAT_INPUT);
 		try {
 			category.addMenuElements(getApplicationBusiness(iwc).getApplicationCategoryHome().findAllOrderedByName());
 			category.setSelectedElement(catValue);
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
 
