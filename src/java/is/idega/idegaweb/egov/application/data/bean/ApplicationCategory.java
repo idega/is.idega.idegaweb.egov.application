@@ -69,7 +69,7 @@ public class ApplicationCategory implements Serializable, ApplicationCategoryMod
 
 	@Override
 	public String toString() {
-		return getPrimaryKey().toString();
+		return getLocalizedName();
 	}
 
 	@Override

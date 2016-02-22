@@ -261,8 +261,7 @@ public class ApplicationCategoryBMPBean extends GenericEntity implements Applica
 
 	@Override
 	public String toString() {
-		Object pk = getPrimaryKey();
-		return pk == null ? "null" : pk.toString();
+		return getLocalizedName();
 	}
 
 }
