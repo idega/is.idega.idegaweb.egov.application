@@ -204,4 +204,17 @@ public class ApplicationUtil implements Singleton {
 		return localizedName;
 	}
 
+	public static final String getLocalizedName(ApplicationModel app) {
+		Locale locale = CoreUtil.getCurrentLocale();
+		return getLocalizedName(app, ICLocaleBusiness.getLocaleId(locale));
+	}
+
+	public static final String getLocalizedName(ApplicationModel app, Integer icLocaleId) {
+		LocalizedTextModel locText = app.getLocalizedText(icLocaleId);
+		if (locText != null) {
+			return locText.getBody();
+		}
+		return app.getName();
+	}
+
 }

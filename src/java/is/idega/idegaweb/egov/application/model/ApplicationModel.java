@@ -53,4 +53,7 @@ public interface ApplicationModel {
 
 	<T extends LocalizedTextModel, L extends Collection<T>> L getLocalizedTexts();
 
+	String getLocalizedName();
+	String getLocalizedName(int icLocaleId);
+
 }

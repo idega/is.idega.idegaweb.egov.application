@@ -20,7 +20,6 @@ import javax.faces.component.UIComponent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.idega.block.text.model.LocalizedTextModel;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -84,6 +83,7 @@ public abstract class ApplicationBlock extends Block {
 
 		boolean showDisabled = iwc.getIWMainApplication().getSettings().getBoolean("app.show_disabled_applications", Boolean.TRUE);
 
+		int icLocaleId = iwc.getCurrentLocaleId();
 		for (T app: applications) {
 			if (app == null) {
 				continue;
@@ -122,15 +122,7 @@ public abstract class ApplicationBlock extends Block {
 					li.setStyleClass("electronic-does-not-require-login");
 				}
 
-				int icLocaleId = iwc.getCurrentLocaleId();
-
-				LocalizedTextModel locText = app.getLocalizedText(icLocaleId);
-				String heading = null;
-				if(locText != null) {
-					heading = locText.getBody();
-				} else {
-					heading = app.getName();
-				}
+				String heading = app.getLocalizedName(icLocaleId);
 
 				Link link = new Link(new Text(heading));
 				link.addParameter(PARAMETER_APPLICATION_PK, app.getPrimaryKey().toString());

@@ -826,4 +826,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		return ApplicationUtil.isEnabled(this);
 	}
 
+	@Override
+	public String getLocalizedName() {
+		return ApplicationUtil.getLocalizedName(this);
+	}
+
+	@Override
+	public String getLocalizedName(int icLocaleId) {
+		return ApplicationUtil.getLocalizedName(this, icLocaleId);
+	}
+
 }
