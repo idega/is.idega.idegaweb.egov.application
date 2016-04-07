@@ -87,6 +87,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String NEW_WIN_INPUT = "newin";
 	private static final String HIDDEN_INPUT = "hidden";
 	private static final String PAYMENT_REQUIRED_INPUT = "isPaymentRequired";
+	private static final String SHOW_IN_IFRAME = "showInIframe";
 
 	public static final String APPLICATION_ID_PARAMETER = "prm_application_id";
 
@@ -105,6 +106,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	private boolean visibleApplication;
 	private boolean hiddenFromGuests;
 	private boolean isPaymentRequired = false;
+	private boolean showInIframe = false;
 	private boolean checkIfCanViewApplication;
 	private boolean addSaveButton = true;
 	private boolean addBackButton = true;
@@ -184,6 +186,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		String enabledFrom = iwc.getParameter(ENABLED_FROM_INPUT);
 		String enabledTo = iwc.getParameter(ENABLED_TO_INPUT);
 		Boolean isPaymentRequired = getBooleanValue(iwc.getParameter(PAYMENT_REQUIRED_INPUT), this.isPaymentRequired);
+		String showInIframe = getBooleanValueInString(iwc.getParameter(SHOW_IN_IFRAME), this.showInIframe);
 		Integer ageFrom = null;
 		Integer ageTo = null;
 
@@ -219,8 +222,9 @@ public class ApplicationCreator extends ApplicationBlock {
 			app = getApplicationBusiness(iwc).getApplicationHome().create();
 		}
 		app.setName(name);
-		app.setRequiresLogin("Y".equalsIgnoreCase(requiresLogin));
-		app.setVisible("Y".equalsIgnoreCase(visible));
+		app.setRequiresLogin(CoreConstants.Y.equalsIgnoreCase(requiresLogin));
+		app.setVisible(CoreConstants.Y.equalsIgnoreCase(visible));
+		app.setShowInIframe(CoreConstants.Y.equalsIgnoreCase(showInIframe));
 
 		Locale locale = iwc.getCurrentLocale();
 		if (StringUtil.isEmpty(enabledFrom)) {
@@ -246,8 +250,8 @@ public class ApplicationCreator extends ApplicationBlock {
 			}
 		}
 
-		app.setOpensInNewWindow("Y".equalsIgnoreCase(opensInNew));
-		app.setHiddenFromGuests("Y".equalsIgnoreCase(hiddenFromGuests));
+		app.setOpensInNewWindow(CoreConstants.Y.equalsIgnoreCase(opensInNew));
+		app.setHiddenFromGuests(CoreConstants.Y.equalsIgnoreCase(hiddenFromGuests));
 		app.setAgeFrom((ageFrom == null)? -1 : ageFrom.intValue());
 		app.setAgeTo((ageTo == null)? -1 : ageTo.intValue());
 		if (code != null && !code.equals("-1")) {
@@ -565,6 +569,7 @@ public class ApplicationCreator extends ApplicationBlock {
 		String appTypeValue = iwc.getParameter(APP_TYPE_INPUT);
 		String requiresLoginValue = getBooleanValueInString(iwc.getParameter(REQ_LOGIN_INPUT), this.requiresLogin);
 		String visibleValue = getBooleanValueInString(iwc.getParameter(VISIBLE_INPUT), this.visibleApplication);
+		String showInIframeValue = getBooleanValueInString(iwc.getParameter(SHOW_IN_IFRAME), this.showInIframe);
 
 		Integer ageFromValue = null;
 		Integer ageToValue = null;
@@ -606,11 +611,18 @@ public class ApplicationCreator extends ApplicationBlock {
 			requiresLogin.setSelected(false);
 		}
 
-		BooleanInput visible = new BooleanInput("visible");
+		BooleanInput visible = new BooleanInput(VISIBLE_INPUT);
 		if(visibleValue != null && visibleValue.equals(CoreConstants.Y)) {
 			visible.setSelected(true);
 		} else {
 			visible.setSelected(false);
+		}
+
+		BooleanInput showInIframeInput = new BooleanInput(SHOW_IN_IFRAME);
+		if (showInIframeValue != null && showInIframeValue.equals(CoreConstants.Y)) {
+			showInIframeInput.setSelected(true);
+		} else {
+			showInIframeInput.setSelected(false);
 		}
 
 		Locale locale = iwc.getCurrentLocale();
@@ -699,6 +711,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 				requiresLogin.setSelected(application.getRequiresLogin());
 				visible.setSelected(application.getVisible());
+				showInIframeInput.setSelected(application.getShowInIframe());
 				ageFrom.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeFrom()) : CoreConstants.EMPTY);
 				ageTo.setContent(application.getAgeFrom() > -1 ? Integer.toString(application.getAgeTo()) : CoreConstants.EMPTY);
 				if (application.getCategory() != null) {
@@ -819,6 +832,13 @@ public class ApplicationCreator extends ApplicationBlock {
 		label = new Label(this.iwrb.getLocalizedString("visible", "Visible"), visible);
 		formItem.add(label);
 		formItem.add(visible);
+		layer.add(formItem);
+
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		label = new Label(this.iwrb.getLocalizedString("show_in_iframe", "Show in iFrame"), showInIframeInput);
+		formItem.add(label);
+		formItem.add(showInIframeInput);
 		layer.add(formItem);
 
 		//	Enabled from

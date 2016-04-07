@@ -56,4 +56,7 @@ public interface ApplicationModel {
 	String getLocalizedName();
 	String getLocalizedName(int icLocaleId);
 
+	Boolean getShowInIframe();
+	void setShowInIframe(Boolean showInIframe);
+
 }

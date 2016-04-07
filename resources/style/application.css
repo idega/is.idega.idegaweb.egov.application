@@ -580,3 +580,7 @@ a.planning-query-link, a.planning-application-link {
 	font-size: 16px;
 	font-weight: bold;
 }
+
+iframe.remote-application-in-iframe {
+	width: 100%;
+}

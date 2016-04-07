@@ -111,11 +111,15 @@ public abstract class ApplicationForm extends Block {
 			return app;
 		}
 
-		Object id = iwc.getSessionAttribute(ApplicationBlock.PARAMETER_APPLICATION_PK);
+		Object id = iwc.getSessionAttribute(ApplicationConstants.PARAM_APP_ID);
 		if (id instanceof Integer) {
 			app = getApplicationDAO().getById((Integer) id);
 		}
-		iwc.removeSessionAttribute(ApplicationBlock.PARAMETER_APPLICATION_PK);
+		iwc.removeSessionAttribute(ApplicationConstants.PARAM_APP_ID);
+
+		if (app == null && iwc.isParameterSet(ApplicationConstants.PARAM_APP_ID)) {
+			app = getApplicationDAO().getById(iwc.getIntegerParameter(ApplicationConstants.PARAM_APP_ID));
+		}
 
 		return app;
 	}

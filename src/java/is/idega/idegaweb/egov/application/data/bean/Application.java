@@ -107,6 +107,9 @@ public class Application implements Serializable, ApplicationModel {
 	@Column(name = ApplicationBMPBean.COLUMN_LOGIN_PAGE_URL)
 	private String loginPageUrl;
 
+	@Column(name = ApplicationBMPBean.COLUMN_SHOW_IN_IFRAME, length = 1)
+	private Character showInIframe;
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = ApplicationBMPBean.EGOV_APPLICATION_NAME_LOC_TEXT,
 		joinColumns = @JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID),
@@ -348,6 +351,16 @@ public class Application implements Serializable, ApplicationModel {
 	@Override
 	public String getLocalizedName(int icLocaleId) {
 		return ApplicationUtil.getLocalizedName(this, icLocaleId);
+	}
+
+	@Override
+	public Boolean getShowInIframe() {
+		return showInIframe == null ? false : showInIframe == CoreConstants.CHAR_Y;
+	}
+
+	@Override
+	public void setShowInIframe(Boolean showInIframe) {
+		this.showInIframe = (showInIframe == null || !showInIframe.booleanValue()) ? CoreConstants.CHAR_N: CoreConstants.CHAR_Y;
 	}
 
 }

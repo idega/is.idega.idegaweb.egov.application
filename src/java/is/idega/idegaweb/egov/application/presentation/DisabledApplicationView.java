@@ -25,15 +25,13 @@ import com.idega.util.StringUtil;
 
 public class DisabledApplicationView extends Block {
 
-	public static final String PARAM_APP_ID = "appId";
-
 	@Override
 	public void main(IWContext iwc) throws Exception {
 		Locale locale = iwc.getCurrentLocale();
 
 		String appName = null;
 		Application app = null;
-		String appId = iwc.getParameter(PARAM_APP_ID);
+		String appId = iwc.getParameter(ApplicationConstants.PARAM_APP_ID);
 
 		if (StringHandler.isNumeric(appId)) {
 			ApplicationHome appHome = (ApplicationHome) IDOLookup.getHome(Application.class);

@@ -73,6 +73,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String HIDDEN_FROM_GUESTS = "hidden_from_guests";
 	public static final String PRIORITY = "app_priority";
 	public static final String COLUMN_LOGIN_PAGE_URL = "login_page_url";
+	public static final String COLUMN_SHOW_IN_IFRAME = "show_in_iframe";
 	private static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
 
 	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
@@ -200,6 +201,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(PRIORITY, "Priority", Integer.class);
 		addAttribute(COLUMN_LOGIN_PAGE_URL, "Login page url", String.class);
 		addAttribute(COLUMN_PAYMENT_REQUIRED, "Is payment required", Boolean.class);
+		addAttribute(COLUMN_SHOW_IN_IFRAME, "Show in Iframe", Boolean.class);
 
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_NAME_LOC_TEXT);
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_URL_LOC_TEXT);
@@ -834,6 +836,16 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	@Override
 	public String getLocalizedName(int icLocaleId) {
 		return ApplicationUtil.getLocalizedName(this, icLocaleId);
+	}
+
+	@Override
+	public Boolean getShowInIframe() {
+		return getBooleanColumnValue(COLUMN_SHOW_IN_IFRAME, Boolean.FALSE);
+	}
+
+	@Override
+	public void setShowInIframe(Boolean showInIframe) {
+		setColumn(COLUMN_SHOW_IN_IFRAME, showInIframe);
 	}
 
 }

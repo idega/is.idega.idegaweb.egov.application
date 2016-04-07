@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.faces.component.UIComponent;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -43,12 +44,14 @@ import com.idega.servlet.filter.BaseFilter;
 import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 import com.idega.util.URIUtil;
 import com.idega.util.expression.ELUtil;
 
+import is.idega.idegaweb.egov.application.ApplicationConstants;
 import is.idega.idegaweb.egov.application.ApplicationUtil;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.business.ApplicationType;
@@ -57,6 +60,7 @@ import is.idega.idegaweb.egov.application.data.dao.ApplicationDAO;
 import is.idega.idegaweb.egov.application.model.ApplicationModel;
 //import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.presentation.ApplicationBlock;
+import is.idega.idegaweb.egov.application.presentation.ApplicationFormInIframe;
 import is.idega.idegaweb.egov.application.presentation.DisabledApplicationView;
 
 public class ApplicationUrlRedirector extends BaseFilter implements Filter {
@@ -97,6 +101,25 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 		return map.containsKey(ApplicationBlock.PARAMETER_APPLICATION_PK);
 	}
 
+	private String getUriForModule(IWMainApplication iwma, Class<? extends UIComponent> uiClass, String appPropName) {
+		String uri = null;
+		List<ICPage> pagesWithModule = null;
+		try {
+			pagesWithModule = BuilderLogic.getInstance().findPagesForModule(uiClass);
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error looking up for pages with module " + uiClass.getName(), e);
+		}
+		if (ListUtil.isEmpty(pagesWithModule)) {
+			uri = iwma.getSettings().getProperty(appPropName, CoreConstants.PAGES_URI_PREFIX);
+			LOGGER.warning("Did not find page for module: " + uiClass.getName() + ", using app property value (" + uri + "). Will clear all caches");
+			CoreUtil.clearAllCaches();
+		} else {
+			ICPage page = pagesWithModule.get(0);
+			uri = CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI();
+		}
+		return uri;
+	}
+
 	public String getNewRedirectURL(HttpServletRequest request, HttpServletResponse response) {
 		ApplicationModel application = null;
 		try {
@@ -114,32 +137,16 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			ApplicationDAO applicationDAO = ELUtil.getInstance().getBean(ApplicationDAO.BEAN_NAME);
 			Integer id = Integer.valueOf(pk);
-			iwc.setSessionAttribute(ApplicationBlock.PARAMETER_APPLICATION_PK, id);
+			iwc.setSessionAttribute(ApplicationConstants.PARAM_APP_ID, id);
 			application = ApplicationUtil.isHibernateTurnedOn(iwc.getApplicationSettings()) ? applicationDAO.getById(id) : getApplicationBusiness(iwc).getApplication(id);
 
 			updateTimesClicked(iwma, application);
 
 			String url = null;
 			if ((!application.isEnabled() || !application.getVisible()) && !iwc.isSuperAdmin()) {
-				String uri = null;
-				List<ICPage> pagesWithModule = null;
-				try {
-					pagesWithModule = BuilderLogic.getInstance().findPagesForModule(DisabledApplicationView.class);
-				} catch (Exception e) {
-					LOGGER.log(Level.WARNING, "Error looking up for pages with module " + DisabledApplicationView.class.getName(), e);
-				}
-				if (ListUtil.isEmpty(pagesWithModule)) {
-					uri = iwma.getSettings().getProperty("disabled_app_page", CoreConstants.PAGES_URI_PREFIX);
-					LOGGER.warning("Did not find page for module: " + DisabledApplicationView.class.getName() + ", using app property value (" + uri
-							+ ") for disabled app page. Will clear all caches");
-					BuilderLogic.getInstance().doClearAllCaches();
-				} else {
-					ICPage page = pagesWithModule.get(0);
-					uri = CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI();
-				}
-
+				String uri = getUriForModule(iwma, DisabledApplicationView.class, "disabled_app_page");
 				URIUtil util = new URIUtil(uri);
-				util.setParameter(DisabledApplicationView.PARAM_APP_ID, pk);
+				util.setParameter(ApplicationConstants.PARAM_APP_ID, pk);
 				return util.getUri();
 			}
 
@@ -156,7 +163,13 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 					LOGGER.log(Level.WARNING, "Error gettin app type for application with ID: " + pk);
 				}
 			}
-			if (StringUtil.isEmpty(appType)) {
+
+			if (application.getShowInIframe()) {
+				String uri = getUriForModule(iwma, ApplicationFormInIframe.class, "form_in_iframe_page");
+				URIUtil util = new URIUtil(uri);
+				util.setParameter(ApplicationConstants.PARAM_APP_ID, pk);
+				return util.getUri();
+			} else if (StringUtil.isEmpty(appType)) {
 				LOGGER.info("App type was not resolved");
 				url = application.getUrlByLocale(iwc.getCurrentLocale());
 			} else {
