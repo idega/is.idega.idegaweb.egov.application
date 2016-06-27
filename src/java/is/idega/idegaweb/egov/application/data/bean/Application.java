@@ -17,8 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import com.idega.block.process.data.bean.CaseCode;
@@ -26,8 +26,11 @@ import com.idega.block.process.data.model.CaseCodeModel;
 import com.idega.block.text.data.LocalizedTextBMPBean;
 import com.idega.block.text.data.bean.LocalizedText;
 import com.idega.block.text.model.LocalizedTextModel;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.persistence.Param;
 import com.idega.util.CoreConstants;
 import com.idega.util.DBUtil;
+import com.idega.util.ListUtil;
 import com.idega.util.expression.ELUtil;
 
 import is.idega.idegaweb.egov.application.ApplicationUtil;
@@ -38,8 +41,16 @@ import is.idega.idegaweb.egov.application.model.ApplicationModel;
 @Entity
 @Table(name = Application.TABLE_NAME)
 @Cacheable
-@NamedNativeQueries({
-	@NamedNativeQuery(name = Application.QUERY_GET_BY_ID, query = "from Application a where a.id = :id")
+@NamedQueries({
+	@NamedQuery(name = Application.QUERY_GET_BY_ID, query = "from is.idega.idegaweb.egov.application.data.bean.Application a where a.id = :id"),
+	@NamedQuery(
+			name = Application.QUERY_GET_LOCALIZED_HEADLINE,
+			query = "select l.headline from is.idega.idegaweb.egov.application.data.bean.Application a inner join a.urlLocalizedTexts l where a.id = :id and l.locale.localeID = :localeId and l.headline is not null"
+	),
+	@NamedQuery(
+			name = Application.QUERY_GET_LOCALIZED_BODY,
+			query = "select l.body from is.idega.idegaweb.egov.application.data.bean.Application a inner join a.urlLocalizedTexts l where a.id = :id and l.locale.localeID = :localeId and l.body is not null"
+	)
 })
 public class Application implements Serializable, ApplicationModel {
 
@@ -47,7 +58,9 @@ public class Application implements Serializable, ApplicationModel {
 
 	static final String TABLE_NAME = ApplicationBMPBean.TABLE_NAME;
 
-	public static final String QUERY_GET_BY_ID = "application.getById";
+	public static final String	QUERY_GET_BY_ID = "application.getById",
+								QUERY_GET_LOCALIZED_HEADLINE = "application.getLocalizedHeadline",
+								QUERY_GET_LOCALIZED_BODY = "application.getLocalizedBody";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -331,6 +344,35 @@ public class Application implements Serializable, ApplicationModel {
 	public List<LocalizedText> getUrlLocalizedTexts() {
 		urlLocalizedTexts = DBUtil.getInstance().lazyLoad(urlLocalizedTexts);
 		return urlLocalizedTexts;
+	}
+
+	public String getLocalizedHeadline(Locale locale) {
+		ApplicationDAO applicationDAO = ELUtil.getInstance().getBean(ApplicationDAO.BEAN_NAME);
+		Integer localeId = ICLocaleBusiness.getLocaleId(locale);
+		List<String> headlines = applicationDAO.getResultList(
+				QUERY_GET_LOCALIZED_HEADLINE,
+				String.class,
+				0,
+				1,
+				"appLocTextHeadline",
+				new Param("id", getId()),
+				new Param("localeId", localeId)
+		);
+		return ListUtil.isEmpty(headlines) ? null : headlines.get(0);
+	}
+
+	public String getLocalizedBody(Integer localeId) {
+		ApplicationDAO applicationDAO = ELUtil.getInstance().getBean(ApplicationDAO.BEAN_NAME);
+		List<String> bodies = applicationDAO.getResultList(
+				QUERY_GET_LOCALIZED_BODY,
+				String.class,
+				0,
+				1,
+				"appLocTextBody",
+				new Param("id", getId()),
+				new Param("localeId", localeId)
+		);
+		return ListUtil.isEmpty(bodies) ? null : bodies.get(0);
 	}
 
 	public void setUrlLocalizedTexts(List<LocalizedText> urlLocalizedTexts) {

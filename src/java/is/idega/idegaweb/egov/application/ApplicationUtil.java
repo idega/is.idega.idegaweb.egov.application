@@ -161,15 +161,14 @@ public class ApplicationUtil implements Singleton {
 		return Collections.emptyList();
 	}
 
-	public static final <T extends LocalizedTextModel> String getQueryForTxLocalizedText(int localeId, Collection<T> localNamesIds){
-		String queryForLocalizedEntry = "select * from "+ApplicationBMPBean.TX_LOCALIZED_TEXT+" where "+ApplicationBMPBean.IC_LOCALE_ID+" = "+localeId+" AND (";
+	public static final <T extends LocalizedTextModel> String getQueryForTxLocalizedText(int localeId, Collection<T> localNamesIds) {
+		String queryForLocalizedEntry = "select * from " + ApplicationBMPBean.TX_LOCALIZED_TEXT + " where " + ApplicationBMPBean.IC_LOCALE_ID + " = " + localeId + " AND (";
 		for (Iterator<T> localNameIdsIterator = localNamesIds.iterator(); localNameIdsIterator.hasNext();) {
 			T element = localNameIdsIterator.next();
-			if(localNameIdsIterator.hasNext()){
-				queryForLocalizedEntry += ApplicationBMPBean.TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey()+ " OR ";
-			}
-			else{
-				queryForLocalizedEntry += ApplicationBMPBean.TX_LOCALIZED_TEXT_ID+" = "+element.getPrimaryKey()+")";
+			if (localNameIdsIterator.hasNext()) {
+				queryForLocalizedEntry += ApplicationBMPBean.TX_LOCALIZED_TEXT_ID + " = " + element.getPrimaryKey() + " OR ";
+			} else {
+				queryForLocalizedEntry += ApplicationBMPBean.TX_LOCALIZED_TEXT_ID + " = " + element.getPrimaryKey() + ")";
 			}
 		}
 		return queryForLocalizedEntry;
@@ -179,18 +178,7 @@ public class ApplicationUtil implements Singleton {
 		if (app instanceof ApplicationBMPBean) {
 			return ((ApplicationBMPBean) app).getNameOrUrlByLocale(locale);
 		} else if (app instanceof is.idega.idegaweb.egov.application.data.bean.Application) {
-			is.idega.idegaweb.egov.application.data.bean.Application appBean = (is.idega.idegaweb.egov.application.data.bean.Application) app;
-			List<com.idega.block.text.data.bean.LocalizedText> texts = appBean.getUrlLocalizedTexts();
-			if (ListUtil.isEmpty(texts)) {
-				return null;
-			}
-
-			int localeId = ICLocaleBusiness.getLocaleId(locale);
-			for (com.idega.block.text.data.bean.LocalizedText text: texts) {
-				if (text.getLocaleId() == localeId) {
-					return text.getHeadline();
-				}
-			}
+			return ((is.idega.idegaweb.egov.application.data.bean.Application) app).getLocalizedHeadline(locale);
 		}
 
 		return null;
@@ -210,9 +198,16 @@ public class ApplicationUtil implements Singleton {
 	}
 
 	public static final String getLocalizedName(ApplicationModel app, Integer icLocaleId) {
-		LocalizedTextModel locText = app.getLocalizedText(icLocaleId);
-		if (locText != null) {
-			return locText.getBody();
+		if (app instanceof is.idega.idegaweb.egov.application.data.bean.Application) {
+			String localizedBody = ((is.idega.idegaweb.egov.application.data.bean.Application) app).getLocalizedBody(icLocaleId);
+			if (localizedBody != null) {
+				return localizedBody;
+			}
+		} else {
+			LocalizedTextModel locText = app.getLocalizedText(icLocaleId);
+			if (locText != null) {
+				return locText.getBody();
+			}
 		}
 		return app.getName();
 	}
