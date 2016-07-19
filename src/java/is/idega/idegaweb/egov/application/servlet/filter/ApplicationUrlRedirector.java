@@ -12,6 +12,7 @@ package is.idega.idegaweb.egov.application.servlet.filter;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -113,10 +114,24 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 			uri = iwma.getSettings().getProperty(appPropName, CoreConstants.PAGES_URI_PREFIX);
 			LOGGER.warning("Did not find page for module: " + uiClass.getName() + ", using app property value (" + uri + "). Will clear all caches");
 			CoreUtil.clearAllCaches();
+			return uri;
+		}
+
+		ICPage page = null;
+		for (Iterator<ICPage> pagesIter = pagesWithModule.iterator(); (pagesIter.hasNext() && page == null); pagesIter.hasNext()) {
+			page = pagesIter.next();
+			if (page.getDeleted()) {
+				page = null;
+			}
+		}
+		if (page == null) {
+			uri = iwma.getSettings().getProperty(appPropName, CoreConstants.PAGES_URI_PREFIX);
+			LOGGER.warning("Did not find not deleted page for module: " + uiClass.getName() + ", using app property value (" + uri + ")");
+			return uri;
 		} else {
-			ICPage page = pagesWithModule.get(0);
 			uri = CoreConstants.PAGES_URI_PREFIX + page.getDefaultPageURI();
 		}
+
 		return uri;
 	}
 
