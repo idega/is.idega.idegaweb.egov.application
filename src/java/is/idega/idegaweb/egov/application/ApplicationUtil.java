@@ -113,8 +113,8 @@ public class ApplicationUtil implements Singleton {
 			return CoreConstants.PAGES_URI_PREFIX;
 		}
 
+		String url = null;
 		try {
-			String url = null;
 			if (!isAvailabe(iwc, application)) {
 				String uri = getUriForModule(iwma, DisabledApplicationView.class, "disabled_app_page");
 				URIUtil util = new URIUtil(uri);
@@ -229,7 +229,7 @@ public class ApplicationUtil implements Singleton {
 			LOGGER.log(Level.WARNING, "Error getting redirect URL for application " + application, e);
 		}
 
-		return null;
+		return url;
 	}
 
 	public static final boolean isEnabled(ApplicationModel app) {
