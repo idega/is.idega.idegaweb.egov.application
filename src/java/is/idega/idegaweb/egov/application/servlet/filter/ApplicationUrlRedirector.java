@@ -35,6 +35,7 @@ import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
 import com.idega.util.CoreConstants;
 import com.idega.util.StringHandler;
+import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
 import is.idega.idegaweb.egov.application.ApplicationConstants;
@@ -71,9 +72,12 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 		boolean doRedirect = getIfDoRedirect(request);
 		if (doRedirect) {
 			String newUrl = getNewRedirectURL(request, response);
+			if (StringUtil.isEmpty(newUrl)) {
+				LOGGER.warning("Unknown URL. Application ID: " + request.getParameter(ApplicationBlock.PARAMETER_APPLICATION_PK));
+				newUrl = CoreConstants.PAGES_URI_PREFIX;
+			}
 			response.sendRedirect(newUrl);
-		}
-		else {
+		} else {
 			chain.doFilter(srequest, sresponse);
 		}
 	}
@@ -106,8 +110,7 @@ public class ApplicationUrlRedirector extends BaseFilter implements Filter {
 
 			updateTimesClicked(iwma, application);
 
-			String url = ApplicationUtil.getRedirectUrl(iwma, iwc, request, getApplicationTypesManager(), application, pk, isLoggedOn);
-			return url;
+			return ApplicationUtil.getRedirectUrl(iwma, iwc, request, getApplicationTypesManager(), application, pk, isLoggedOn);
 		} catch (Exception e) {
 			String message = "Error constructing redirect URL to application " + application;
 			LOGGER.log(Level.WARNING, message, e);
