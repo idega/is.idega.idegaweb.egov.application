@@ -1,10 +1,5 @@
 package is.idega.idegaweb.egov.application.presentation;
 
-import is.idega.idegaweb.egov.application.ApplicationConstants;
-import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.data.Application;
-import is.idega.idegaweb.egov.application.data.ApplicationHome;
-
 import java.util.Locale;
 
 import javax.ejb.FinderException;
@@ -22,6 +17,11 @@ import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
+
+import is.idega.idegaweb.egov.application.ApplicationConstants;
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.data.Application;
+import is.idega.idegaweb.egov.application.data.ApplicationHome;
 
 public class DisabledApplicationView extends Block {
 
@@ -61,7 +61,7 @@ public class DisabledApplicationView extends Block {
 		heading.setStyleClass("header");
 		container.add(heading);
 
-		String text = app == null ?
+		String text = (app == null || app.getEnabledFrom() == null || app.getEnabledTo() == null) ?
 				iwrb.getLocalizedString("disabled_app_text", "Application currently is disabled.") :
 				iwrb.getLocalizedString("application_is_enabled_from", "Application is enabled from") + CoreConstants.SPACE +
 					new IWTimestamp(app.getEnabledFrom()).getLocaleDateAndTime(locale) + CoreConstants.SPACE + iwrb.getLocalizedString("to", "to") +
