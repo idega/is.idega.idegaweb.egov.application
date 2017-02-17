@@ -55,7 +55,12 @@ public class ApplicationUtil implements Singleton {
 	private static final Logger LOGGER = Logger.getLogger(ApplicationUtil.class.getName());
 
 	private static String getUriForModule(IWMainApplication iwma, Class<? extends UIComponent> uiClass, String appPropName) {
-		String uri = null;
+		String uri = iwma.getSettings().getProperty(appPropName);
+		if (!StringUtil.isEmpty(uri)) {
+			LOGGER.info("Using app property value (" + uri + ") for " + appPropName);
+			return uri;
+		}
+
 		List<ICPage> pagesWithModule = null;
 		try {
 			pagesWithModule = BuilderLogic.getInstance().findPagesForModule(uiClass);
@@ -253,9 +258,6 @@ public class ApplicationUtil implements Singleton {
 			enabled = now.isEarlierThan(new IWTimestamp(enabledTo));
 		}
 
-		if (!enabled) {
-			LOGGER.warning("Application (ID: " + app.getPrimaryKey() + ") is disabled. It is enabled from " + enabledFrom + " to " + enabledTo + ". Currently it's " + now);
-		}
 		return enabled;
 	}
 
