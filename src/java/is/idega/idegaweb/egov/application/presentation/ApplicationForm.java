@@ -494,6 +494,10 @@ public abstract class ApplicationForm extends Block {
 		}
 	}
 
+	protected Integer getValidBirthYear(IWContext iwc) {
+		return null;
+	}
+
 	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User parentOrCustodian, User chosenUser, Collection<User> children, String parameterName, IWResourceBundle iwrb) throws RemoteException {
 		Application application = null;
 		if (applicationPK != null) {
@@ -513,6 +517,8 @@ public abstract class ApplicationForm extends Block {
 			}
 		}
 
+		Integer customValidBirthYear = getValidBirthYear(iwc);
+
 		DropdownMenu menu = new DropdownMenu(parameterName);
 		menu.setStyleClass("userSelector");
 		if (ListUtil.isEmpty(children)) {
@@ -527,12 +533,14 @@ public abstract class ApplicationForm extends Block {
 
 				boolean addUser = true;
 
+				Date dateOfBirthday = customValidBirthYear == null ? null : child.getDateOfBirth();
+
 				int ageFrom = -1, ageTo = -1, years = -1;
 				if (application != null) {
 					ageFrom = application.getAgeFrom();
 					ageTo = application.getAgeTo();
 					if (ageFrom > -1 && ageTo > -1) {
-						Date dateOfBirthday = child.getDateOfBirth();
+						dateOfBirthday = dateOfBirthday == null ? child.getDateOfBirth() : dateOfBirthday;
 						if (dateOfBirthday != null) {
 							IWTimestamp stamp = new IWTimestamp(dateOfBirthday);
 							stamp.setDay(1);
@@ -543,6 +551,22 @@ public abstract class ApplicationForm extends Block {
 							addUser = ageFrom <= years && ageTo >= years;
 						} else {
 							getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() + ") because date of birth is unknown!");
+							addUser = false;
+						}
+					}
+				}
+
+				if (addUser && customValidBirthYear != null) {
+					dateOfBirthday = dateOfBirthday == null ? child.getDateOfBirth() : dateOfBirthday;
+					if (dateOfBirthday == null) {
+						getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() +
+								") because date of birth is unknown! Custom birth year: " + customValidBirthYear);
+						addUser = false;
+					} else {
+						IWTimestamp stamp = new IWTimestamp(dateOfBirthday);
+						if (stamp.getYear() != customValidBirthYear.intValue()) {
+							getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() +
+									") because year of birthdate (" + stamp + ") is not " + customValidBirthYear);
 							addUser = false;
 						}
 					}
