@@ -311,3 +311,28 @@ span.required {
 .caseNavigation {
 	display: none;
 }
+
+#adminTopLayer {
+	display: none;
+}
+#subNavigation {
+	display: none;
+}
+#navigation {
+	display: none;
+}
+#breadcrumbs {
+	display: none;
+}
+#pluginSidebar {
+	display: none;
+}
+.webchat {
+	display: none;
+}
+.fontResize {
+	display: none;
+}
+.languageList {
+	display: none;
+}
