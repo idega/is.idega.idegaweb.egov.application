@@ -64,7 +64,8 @@ public class ApplicationFormInIframe extends ApplicationForm {
 			LoginInfo loginInfo = loggedOnInfo.getUserLogin().getLoginInfo();
 
 			OAuth2Service oauth2Service = getOAuth2Service();
-			OAuthToken token = oauth2Service.getToken(loginInfo.getUserLogin().getUserLogin());
+			String clientId = oauth2Service.getDefaultClientId();
+			OAuthToken token = oauth2Service.getToken(clientId, loginInfo.getUserLogin().getUserLogin());
 			if (token != null) {
 				uri.setParameter("access_token", token.getAccess_token());
 			}
