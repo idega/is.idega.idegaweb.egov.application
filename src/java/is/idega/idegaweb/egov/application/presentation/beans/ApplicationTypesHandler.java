@@ -1,10 +1,5 @@
 package is.idega.idegaweb.egov.application.presentation.beans;
 
-import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
-import is.idega.idegaweb.egov.application.business.ApplicationType;
-import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
-import is.idega.idegaweb.egov.application.data.Application;
-
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +8,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +20,11 @@ import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 
+import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.business.ApplicationType;
+import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
+import is.idega.idegaweb.egov.application.data.Application;
+
 /**
  * @author <a href="civilis@idega.com">Vytautas Čivilis</a>
  * @version $Revision: 1.3 $
@@ -31,8 +32,8 @@ import com.idega.presentation.IWContext;
  * Last modified: $Date: 2008/09/02 12:54:24 $ by $Author: civilis $
  *
  */
-@Scope("singleton")
 @Service("appTypesHandler")
+@Scope(BeanDefinition.SCOPE_SINGLETON)
 public class ApplicationTypesHandler {
 
 	@Autowired private ApplicationTypesManager applicationTypesManager;
@@ -84,7 +85,7 @@ public class ApplicationTypesHandler {
 
 	protected ApplicationBusiness getApplicationBusiness(IWContext iwc) {
 		try {
-			return (ApplicationBusiness) IBOLookup.getServiceInstance(iwc, ApplicationBusiness.class);
+			return IBOLookup.getServiceInstance(iwc, ApplicationBusiness.class);
 		}
 		catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);

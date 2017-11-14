@@ -1,5 +1,9 @@
 package is.idega.idegaweb.egov.application.business;
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.CoreConstants;
 
 import is.idega.idegaweb.egov.application.IWBundleStarter;
@@ -80,6 +85,25 @@ public class ApplicationTypeURL implements ApplicationType {
 	@Override
 	public String getUrl(IWContext iwc, ApplicationModel app) {
 		return app.getUrl();
+	}
+
+	@Override
+	public String getSelectedElement(ApplicationModel app) {
+		return CoreConstants.EMPTY;
+	}
+
+	@Override
+	public List<String> getRolesCanStartProcessDWR(String pdId, String applicationId) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public <T extends Serializable> List<String> getRolesCanStartProcess(T pdId, Object applicationId) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public void fillMenu(DropdownMenu menu) {
 	}
 
 }

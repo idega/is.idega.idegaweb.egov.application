@@ -1,9 +1,13 @@
 package is.idega.idegaweb.egov.application.business;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DropdownMenu;
 
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.model.ApplicationModel;
@@ -54,5 +58,13 @@ public interface ApplicationType {
 		public abstract boolean validate(IWContext iwc);
 
 	}
+
+	public String getSelectedElement(ApplicationModel app);
+
+	public List<String> getRolesCanStartProcessDWR(String pdId, String applicationId);
+
+	public <T extends Serializable> List<String> getRolesCanStartProcess(T pdId, Object applicationId);
+
+	public void fillMenu(DropdownMenu menu);
 
 }
