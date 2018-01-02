@@ -66,6 +66,10 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 
 	@Override
 	public void updateTimesClicked(ApplicationModel application) {
+		if (application == null) {
+			return;
+		}
+
 		int timesClicked = application.getTimesClicked() + 1;
 		if (timesClicked == 0) {
 			timesClicked++;
