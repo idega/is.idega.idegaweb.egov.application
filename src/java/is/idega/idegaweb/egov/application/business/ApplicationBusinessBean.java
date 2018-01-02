@@ -317,7 +317,7 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		List<Application> availableApplications = new ArrayList<Application>();
 		User currentUser = null;
 		try {
-			currentUser = iwc == null ? null : iwc.getCurrentUser();
+			currentUser = iwc == null ? null : iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		} catch(NotLoggedOnException e) {
 			e.printStackTrace();
 		}
