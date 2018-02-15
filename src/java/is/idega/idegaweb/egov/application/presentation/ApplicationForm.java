@@ -140,6 +140,9 @@ public abstract class ApplicationForm extends Block {
 			add(form);
 
 			String disabledTextLocKey = getDisabledTextLocalization(iwc.getApplicationSettings());
+			if (StringUtil.isEmpty(disabledTextLocKey) || Boolean.TRUE.toString().equals(disabledTextLocKey) || Boolean.FALSE.toString().equals(disabledTextLocKey)) {
+				disabledTextLocKey = getClass().getSimpleName() + ".disabled_text";
+			}
 			form.add(
 				getStopLayer(
 					iwrb.getLocalizedString("registration_closed", "Registration is closed"),
