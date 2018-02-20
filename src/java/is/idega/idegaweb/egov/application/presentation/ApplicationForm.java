@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
@@ -58,6 +60,7 @@ import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
 import com.idega.util.CreditCardChecker;
 import com.idega.util.CreditCardType;
@@ -65,6 +68,7 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.PresentationUtil;
+import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
@@ -122,6 +126,42 @@ public abstract class ApplicationForm extends Block {
 		}
 
 		return app;
+	}
+
+	protected List<Integer> getCustomProperties(IWContext iwc, String name, String defaultValue, Integer defaultResult) {
+		String customValue = null;
+		try {
+			customValue = iwc.getApplicationSettings().getProperty(name, defaultValue);
+			if (StringUtil.isEmpty(customValue)) {
+				return defaultResult == null ? null : Arrays.asList(defaultResult);
+			}
+
+			String[] data = customValue.split(CoreConstants.UNDER);
+			if (ArrayUtil.isEmpty(data) || data.length != 2) {
+				return defaultResult == null ? null : Arrays.asList(defaultResult);
+			}
+
+			IWTimestamp validUntil = new IWTimestamp(data[1]);
+			if (validUntil != null && IWTimestamp.RightNow().getTime().getTime() <= validUntil.getTime().getTime()) {
+				String[] years = data[0].split(CoreConstants.COMMA);
+				if (ArrayUtil.isEmpty(years)) {
+					return defaultResult == null ? null : Arrays.asList(defaultResult);
+				}
+
+				List<Integer> validYears = new ArrayList<>();
+				for (String year: years) {
+					if (StringHandler.isNumeric(year)) {
+						validYears.add(Integer.valueOf(year));
+					}
+				}
+				return ListUtil.isEmpty(validYears) ?
+						defaultResult == null ? null : Arrays.asList(defaultResult) :
+						validYears;
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error checking if " + customValue + " is turned on", e);
+		}
+		return defaultResult == null ? null : Arrays.asList(defaultResult);
 	}
 
 	@Override
@@ -497,7 +537,7 @@ public abstract class ApplicationForm extends Block {
 		}
 	}
 
-	protected Integer getValidBirthYear(IWContext iwc) {
+	protected List<Integer> getValidBirthYears(IWContext iwc) {
 		return null;
 	}
 
@@ -520,7 +560,7 @@ public abstract class ApplicationForm extends Block {
 			}
 		}
 
-		Integer customValidBirthYear = getValidBirthYear(iwc);
+		List<Integer> customValidBirthYears = getValidBirthYears(iwc);
 
 		DropdownMenu menu = new DropdownMenu(parameterName);
 		menu.setStyleClass("userSelector");
@@ -536,7 +576,7 @@ public abstract class ApplicationForm extends Block {
 
 				boolean addUser = true;
 
-				Date dateOfBirthday = customValidBirthYear == null ? null : child.getDateOfBirth();
+				Date dateOfBirthday = ListUtil.isEmpty(customValidBirthYears) ? null : child.getDateOfBirth();
 
 				int ageFrom = -1, ageTo = -1, years = -1;
 				if (application != null) {
@@ -559,17 +599,23 @@ public abstract class ApplicationForm extends Block {
 					}
 				}
 
-				if (addUser && customValidBirthYear != null) {
+				if (addUser && !ListUtil.isEmpty(customValidBirthYears)) {
 					dateOfBirthday = dateOfBirthday == null ? child.getDateOfBirth() : dateOfBirthday;
 					if (dateOfBirthday == null) {
 						getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() +
-								") because date of birth is unknown! Custom birth year: " + customValidBirthYear);
+								") because date of birth is unknown! Custom birth year(s): " + customValidBirthYears);
 						addUser = false;
 					} else {
 						IWTimestamp stamp = new IWTimestamp(dateOfBirthday);
-						if (stamp.getYear() != customValidBirthYear.intValue()) {
+						boolean atLeastOneFound = false;
+						for (Integer customValidBirthYear: customValidBirthYears) {
+							if (stamp.getYear() == customValidBirthYear.intValue()) {
+								atLeastOneFound = true;
+							}
+						}
+						if (!atLeastOneFound) {
 							getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() +
-									") because year of birthdate (" + stamp + ") is not " + customValidBirthYear);
+									") because year of birthdate (" + stamp + ") is not in " + customValidBirthYears);
 							addUser = false;
 						}
 					}
