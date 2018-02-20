@@ -601,24 +601,7 @@ public abstract class ApplicationForm extends Block {
 
 				if (addUser && !ListUtil.isEmpty(customValidBirthYears)) {
 					dateOfBirthday = dateOfBirthday == null ? child.getDateOfBirth() : dateOfBirthday;
-					if (dateOfBirthday == null) {
-						getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() +
-								") because date of birth is unknown! Custom birth year(s): " + customValidBirthYears);
-						addUser = false;
-					} else {
-						IWTimestamp stamp = new IWTimestamp(dateOfBirthday);
-						boolean atLeastOneFound = false;
-						for (Integer customValidBirthYear: customValidBirthYears) {
-							if (stamp.getYear() == customValidBirthYear.intValue()) {
-								atLeastOneFound = true;
-							}
-						}
-						if (!atLeastOneFound) {
-							getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() +
-									") because year of birthdate (" + stamp + ") is not in " + customValidBirthYears);
-							addUser = false;
-						}
-					}
+					addUser = isValidBirthYear(child, customValidBirthYears);
 				}
 
 				boolean addOveragedUser = false;
@@ -650,6 +633,39 @@ public abstract class ApplicationForm extends Block {
 		}
 
 		return menu;
+	}
+
+	protected boolean isValidBirthYear(User child, List<Integer> validYearsOfBirth) {
+		if (child == null) {
+			return false;
+		}
+
+		if (ListUtil.isEmpty(validYearsOfBirth)) {
+			return true;
+		}
+
+		Date dateOfBirhtday = child.getDateOfBirth();
+		if (dateOfBirhtday == null) {
+			getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() +
+					") because date of birth is unknown! Custom birth year(s): " + validYearsOfBirth);
+			return false;
+		}
+
+		IWTimestamp stamp = new IWTimestamp(dateOfBirhtday);
+		int birthYear = stamp.getYear();
+		boolean atLeastOneFound = false;
+		for (Integer validYearOfBirth: validYearsOfBirth) {
+			if (birthYear == validYearOfBirth.intValue()) {
+				atLeastOneFound = true;
+			}
+		}
+		if (!atLeastOneFound) {
+			getLogger().warning("Not adding user " + child + " (ID: " + child.getId() + ", personal ID: " + child.getPersonalID() +
+					") because year of birthdate (" + stamp + ") is not in " + validYearsOfBirth);
+			return false;
+		}
+
+		return true;
 	}
 
 	protected boolean addOveragedUser(IWContext iwc, User user, Application application) {
