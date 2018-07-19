@@ -115,7 +115,14 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 			e.printStackTrace();
 			return null;
 		}
-		return ((LocalizedText) localizedName.toArray()[0]).getHeadline();
+
+		LocalizedText lText = ((LocalizedText) localizedName.toArray()[0]);
+		String headline = lText.getHeadline();
+		if (!StringUtil.isEmpty(headline)) {
+			return headline;
+		}
+
+		return lText.getBody();
 	}
 
 	@Override
