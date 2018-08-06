@@ -1,9 +1,5 @@
 package is.idega.idegaweb.egov.application.component;
 
-import is.idega.idegaweb.egov.application.ApplicationConstants;
-import is.idega.idegaweb.egov.application.bean.Applicant;
-import is.idega.idegaweb.egov.application.bean.ApplicationBean;
-
 import java.rmi.RemoteException;
 
 import javax.el.ValueExpression;
@@ -28,6 +24,10 @@ import com.idega.util.PersonalIDFormatter;
 import com.idega.util.PresentationUtil;
 import com.idega.util.text.Name;
 
+import is.idega.idegaweb.egov.application.ApplicationConstants;
+import is.idega.idegaweb.egov.application.bean.Applicant;
+import is.idega.idegaweb.egov.application.bean.ApplicationBean;
+
 public class UserInfo extends IWBaseComponent {
 
 	private String name;
@@ -36,11 +36,11 @@ public class UserInfo extends IWBaseComponent {
 	private String postal;
 	private String phone;
 	private String email;
-	
+
 	private String applicantPK;
 
 	private boolean showContactInfo;
-	
+
 	private static final String APPLICANT_PROPERTY = "applicant";
 	private static final String APPLICANT_ID_PROPERTY = "applicantId";
 	private static final String NAME_PROPERTY = "name";
@@ -86,49 +86,51 @@ public class UserInfo extends IWBaseComponent {
     	ve = getValueExpression(APPLICANT_PROPERTY);
     	if (ve != null) {
 	    	Applicant applicant = (Applicant) ve.getValue(context.getELContext());
-	    	setName(applicant.getName());
-	    	setPersonalID(applicant.getPersonalID());
-	    	setAddress(applicant.getAddress());
-	    	setPostal(applicant.getPostal());
-	    	setPhone(applicant.getHomePhone());
-	    	setEmail(applicant.getEmail());
+	    	if (applicant != null) {
+		    	setName(applicant.getName());
+		    	setPersonalID(applicant.getPersonalID());
+		    	setAddress(applicant.getAddress());
+		    	setPostal(applicant.getPostal());
+		    	setPhone(applicant.getHomePhone());
+		    	setEmail(applicant.getEmail());
+	    	}
     	}
 
 		ve = getValueExpression(NAME_PROPERTY);
     	if (ve != null) {
 	    	String name = (String) ve.getValue(context.getELContext());
 	    	setName(name);
-    	}    	
+    	}
 
 		ve = getValueExpression(PERSONAL_ID_PROPERTY);
     	if (ve != null) {
 	    	String personalID = (String) ve.getValue(context.getELContext());
 	    	setPersonalID(personalID);
-    	}    	
+    	}
 
 		ve = getValueExpression(ADDRESS_PROPERTY);
     	if (ve != null) {
 	    	String address = (String) ve.getValue(context.getELContext());
 	    	setAddress(address);
-    	}    	
+    	}
 
 		ve = getValueExpression(POSTAL_PROPERTY);
     	if (ve != null) {
 	    	String postal = (String) ve.getValue(context.getELContext());
 	    	setPostal(postal);
-    	}    	
+    	}
 
 		ve = getValueExpression(PHONE_PROPERTY);
     	if (ve != null) {
 	    	String phone = (String) ve.getValue(context.getELContext());
 	    	setPhone(phone);
-    	}    	
+    	}
 
 		ve = getValueExpression(EMAIL_PROPERTY);
     	if (ve != null) {
 	    	String email = (String) ve.getValue(context.getELContext());
 	    	setEmail(email);
-    	}    	
+    	}
 
 		ve = getValueExpression(SHOW_CONTACT_INFO_PROPERTY);
     	if (ve != null) {
@@ -136,7 +138,7 @@ public class UserInfo extends IWBaseComponent {
 	    	setShowContactInfo(showContactInfo);
     	}
 	}
-	
+
 	private void fetchUserInfo(FacesContext context, String applicantId) {
     	IWContext iwc = IWContext.getIWContext(context);
     	try {
@@ -179,10 +181,10 @@ public class UserInfo extends IWBaseComponent {
     		throw new IBORuntimeException(re);
     	}
 	}
-	
+
 	private UserBusiness getUserBusiness(IWApplicationContext iwac) {
 		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
+			return IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 		}
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
