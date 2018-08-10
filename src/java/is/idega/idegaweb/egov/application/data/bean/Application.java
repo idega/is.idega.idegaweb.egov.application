@@ -19,6 +19,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.idega.block.process.data.bean.CaseCode;
@@ -136,6 +137,10 @@ public class Application implements Serializable, ApplicationModel {
 		inverseJoinColumns = @JoinColumn(name = LocalizedTextBMPBean.TABLE_NAME + "_ID")
 	)
 	private List<LocalizedText> urlLocalizedTexts;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID, referencedColumnName = ApplicationSettings.COLUMN_ID)
+	private ApplicationSettings settings;
 
 	public Integer getId() {
 		return id;
@@ -403,6 +408,17 @@ public class Application implements Serializable, ApplicationModel {
 	@Override
 	public void setShowInIframe(Boolean showInIframe) {
 		this.showInIframe = (showInIframe == null || !showInIframe.booleanValue()) ? CoreConstants.CHAR_N: CoreConstants.CHAR_Y;
+	}
+
+	public ApplicationSettings getSettings() {
+		if (!DBUtil.getInstance().isInitialized(settings)) {
+			settings = DBUtil.getInstance().lazyLoad(settings);
+		}
+		return settings;
+	}
+
+	public void setSettings(ApplicationSettings settings) {
+		this.settings = settings;
 	}
 
 }
