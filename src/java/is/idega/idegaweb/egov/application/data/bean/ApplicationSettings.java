@@ -40,7 +40,7 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	private Integer numberOfMonthsOfInnactivity;
 
 	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ApplicationReminder.class)
-	@JoinTable(name = TABLE_NAME + "_rem", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ApplicationReminder.COLUMN_ID) })
+	@JoinTable(name = TABLE_NAME + "_rem", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ApplicationReminder.COLUMN_ID, table = ApplicationReminder.TABLE_NAME) })
 	private List<ReminderModel> reminders;
 
 	@ManyToMany(fetch = FetchType.LAZY, targetEntity = User.class)
