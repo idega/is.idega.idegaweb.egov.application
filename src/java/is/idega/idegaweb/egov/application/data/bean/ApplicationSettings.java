@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,8 +15,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import com.idega.block.process.data.model.SettingsModel;
 import com.idega.block.process.data.model.ReminderModel;
+import com.idega.block.process.data.model.SettingsModel;
 import com.idega.core.accesscontrol.data.bean.ICRole;
 import com.idega.user.data.bean.User;
 import com.idega.util.DBUtil;
@@ -40,18 +39,19 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	@Column(name = "months_of_innactivity")
 	private Integer numberOfMonthsOfInnactivity;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, targetEntity = User.class)
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ApplicationReminder.class)
 	@JoinTable(name = TABLE_NAME + "_rem", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ApplicationReminder.COLUMN_ID) })
 	private List<ReminderModel> reminders;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, targetEntity = User.class)
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = User.class)
 	@JoinTable(name = TABLE_NAME + "_inv", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = User.COLUMN_USER_ID) })
 	private List<User> thirdPartiesToInvite;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, targetEntity = User.class)
-	@JoinTable(name = TABLE_NAME + "_rol", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ICRole.COLUMN_ROLE_KEY) })
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ICRole.class)
+	@JoinTable(name = TABLE_NAME + "_rol", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ICRole.COLUMN_ROLE_KEY, table = ICRole.ENTITY_NAME) })
 	private List<ICRole> roles;
 
+	@Override
 	public Integer getId() {
 		return id;
 	}
