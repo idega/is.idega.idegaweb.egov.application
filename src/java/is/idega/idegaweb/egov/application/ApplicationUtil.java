@@ -212,7 +212,7 @@ public class ApplicationUtil implements Singleton {
 				while (enumeration.hasMoreElements()) {
 					String parameter = enumeration.nextElement();
 
-					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK)) {
+					if (!parameter.equals(ApplicationBlock.PARAMETER_APPLICATION_PK) && !url.contains(parameter)) {
 						String[] values = request.getParameterValues(parameter);
 						if (values != null) {
 							for (String paramVal : values) {
