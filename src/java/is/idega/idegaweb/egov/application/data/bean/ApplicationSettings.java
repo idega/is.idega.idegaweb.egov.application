@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import com.idega.block.process.data.model.ReminderModel;
@@ -24,17 +26,31 @@ import com.idega.util.DBUtil;
 @Entity
 @Table(name = ApplicationSettings.TABLE_NAME)
 @Cacheable
+@NamedQueries({
+	@NamedQuery(name = ApplicationSettings.FIND_BY_ID, query = "select s from ApplicationSettings s where s.id = :" + ApplicationSettings.PARAM_ID),
+	@NamedQuery(name = ApplicationSettings.FIND_BY_APPLICATION_ID, query = "select s from ApplicationSettings s where s.applicationId = :" + ApplicationSettings.PARAM_APPLICATION_ID)
+})
 public class ApplicationSettings implements Serializable, SettingsModel {
 
 	private static final long serialVersionUID = 3355823446588878757L;
 
 	public static final String 	TABLE_NAME = "egov_application_settings",
-								COLUMN_ID = TABLE_NAME + "_id";
+								COLUMN_ID = TABLE_NAME + "_id",
+								COLUMN_APPLICATION_ID = "application_id",
+
+								FIND_BY_ID = "ApplicationSettings.findById",
+								FIND_BY_APPLICATION_ID = "ApplicationSettings.findByApplicationId",
+
+								PARAM_ID = "applicationSettingId",
+								PARAM_APPLICATION_ID = "applicationId";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = COLUMN_ID)
 	private Integer id;
+
+	@Column(name = ApplicationSettings.COLUMN_APPLICATION_ID, unique = true)
+	private Integer applicationId;
 
 	@Column(name = "months_of_innactivity")
 	private Integer numberOfMonthsOfInnactivity;
@@ -102,5 +118,14 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 		roles = DBUtil.getInstance().lazyLoad(roles);
 		return roles;
 	}
+
+	public Integer getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(Integer applicationId) {
+		this.applicationId = applicationId;
+	}
+
 
 }

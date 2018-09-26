@@ -1,18 +1,25 @@
 package is.idega.idegaweb.egov.application.data.dao.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.idega.block.process.data.model.ReminderModel;
+import com.idega.core.accesscontrol.data.bean.ICRole;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.impl.GenericDaoImpl;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.user.dao.UserDAO;
+import com.idega.user.data.bean.User;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
@@ -21,12 +28,17 @@ import com.idega.util.StringUtil;
 
 import is.idega.idegaweb.egov.application.data.bean.Application;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationCategory;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationReminder;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
 import is.idega.idegaweb.egov.application.data.dao.ApplicationDAO;
 
 @Repository(ApplicationDAO.BEAN_NAME)
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 @Transactional(readOnly = false)
 public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO {
+
+	@Autowired
+	private UserDAO userDAO;
 
 	@Override
 	public List<ApplicationCategory> getAllCategoriesOrderedByPriority() {
@@ -110,5 +122,204 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return null;
 	}
+
+
+	@Override
+	public List<String> getDistinctApplicationURLByAppType(String appType) {
+		if (StringUtil.isEmpty(appType)) {
+			return null;
+		}
+
+		try {
+			return getResultList(Application.QUERY_GET_DISTINCT_APPLICATION_URL_BY_APP_TYPE, String.class, new Param("appType", appType));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting application URLs by application type: " + appType, e);
+		}
+
+		return null;
+	}
+
+
+	@Override
+	public List<Application> getAll() {
+		try {
+			return getResultList(Application.QUERY_GET_ALL, Application.class);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting all application.", e);
+		}
+
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeApplicationSettings(Integer applicationId) {
+		if (applicationId == null) {
+			getLogger().warning("Application ID is not provided");
+			return;
+		}
+
+		try {
+			Application application = getById(applicationId);
+			if (application != null && application.getSettings() != null) {
+				remove(application.getSettings());
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not remove application settings for application with ID " + applicationId  + ". Error message was: " + e.getLocalizedMessage(), e);
+		}
+	}
+
+	@Override
+	public ApplicationSettings getSettingsByApplicationId(Integer applicationId) {
+		if (applicationId == null) {
+			return null;
+		}
+
+		try {
+			return getSingleResult(ApplicationSettings.FIND_BY_APPLICATION_ID, ApplicationSettings.class, new Param(ApplicationSettings.PARAM_APPLICATION_ID, applicationId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting application settings by application ID: " + applicationId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public ApplicationSettings getSettingsById(Integer settingsId) {
+		if (settingsId == null) {
+			return null;
+		}
+
+		try {
+			return getSingleResult(ApplicationSettings.FIND_BY_ID, ApplicationSettings.class, new Param(ApplicationSettings.PARAM_ID, settingsId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting applicataion settings by ID: " + settingsId, e);
+		}
+
+		return null;
+	}
+
+
+	@Override
+	@Transactional(readOnly = false)
+	public ReminderModel updateReminder(Integer reminderId, List<String> receiversUUIDs, Long timestamp, String message) {
+		ApplicationReminder reminder = null;
+		if (reminderId == null) {
+			reminder = new ApplicationReminder();
+		} else {
+			List<ApplicationReminder> reminders = getResultList(ApplicationReminder.FIND_BY_IDS, ApplicationReminder.class, new Param(ApplicationReminder.PARAM_IDS, Arrays.asList(reminderId)));
+			reminder = ListUtil.isEmpty(reminders) ? null : reminders.iterator().next();
+		}
+		if (reminder == null) {
+			return null;
+		}
+
+		reminder.setReceivers(getUsers(receiversUUIDs));
+		reminder.setTimestamp(timestamp == null ? null : new Timestamp(timestamp));
+		reminder.setMessage(message);
+
+		if (reminder.getId() == null) {
+			persist(reminder);
+		} else {
+			merge(reminder);
+		}
+
+		return reminder.getId() == null ? null : reminder;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public ApplicationSettings updateApplicationSettings(
+			Integer applicationId,
+			Integer settingsId,
+			Integer numberOfMonthsOfInnactivity,
+			List<String> thirdPartiesUUIDs,
+			List<Integer> remindersIds,
+			List<String> rolesKeys
+	) {
+		if (applicationId == null) {
+			return null;
+		}
+
+		try {
+			ApplicationSettings settings = null;
+			if (settingsId == null) {
+				settings = getSettingsByApplicationId(applicationId);
+			} else {
+				settings = getSettingsById(settingsId);
+			}
+			settings = settings == null ? new ApplicationSettings() : settings;
+
+			settings.setAutoCloseAfterInnactiveForMonths(numberOfMonthsOfInnactivity);
+
+			List<User> thirdParties = getUsers(thirdPartiesUUIDs);
+			settings.setPredefinedListOfThirdPartiesToInvite(thirdParties);
+
+			List<ReminderModel> reminders = null;
+			if (!ListUtil.isEmpty(remindersIds)) {
+				reminders = getResultList(ApplicationReminder.FIND_BY_IDS, ReminderModel.class, new Param(ApplicationReminder.PARAM_IDS, remindersIds));
+			}
+			settings.setReminders(reminders);
+
+			List<ICRole> roles = null;
+			if (!ListUtil.isEmpty(rolesKeys)) {
+				roles = new ArrayList<>();
+				for (String roleKey: rolesKeys) {
+					if (StringUtil.isEmpty(roleKey)) {
+						continue;
+					}
+
+					ICRole role = null;
+					try {
+						role = getSingleResult(ICRole.QUERY_FIND_ROLE_BY_KEY, ICRole.class, new Param("key", roleKey));
+					} catch (Exception e) {
+						getLogger().log(Level.WARNING, "Error getting role " + roleKey, e);
+					}
+
+					if (role != null) {
+						roles.add(role);
+					}
+				}
+			}
+			settings.setRolesToHandle(roles);
+
+			settings.setApplicationId(applicationId);
+
+			if (settings.getId() == null) {
+				persist(settings);
+			} else {
+				merge(settings);
+			}
+
+			return settings == null || settings.getId() == null ? null : settings;
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error updating settings " + (settingsId == null ? CoreConstants.EMPTY : "(ID: " + settingsId + ") ") + "for application with ID " + applicationId, e);
+		}
+
+		return null;
+	}
+
+
+	private List<User> getUsers(List<String> uuids) {
+		if (ListUtil.isEmpty(uuids)) {
+			return null;
+		}
+
+		List<User> users = new ArrayList<>();
+		for (String uuid: uuids) {
+			User user = null;
+			try {
+				user = userDAO.getUserByUUID(uuid);
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING, "Error getting user by UUID " + uuid, e);
+			}
+			if (user != null) {
+				users.add(user);
+			}
+		}
+
+		return users;
+	}
+
 
 }

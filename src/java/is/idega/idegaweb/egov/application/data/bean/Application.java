@@ -44,6 +44,7 @@ import is.idega.idegaweb.egov.application.model.ApplicationModel;
 @Cacheable
 @NamedQueries({
 	@NamedQuery(name = Application.QUERY_GET_BY_ID, query = "from is.idega.idegaweb.egov.application.data.bean.Application a where a.id = :id"),
+	@NamedQuery(name = Application.QUERY_GET_ALL, query = "from is.idega.idegaweb.egov.application.data.bean.Application a"),
 	@NamedQuery(
 			name = Application.QUERY_GET_LOCALIZED_HEADLINE,
 			query = "select l.headline from is.idega.idegaweb.egov.application.data.bean.Application a inner join a.urlLocalizedTexts l where a.id = :id and l.locale.localeID = :localeId and l.headline is not null"
@@ -51,6 +52,10 @@ import is.idega.idegaweb.egov.application.model.ApplicationModel;
 	@NamedQuery(
 			name = Application.QUERY_GET_LOCALIZED_BODY,
 			query = "select l.body from is.idega.idegaweb.egov.application.data.bean.Application a inner join a.urlLocalizedTexts l where a.id = :id and l.locale.localeID = :localeId and l.body is not null"
+	),
+	@NamedQuery(
+			name = Application.QUERY_GET_DISTINCT_APPLICATION_URL_BY_APP_TYPE,
+			query = "select distinct a.url from is.idega.idegaweb.egov.application.data.bean.Application a  where a.appType = :appType"
 	)
 })
 public class Application implements Serializable, ApplicationModel {
@@ -61,7 +66,10 @@ public class Application implements Serializable, ApplicationModel {
 
 	public static final String	QUERY_GET_BY_ID = "application.getById",
 								QUERY_GET_LOCALIZED_HEADLINE = "application.getLocalizedHeadline",
-								QUERY_GET_LOCALIZED_BODY = "application.getLocalizedBody";
+								QUERY_GET_LOCALIZED_BODY = "application.getLocalizedBody",
+								QUERY_GET_DISTINCT_APPLICATION_URL_BY_APP_TYPE = "application.getDistinctApplicationURLByAppType",
+								QUERY_GET_ALL = "application.getAll";
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

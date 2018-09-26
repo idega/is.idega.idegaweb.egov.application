@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import com.idega.block.process.data.model.ReminderModel;
@@ -23,12 +25,18 @@ import com.idega.util.DBUtil;
 @Entity
 @Table(name = ApplicationReminder.TABLE_NAME)
 @Cacheable
+@NamedQueries({
+	@NamedQuery(name = ApplicationReminder.FIND_BY_IDS, query = "select r from ApplicationReminder r where r.id in (:" + ApplicationReminder.PARAM_IDS + ")"),
+})
 public class ApplicationReminder implements Serializable, ReminderModel {
 
 	private static final long serialVersionUID = -2223620257575509494L;
 
 	public static final String	TABLE_NAME = "egov_application_reminder",
-								COLUMN_ID = TABLE_NAME + "_id";
+								COLUMN_ID = TABLE_NAME + "_id",
+
+								FIND_BY_IDS = "ApplicationReminder.findByIds",
+								PARAM_IDS = "applicationReminderIds";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
