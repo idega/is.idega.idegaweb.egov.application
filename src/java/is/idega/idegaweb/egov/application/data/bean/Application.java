@@ -147,7 +147,7 @@ public class Application implements Serializable, ApplicationModel {
 	private List<LocalizedText> urlLocalizedTexts;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID, referencedColumnName = ApplicationSettings.COLUMN_ID)
+	@JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID, referencedColumnName = ApplicationSettings.COLUMN_APPLICATION_ID)
 	private ApplicationSettings settings;
 
 	public Integer getId() {
