@@ -112,8 +112,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 				uri = uri.substring(0, uri.length() - 1);
 			}
 
-			uri = CoreConstants.PERCENT.concat(uri).concat(CoreConstants.PERCENT);
-			String query = "select a from ".concat(Application.class.getName()).concat(" a where a.url like :uri");
+//			uri = CoreConstants.PERCENT.concat(uri).concat(CoreConstants.PERCENT);
+			String query = "select a from ".concat(Application.class.getName()).concat(" a where a.url = :uri");
 			List<Application> applications = getResultListByInlineQuery(query, Application.class, new Param("uri", uri));
 			return ListUtil.isEmpty(applications) ? null : applications.get(0);
 		} catch (Exception e) {
