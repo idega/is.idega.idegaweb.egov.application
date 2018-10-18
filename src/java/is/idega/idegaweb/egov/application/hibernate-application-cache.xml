@@ -24,5 +24,17 @@
         timeToIdleSeconds="86400"
         timeToLiveSeconds="86400"
     />
+    <cache
+        maxElementsInMemory="5000"
+        name="is.idega.idegaweb.egov.application.data.bean.SignatureProfile"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
+    />
+    <cache
+        maxElementsInMemory="5000"
+        name="is.idega.idegaweb.egov.application.data.bean.DecisionTemplate"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
+    />
     
 </ehcache>

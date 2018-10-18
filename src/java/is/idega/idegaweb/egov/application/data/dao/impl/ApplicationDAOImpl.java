@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.persistence.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.idega.block.process.data.model.ReminderModel;
 import com.idega.core.accesscontrol.data.bean.ICRole;
+import com.idega.core.file.data.bean.ICFile;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.impl.GenericDaoImpl;
 import com.idega.idegaweb.IWMainApplication;
@@ -30,6 +33,8 @@ import is.idega.idegaweb.egov.application.data.bean.Application;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationReminder;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
+import is.idega.idegaweb.egov.application.data.bean.DecisionTemplate;
+import is.idega.idegaweb.egov.application.data.bean.SignatureProfile;
 import is.idega.idegaweb.egov.application.data.dao.ApplicationDAO;
 
 @Repository(ApplicationDAO.BEAN_NAME)
@@ -229,13 +234,23 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 	@Override
 	@Transactional(readOnly = false)
+	public ApplicationSettings createNewApplicationSettings() {
+		ApplicationSettings settings = new ApplicationSettings();
+		persist(settings);
+		return settings;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
 	public ApplicationSettings updateApplicationSettings(
 			Integer applicationId,
 			Integer settingsId,
 			Integer numberOfMonthsOfInnactivity,
 			List<String> thirdPartiesUUIDs,
 			List<Integer> remindersIds,
-			List<String> rolesKeys
+			List<String> rolesKeys,
+			List<Integer> signatureProfileIds,
+			List<Integer> decisionTemplateIds
 	) {
 		if (applicationId == null) {
 			return null;
@@ -283,6 +298,21 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			}
 			settings.setRolesToHandle(roles);
 
+			//Signature profiles
+			List<SignatureProfile> signatureProfiles = null;
+			if (!ListUtil.isEmpty(signatureProfileIds)) {
+				signatureProfiles = getResultList(SignatureProfile.FIND_BY_IDS, SignatureProfile.class, new Param(SignatureProfile.PARAM_IDS, signatureProfileIds));
+			}
+			settings.setSignatureProfiles(signatureProfiles);
+
+			//Decision templates
+			List<DecisionTemplate> decisionTemplates = null;
+			if (!ListUtil.isEmpty(decisionTemplateIds)) {
+				decisionTemplates = getResultList(DecisionTemplate.FIND_BY_IDS, DecisionTemplate.class, new Param(DecisionTemplate.PARAM_IDS, decisionTemplateIds));
+			}
+			settings.setDecisionTemplates(decisionTemplates);
+
+
 			settings.setApplicationId(applicationId);
 
 			if (settings.getId() == null) {
@@ -320,6 +350,258 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return users;
 	}
+
+
+
+	@Override
+	@Transactional(readOnly = false)
+	public SignatureProfile updateSignatureProfile(Integer signatureProfileId, Integer applicationSettingsId,
+			String name, String roleTitle, String information, ICFile signature, boolean mandatoryEditPicture) {
+		SignatureProfile signatureProfile = null;
+		if (signatureProfileId == null) {
+			signatureProfile = new SignatureProfile();
+		} else {
+			signatureProfile = getSignatureProfileById(signatureProfileId);
+		}
+
+		if (signatureProfile == null) {
+			return null;
+		}
+
+		if (applicationSettingsId != null) {
+			signatureProfile.setApplicationSettingsId(applicationSettingsId);
+		}
+		signatureProfile.setName(name);
+		signatureProfile.setRoleTitle(roleTitle);
+		signatureProfile.setInformation(information);
+		if (mandatoryEditPicture) {
+			signatureProfile.setSignature(signature);
+		}
+
+		if (signatureProfile.getId() == null) {
+			persist(signatureProfile);
+		} else {
+			merge(signatureProfile);
+		}
+
+		return signatureProfile.getId() == null ? null : signatureProfile;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeSignatureProfile(Integer signatureProfileId) {
+		if (signatureProfileId == null) {
+			getLogger().warning("Signature profile ID is not provided");
+			return;
+		}
+
+		try {
+			SignatureProfile signatureProfile = getSignatureProfileById(signatureProfileId);
+			if (signatureProfile != null) {
+				remove(signatureProfile);
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not remove the signature profile with ID " + signatureProfileId  + ". Error message was: " + e.getLocalizedMessage(), e);
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public DecisionTemplate updateDecisionTemplate(Integer decisionTemplateId, Integer applicationSettingsId,
+			String name, String templateContent, Integer signatureProfileId) {
+		DecisionTemplate decisionTemplate = null;
+		if (decisionTemplateId == null) {
+			decisionTemplate = new DecisionTemplate();
+		} else {
+			decisionTemplate = getDecisionTemplateById(decisionTemplateId);
+		}
+
+		if (decisionTemplate == null) {
+			return null;
+		}
+
+		if (applicationSettingsId != null) {
+			decisionTemplate.setApplicationSettingsId(applicationSettingsId);
+		}
+		decisionTemplate.setName(name);
+		decisionTemplate.setTemplateContent(templateContent);
+		if (signatureProfileId != null && signatureProfileId.intValue() > -1) {
+			decisionTemplate.setSignatureProfile(getSignatureProfileById(signatureProfileId));
+		}
+
+		if (decisionTemplate.getId() == null) {
+			persist(decisionTemplate);
+		} else {
+			merge(decisionTemplate);
+		}
+
+
+		return decisionTemplate.getId() == null ? null : decisionTemplate;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeDecisionTemplate(Integer decisionTemplateId) {
+		if (decisionTemplateId == null) {
+			getLogger().warning("Decision template ID is not provided");
+			return;
+		}
+
+		try {
+			DecisionTemplate decisionTemplate = getDecisionTemplateById(decisionTemplateId);
+			if (decisionTemplate != null) {
+				remove(decisionTemplate);
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not remove the decision template with ID " + decisionTemplateId  + ". Error message was: " + e.getLocalizedMessage(), e);
+		}
+	}
+
+	@Override
+	public SignatureProfile getSignatureProfileById(Integer signatureProfileId) {
+		if (signatureProfileId == null) {
+			return null;
+		}
+
+		try {
+			return getSingleResult(SignatureProfile.FIND_BY_ID, SignatureProfile.class, new Param(SignatureProfile.PARAM_ID, signatureProfileId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting signature profile by ID: " + signatureProfileId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public DecisionTemplate getDecisionTemplateById(Integer decisionTemplateId) {
+		if (decisionTemplateId == null) {
+			return null;
+		}
+
+		try {
+			return getSingleResult(DecisionTemplate.FIND_BY_ID, DecisionTemplate.class, new Param(DecisionTemplate.PARAM_ID, decisionTemplateId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting decision template by ID: " + decisionTemplateId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public List<SignatureProfile> getSignatureProfilesByApplicationSettingsId(Integer applicationSettingsId) {
+		if (applicationSettingsId == null) {
+			return null;
+		}
+
+		try {
+			return getResultList(SignatureProfile.FIND_BY_APPLICATION_SETTINGS_ID, SignatureProfile.class, new Param(SignatureProfile.PARAM_APPLICATION_SETTINGS_ID, applicationSettingsId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting signature profiles by application settings ID: " + applicationSettingsId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public List<Integer> getSignatureProfileIdsByApplicationSettingsId(Integer applicationSettingsId) {
+		if (applicationSettingsId == null) {
+			return null;
+		}
+
+		try {
+			return getResultList(SignatureProfile.FIND_IDS_BY_APPLICATION_SETTINGS_ID, Integer.class, new Param(SignatureProfile.PARAM_APPLICATION_SETTINGS_ID, applicationSettingsId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting signature profile ids by application settings ID: " + applicationSettingsId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public List<DecisionTemplate> getDecisionTemplatesByApplicationSettingsId(Integer applicationSettingsId) {
+		if (applicationSettingsId == null) {
+			return null;
+		}
+
+		try {
+			return getResultList(DecisionTemplate.FIND_BY_APPLICATION_SETTINGS_ID, DecisionTemplate.class, new Param(DecisionTemplate.PARAM_APPLICATION_SETTINGS_ID, applicationSettingsId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting decision templates by application settings ID: " + applicationSettingsId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public List<Integer> getDecisionTemplateIdsByApplicationSettingsId(Integer applicationSettingsId) {
+		if (applicationSettingsId == null) {
+			return null;
+		}
+
+		try {
+			return getResultList(DecisionTemplate.FIND_IDS_BY_APPLICATION_SETTINGS_ID, Integer.class, new Param(DecisionTemplate.PARAM_APPLICATION_SETTINGS_ID, applicationSettingsId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting decision template ids by application settings ID: " + applicationSettingsId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeAllSignatureProfileForSettings(Integer applicationSettingsId) {
+		if (applicationSettingsId == null) {
+			return;
+		}
+
+		List<SignatureProfile> signatureProfiles = getSignatureProfilesByApplicationSettingsId(applicationSettingsId);
+		if (!ListUtil.isEmpty(signatureProfiles)) {
+			for (SignatureProfile sp : signatureProfiles) {
+				if (sp != null) {
+					removeSignatureProfile(sp.getId());
+				}
+			}
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeAllDecisionTemplatesForSettings(Integer applicationSettingsId) {
+		if (applicationSettingsId == null) {
+			return;
+		}
+
+		List<DecisionTemplate> decisionTemplates = getDecisionTemplatesByApplicationSettingsId(applicationSettingsId);
+		if (!ListUtil.isEmpty(decisionTemplates)) {
+			for (DecisionTemplate dt : decisionTemplates) {
+				if (dt != null) {
+					removeDecisionTemplate(dt.getId());
+				}
+			}
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeSignatureProfilesByIds(List<Integer> signatureProfileIds) {
+		if (!ListUtil.isEmpty(signatureProfileIds)) {
+			Query query = getEntityManager().createNamedQuery(SignatureProfile.DELETE_BY_IDS);
+			query.setParameter(SignatureProfile.PARAM_IDS, signatureProfileIds);
+			query.executeUpdate();
+		}
+	}
+
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeDecisionTemplatesByIds(List<Integer> decisionTemplateIds) {
+		if (!ListUtil.isEmpty(decisionTemplateIds)) {
+			Query query = getEntityManager().createNamedQuery(DecisionTemplate.DELETE_BY_IDS);
+			query.setParameter(DecisionTemplate.PARAM_IDS, decisionTemplateIds);
+			query.executeUpdate();
+		}
+	}
+
 
 
 }

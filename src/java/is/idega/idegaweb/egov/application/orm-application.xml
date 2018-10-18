@@ -9,5 +9,7 @@
     <entity class="is.idega.idegaweb.egov.application.data.bean.ApplicationCategory" />
     <entity class="is.idega.idegaweb.egov.application.data.bean.ApplicationReminder" />
     <entity class="is.idega.idegaweb.egov.application.data.bean.ApplicationSettings" />
+    <entity class="is.idega.idegaweb.egov.application.data.bean.SignatureProfile" />
+    <entity class="is.idega.idegaweb.egov.application.data.bean.DecisionTemplate" />
 
 </entity-mappings>

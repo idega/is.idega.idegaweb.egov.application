@@ -67,6 +67,14 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	@JoinTable(name = TABLE_NAME + "_rol", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ICRole.COLUMN_ROLE_KEY, table = ICRole.ENTITY_NAME) })
 	private List<ICRole> roles;
 
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = SignatureProfile.class)
+	@JoinTable(name = TABLE_NAME + "_sp", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = SignatureProfile.COLUMN_ID, table = SignatureProfile.TABLE_NAME) })
+	private List<SignatureProfile> signatureProfiles;
+
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = DecisionTemplate.class)
+	@JoinTable(name = TABLE_NAME + "_dt", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = DecisionTemplate.COLUMN_ID, table = DecisionTemplate.TABLE_NAME) })
+	private List<DecisionTemplate> decisionTemplates;
+
 	@Override
 	public Integer getId() {
 		return id;
@@ -126,6 +134,26 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	public void setApplicationId(Integer applicationId) {
 		this.applicationId = applicationId;
 	}
+
+	public List<SignatureProfile> getSignatureProfiles() {
+		signatureProfiles = DBUtil.getInstance().lazyLoad(signatureProfiles);
+		return signatureProfiles;
+	}
+
+	public void setSignatureProfiles(List<SignatureProfile> signatureProfiles) {
+		this.signatureProfiles = signatureProfiles;
+	}
+
+	public List<DecisionTemplate> getDecisionTemplates() {
+		decisionTemplates = DBUtil.getInstance().lazyLoad(decisionTemplates);
+		return decisionTemplates;
+	}
+
+	public void setDecisionTemplates(List<DecisionTemplate> decisionTemplates) {
+		this.decisionTemplates = decisionTemplates;
+	}
+
+
 
 
 }
