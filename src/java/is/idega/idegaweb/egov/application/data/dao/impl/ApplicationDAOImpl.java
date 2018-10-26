@@ -1,10 +1,13 @@
 package is.idega.idegaweb.egov.application.data.dao.impl;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.persistence.Query;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.idega.block.process.data.model.ReminderModel;
+import com.idega.block.process.data.model.SettingsModel;
 import com.idega.core.accesscontrol.data.bean.ICRole;
 import com.idega.core.file.data.bean.ICFile;
 import com.idega.core.persistence.Param;
@@ -242,20 +246,21 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 	@Override
 	@Transactional(readOnly = false)
-	public ApplicationSettings updateApplicationSettings(
-			Integer applicationId,
+	public <T extends Serializable> SettingsModel updateSettings(
+			T id,
 			Integer settingsId,
 			Integer numberOfMonthsOfInnactivity,
-			List<String> thirdPartiesUUIDs,
+			Set<String> thirdPartiesUUIDs,
 			List<Integer> remindersIds,
 			List<String> rolesKeys,
 			List<Integer> signatureProfileIds,
 			List<Integer> decisionTemplateIds
 	) {
-		if (applicationId == null) {
+		if (!(id instanceof Integer)) {
 			return null;
 		}
 
+		Integer applicationId = (Integer) id;
 		try {
 			ApplicationSettings settings = null;
 			if (settingsId == null) {
@@ -329,8 +334,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
-
-	private List<User> getUsers(List<String> uuids) {
+	private List<User> getUsers(Collection<String> uuids) {
 		if (ListUtil.isEmpty(uuids)) {
 			return null;
 		}
@@ -351,12 +355,17 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return users;
 	}
 
-
-
 	@Override
 	@Transactional(readOnly = false)
-	public SignatureProfile updateSignatureProfile(Integer signatureProfileId, Integer applicationSettingsId,
-			String name, String roleTitle, String information, ICFile signature, boolean mandatoryEditPicture) {
+	public SignatureProfile updateSignatureProfile(
+			Integer signatureProfileId,
+			Integer applicationSettingsId,
+			String name,
+			String roleTitle,
+			String information,
+			ICFile signature,
+			boolean mandatoryEditPicture
+	) {
 		SignatureProfile signatureProfile = null;
 		if (signatureProfileId == null) {
 			signatureProfile = new SignatureProfile();
@@ -407,8 +416,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 	@Override
 	@Transactional(readOnly = false)
-	public DecisionTemplate updateDecisionTemplate(Integer decisionTemplateId, Integer applicationSettingsId,
-			String name, String templateContent, Integer signatureProfileId) {
+	public DecisionTemplate updateDecisionTemplate(
+			Integer decisionTemplateId,
+			Integer applicationSettingsId,
+			String name,
+			String templateContent,
+			Integer signatureProfileId
+	) {
 		DecisionTemplate decisionTemplate = null;
 		if (decisionTemplateId == null) {
 			decisionTemplate = new DecisionTemplate();
@@ -601,7 +615,5 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			query.executeUpdate();
 		}
 	}
-
-
 
 }
