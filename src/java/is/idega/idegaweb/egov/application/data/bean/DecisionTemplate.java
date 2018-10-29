@@ -26,6 +26,7 @@ import org.hibernate.annotations.Type;
 	@NamedQuery(name = DecisionTemplate.DELETE_BY_IDS, query = "DELETE FROM DecisionTemplate dt WHERE dt.id IN (:" + DecisionTemplate.PARAM_IDS + ")")
 })
 public class DecisionTemplate implements Serializable {
+
 	private static final long serialVersionUID = 3983491425482184648L;
 
 	public static final String 	TABLE_NAME = "egov_decision_template",
@@ -73,7 +74,6 @@ public class DecisionTemplate implements Serializable {
 		this.id = id;
 	}
 
-
 	public Integer getApplicationSettingsId() {
 		return applicationSettingsId;
 	}
@@ -106,9 +106,9 @@ public class DecisionTemplate implements Serializable {
 		this.signatureProfile = signatureProfile;
 	}
 
-
-
-
-
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " ID: " + getId();
+	}
 
 }
