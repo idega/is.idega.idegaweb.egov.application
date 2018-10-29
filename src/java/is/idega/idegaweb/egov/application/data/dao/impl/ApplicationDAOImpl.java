@@ -598,10 +598,16 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Override
 	@Transactional(readOnly = false)
 	public void removeSignatureProfilesByIds(List<Integer> signatureProfileIds) {
-		if (!ListUtil.isEmpty(signatureProfileIds)) {
+		if (ListUtil.isEmpty(signatureProfileIds)) {
+			return;
+		}
+
+		try {
 			Query query = getEntityManager().createNamedQuery(SignatureProfile.DELETE_BY_IDS);
 			query.setParameter(SignatureProfile.PARAM_IDS, signatureProfileIds);
 			query.executeUpdate();
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error deleting signature profile", e);
 		}
 	}
 
@@ -609,10 +615,16 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Override
 	@Transactional(readOnly = false)
 	public void removeDecisionTemplatesByIds(List<Integer> decisionTemplateIds) {
-		if (!ListUtil.isEmpty(decisionTemplateIds)) {
+		if (ListUtil.isEmpty(decisionTemplateIds)) {
+			return;
+		}
+
+		try {
 			Query query = getEntityManager().createNamedQuery(DecisionTemplate.DELETE_BY_IDS);
 			query.setParameter(DecisionTemplate.PARAM_IDS, decisionTemplateIds);
 			query.executeUpdate();
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error deleting decision templates " + decisionTemplateIds, e);
 		}
 	}
 
