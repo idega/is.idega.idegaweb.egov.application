@@ -67,8 +67,6 @@ public class SignatureProfile implements Serializable {
 	@Lob
 	private ICFile signature;
 
-
-
 	public Integer getId() {
 		return id;
 	}
@@ -118,7 +116,9 @@ public class SignatureProfile implements Serializable {
 		this.signature = signature;
 	}
 
-
-
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " ID: " + getId();
+	}
 
 }

@@ -419,10 +419,8 @@ public class Application implements Serializable, ApplicationModel {
 	}
 
 	public ApplicationSettings getSettings() {
-		if (!DBUtil.getInstance().isInitialized(settings)) {
-			settings = DBUtil.getInstance().lazyLoad(settings);
-		}
-		return settings;
+		ApplicationDAO applicationDAO = ELUtil.getInstance().getBean(ApplicationDAO.BEAN_NAME);
+		return applicationDAO.getSettingsByApplicationId(getId());
 	}
 
 	public void setSettings(ApplicationSettings settings) {

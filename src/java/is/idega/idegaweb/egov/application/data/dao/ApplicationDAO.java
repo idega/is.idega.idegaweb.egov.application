@@ -12,7 +12,7 @@ import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
 import is.idega.idegaweb.egov.application.data.bean.DecisionTemplate;
 import is.idega.idegaweb.egov.application.data.bean.SignatureProfile;
 
-public interface ApplicationDAO extends GenericDao {
+public interface ApplicationDAO extends GenericDao, SettingsDAO {
 
 	public static final String BEAN_NAME = "egovApplicationDAO";
 
