@@ -250,7 +250,11 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			List<Integer> remindersIds,
 			List<String> rolesKeys,
 			List<Integer> signatureProfileIds,
-			List<Integer> decisionTemplateIds
+			List<Integer> decisionTemplateIds,
+			String invoicingType,
+			Double price,
+			Integer fixedInvoicedHours
+
 	) {
 		if (applicationId == null) {
 			return null;
@@ -312,6 +316,10 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			}
 			settings.setDecisionTemplates(decisionTemplates);
 
+			//Invoicing data
+			settings.setInvoicingType(invoicingType);
+			settings.setFixedInvoicedHours(fixedInvoicedHours);
+			settings.setPrice(price);
 
 			settings.setApplicationId(applicationId);
 

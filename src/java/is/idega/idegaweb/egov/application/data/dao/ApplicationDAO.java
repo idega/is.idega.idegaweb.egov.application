@@ -44,7 +44,11 @@ public interface ApplicationDAO extends GenericDao {
 			List<Integer> remindersIds,
 			List<String> rolesKeys,
 			List<Integer> signatureProfileIds,
-			List<Integer> decisionTemplateIds
+			List<Integer> decisionTemplateIds,
+			String invoicingType,
+			Double price,
+			Integer fixedInvoicedHours
+
 	);
 
 	public void removeApplicationSettings(Integer applicationId);

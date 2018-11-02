@@ -37,6 +37,9 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	public static final String 	TABLE_NAME = "egov_application_settings",
 								COLUMN_ID = TABLE_NAME + "_id",
 								COLUMN_APPLICATION_ID = "application_id",
+								COLUMN_PRICE = "price",
+								COLUMN_INVOICING_TYPE = "invoicing_type",
+								COLUMN_FIXED_INVOICED_HOURS = "fixed_invoiced_hours",
 
 								FIND_BY_ID = "ApplicationSettings.findById",
 								FIND_BY_APPLICATION_ID = "ApplicationSettings.findByApplicationId",
@@ -74,6 +77,15 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	@ManyToMany(fetch = FetchType.LAZY, targetEntity = DecisionTemplate.class)
 	@JoinTable(name = TABLE_NAME + "_dt", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = DecisionTemplate.COLUMN_ID, table = DecisionTemplate.TABLE_NAME) })
 	private List<DecisionTemplate> decisionTemplates;
+
+	@Column(name = COLUMN_INVOICING_TYPE)
+	private String invoicingType;
+
+	@Column(name = COLUMN_PRICE)
+	private Double price;
+
+	@Column(name = COLUMN_FIXED_INVOICED_HOURS)
+	private Integer fixedInvoicedHours;
 
 	@Override
 	public Integer getId() {
@@ -151,6 +163,30 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 
 	public void setDecisionTemplates(List<DecisionTemplate> decisionTemplates) {
 		this.decisionTemplates = decisionTemplates;
+	}
+
+	public String getInvoicingType() {
+		return invoicingType;
+	}
+
+	public void setInvoicingType(String invoicingType) {
+		this.invoicingType = invoicingType;
+	}
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public Integer getFixedInvoicedHours() {
+		return fixedInvoicedHours;
+	}
+
+	public void setFixedInvoicedHours(Integer fixedInvoicedHours) {
+		this.fixedInvoicedHours = fixedInvoicedHours;
 	}
 
 
