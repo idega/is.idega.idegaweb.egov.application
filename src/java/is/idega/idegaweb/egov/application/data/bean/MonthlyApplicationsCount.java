@@ -37,8 +37,8 @@ public class MonthlyApplicationsCount implements Serializable {
 								COLUMN_PERCENTAGE = "percentage",
 								COLUMN_ABBREVIATION = "abbreviation",
 
-								FIND_BY_ID = "MonthlyApplications.findById",
-								FIND_BY_YEAR_AND_MONTH = "MonthlyApplications.findByYearAndMonth",
+								FIND_BY_ID = "MonthlyApplicationsCount.findById",
+								FIND_BY_YEAR_AND_MONTH = "MonthlyApplicationsCount.findByYearAndMonth",
 
 								PARAM_ID = "monthlyApplicationsId",
 								PARAM_YEAR = "year",
