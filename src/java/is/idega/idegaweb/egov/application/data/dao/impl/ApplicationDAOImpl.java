@@ -25,10 +25,12 @@ import com.idega.core.file.data.bean.ICFile;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.impl.GenericDaoImpl;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.presentation.IWContext;
 import com.idega.user.dao.UserDAO;
 import com.idega.user.data.bean.User;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
@@ -466,12 +468,19 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			}
 		}
 
+		IWContext iwc = CoreUtil.getIWContext();
+		Integer userId = iwc == null || !iwc.isLoggedOn() ? null : iwc.getCurrentUserId();
+		Timestamp now = IWTimestamp.RightNow().getTimestamp();
+
 		if (decisionTemplate.getId() == null) {
+			decisionTemplate.setCreatedBy(userId);
+			decisionTemplate.setCreated(now);
 			persist(decisionTemplate);
 		} else {
+			decisionTemplate.setEditedBy(userId);
+			decisionTemplate.setEdited(now);
 			merge(decisionTemplate);
 		}
-
 
 		return decisionTemplate.getId() == null ? null : decisionTemplate;
 	}

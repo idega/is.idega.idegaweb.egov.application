@@ -1,6 +1,7 @@
 package is.idega.idegaweb.egov.application.data.bean;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -46,7 +47,6 @@ public class DecisionTemplate implements Serializable {
 								FIND_BY_IDS = "DecisionTemplate.findByIds",
 								DELETE_BY_IDS = "DecisionTemplate.deleteByIds",
 
-
 								PARAM_ID = "decisionTemplateId",
 								PARAM_APPLICATION_SETTINGS_ID = "applicationSettingsId",
 								PARAM_IDS = "decisionTemplateIds";
@@ -76,6 +76,17 @@ public class DecisionTemplate implements Serializable {
 	@Column(name = DecisionTemplate.COLUMN_DEFAULT, length = 1)
 	private Character isDefault;
 
+	@Column(name = "created")
+	private Timestamp created;
+
+	@Column(name = "edited")
+	private Timestamp edited;
+
+	@Column(name = "created_by")
+	private Integer createdBy;
+
+	@Column(name = "edited_by")
+	private Integer editedBy;
 
 	public Integer getId() {
 		return id;
@@ -131,6 +142,38 @@ public class DecisionTemplate implements Serializable {
 
 	public void setIsDefault(Character isDefault) {
 		this.isDefault = isDefault;
+	}
+
+	public Timestamp getCreated() {
+		return created;
+	}
+
+	public void setCreated(Timestamp created) {
+		this.created = created;
+	}
+
+	public Timestamp getEdited() {
+		return edited;
+	}
+
+	public void setEdited(Timestamp edited) {
+		this.edited = edited;
+	}
+
+	public Integer getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Integer createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Integer getEditedBy() {
+		return editedBy;
+	}
+
+	public void setEditedBy(Integer editedBy) {
+		this.editedBy = editedBy;
 	}
 
 	@Override
