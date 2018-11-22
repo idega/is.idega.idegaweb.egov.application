@@ -58,7 +58,9 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 			Integer applicationSettingsId,
 			String name,
 			String templateContent,
-			Integer signatureProfileId
+			Integer signatureProfileId,
+			String type,
+			Boolean isDefault
 	);
 
 	public void removeDecisionTemplate(Integer decisionTemplateId);

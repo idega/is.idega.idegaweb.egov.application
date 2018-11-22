@@ -15,6 +15,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
+import com.idega.util.CoreConstants;
+
 @Entity
 @Table(name = DecisionTemplate.TABLE_NAME)
 @Cacheable
@@ -35,6 +37,8 @@ public class DecisionTemplate implements Serializable {
 								COLUMN_NAME = "name",
 								COLUMN_TEMPLATE_CONTENT = "template_content",
 								COLUMN_SIGNATURE = "signature",
+								COLUMN_TYPE = "type",
+								COLUMN_DEFAULT = "is_default",
 
 								FIND_BY_ID = "DecisionTemplate.findById",
 								FIND_BY_APPLICATION_SETTINGS_ID = "DecisionTemplate.findByApplicationSettingsId",
@@ -65,6 +69,13 @@ public class DecisionTemplate implements Serializable {
 	@Column(name = DecisionTemplate.COLUMN_SIGNATURE)
 	@Lob
 	private SignatureProfile signatureProfile;
+
+	@Column(name = DecisionTemplate.COLUMN_TYPE)
+	private String type;
+
+	@Column(name = DecisionTemplate.COLUMN_DEFAULT, length = 1)
+	private Character isDefault;
+
 
 	public Integer getId() {
 		return id;
@@ -104,6 +115,22 @@ public class DecisionTemplate implements Serializable {
 
 	public void setSignatureProfile(SignatureProfile signatureProfile) {
 		this.signatureProfile = signatureProfile;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public boolean getIsDefault() {
+		return isDefault == null ? false : isDefault == CoreConstants.CHAR_Y;
+	}
+
+	public void setIsDefault(Character isDefault) {
+		this.isDefault = isDefault;
 	}
 
 	@Override

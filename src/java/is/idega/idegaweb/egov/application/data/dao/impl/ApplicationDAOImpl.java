@@ -152,7 +152,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Override
 	public List<Application> getAll() {
 		try {
-			return getResultList(Application.QUERY_GET_ALL, Application.class);
+			return getResultListByInlineQuery(Application.QUERY_GET_ALL, Application.class);
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Error getting all application.", e);
 		}
@@ -429,7 +429,10 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			Integer applicationSettingsId,
 			String name,
 			String templateContent,
-			Integer signatureProfileId
+			Integer signatureProfileId,
+			String type,
+			Boolean isDefault
+
 	) {
 		DecisionTemplate decisionTemplate = null;
 		if (decisionTemplateId == null) {
@@ -449,6 +452,18 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		decisionTemplate.setTemplateContent(templateContent);
 		if (signatureProfileId != null && signatureProfileId.intValue() > -1) {
 			decisionTemplate.setSignatureProfile(getSignatureProfileById(signatureProfileId));
+		}
+
+		if (!StringUtil.isEmpty(type)) {
+			decisionTemplate.setType(type);
+		}
+
+		if (isDefault != null) {
+			if (isDefault.booleanValue() == Boolean.TRUE) {
+				decisionTemplate.setIsDefault(CoreConstants.CHAR_Y);
+			} else {
+				decisionTemplate.setIsDefault(CoreConstants.CHAR_N);
+			}
 		}
 
 		if (decisionTemplate.getId() == null) {
