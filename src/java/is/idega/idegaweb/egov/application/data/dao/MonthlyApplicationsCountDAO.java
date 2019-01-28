@@ -28,5 +28,7 @@ public interface MonthlyApplicationsCountDAO extends GenericDao {
 
 	public MonthlyApplicationsCount createMonthlyApplicationsCount(MonthlyApplicationsCount monthlyApplicationsCount);
 
+	List<MonthlyApplicationsCount> getAllGroupByAppName();
+
 
 }

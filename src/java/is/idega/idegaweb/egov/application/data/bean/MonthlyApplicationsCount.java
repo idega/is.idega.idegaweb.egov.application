@@ -19,7 +19,8 @@ import javax.persistence.Table;
 @Cacheable
 @NamedQueries({
 	@NamedQuery(name = MonthlyApplicationsCount.FIND_BY_ID, query = "select ma from MonthlyApplicationsCount ma where ma.id = :" + MonthlyApplicationsCount.PARAM_ID),
-	@NamedQuery(name = MonthlyApplicationsCount.FIND_BY_YEAR_AND_MONTH, query = "select ma from MonthlyApplicationsCount ma where ma.year = :" + MonthlyApplicationsCount.PARAM_YEAR + " AND ma.month = :" + MonthlyApplicationsCount.PARAM_MONTH)
+	@NamedQuery(name = MonthlyApplicationsCount.FIND_BY_YEAR_AND_MONTH, query = "select ma from MonthlyApplicationsCount ma where ma.year = :" + MonthlyApplicationsCount.PARAM_YEAR + " AND ma.month = :" + MonthlyApplicationsCount.PARAM_MONTH),
+	@NamedQuery(name = MonthlyApplicationsCount.FIND_ALL, query = "select ma from MonthlyApplicationsCount ma")
 })
 public class MonthlyApplicationsCount implements Serializable {
 
@@ -39,6 +40,7 @@ public class MonthlyApplicationsCount implements Serializable {
 
 								FIND_BY_ID = "MonthlyApplicationsCount.findById",
 								FIND_BY_YEAR_AND_MONTH = "MonthlyApplicationsCount.findByYearAndMonth",
+								FIND_ALL = "MonthlyApplicationsCount.findAll",
 
 								PARAM_ID = "monthlyApplicationsId",
 								PARAM_YEAR = "year",

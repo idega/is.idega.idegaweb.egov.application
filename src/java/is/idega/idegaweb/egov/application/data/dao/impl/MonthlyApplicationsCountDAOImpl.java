@@ -1,6 +1,9 @@
 package is.idega.idegaweb.egov.application.data.dao.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -43,6 +46,35 @@ public class MonthlyApplicationsCountDAOImpl extends GenericDaoImpl implements M
 								 new Param(MonthlyApplicationsCount.PARAM_MONTH, month));
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Error getting monthy application counts by year: " + year + " and month: " + month, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public List<MonthlyApplicationsCount> getAllGroupByAppName() {
+		Long totalCount = 0L;
+		try {
+			List<MonthlyApplicationsCount> appCounts= getResultList(MonthlyApplicationsCount.FIND_ALL,
+								 MonthlyApplicationsCount.class);
+			Map<String, MonthlyApplicationsCount> appCountMap = new HashMap<>();
+			for (MonthlyApplicationsCount appCount : appCounts) {
+				MonthlyApplicationsCount tmpAppCount  = appCountMap.get(appCount.getAppName());
+				if (tmpAppCount == null) {
+					appCountMap.put(appCount.getAppName(), appCount);
+				} else {
+					tmpAppCount.setCount(tmpAppCount.getCount() + appCount.getCount());
+					appCountMap.put(tmpAppCount.getAppName(), tmpAppCount);
+				}
+				totalCount = totalCount + appCount.getCount();
+			}
+			List<MonthlyApplicationsCount> result  = new ArrayList<MonthlyApplicationsCount>(appCountMap.values());
+			for (MonthlyApplicationsCount appCount : result) {
+				appCount.setPercentage(((double)(appCount.getCount()) / (double)(totalCount>0?totalCount : 1))*100);
+			}
+			return result;
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting application counts. ", e);
 		}
 
 		return null;
