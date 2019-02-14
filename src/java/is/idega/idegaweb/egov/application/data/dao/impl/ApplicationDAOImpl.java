@@ -123,7 +123,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 				uri = uri.substring(0, uri.length() - 1);
 			}
 
-//			uri = CoreConstants.PERCENT.concat(uri).concat(CoreConstants.PERCENT);
 			String query = "select a from ".concat(Application.class.getName()).concat(" a where a.url = :uri");
 			List<Application> applications = getResultListByInlineQuery(query, Application.class, new Param("uri", uri));
 			return ListUtil.isEmpty(applications) ? null : applications.get(0);
@@ -133,7 +132,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return null;
 	}
-
 
 	@Override
 	public List<String> getDistinctApplicationURLByAppType(String appType) {
@@ -150,13 +148,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
-
 	@Override
+	@Transactional(readOnly = true)
 	public List<Application> getAll() {
 		try {
-			return getResultListByInlineQuery(Application.QUERY_GET_ALL, Application.class);
+			return getResultList(Application.QUERY_GET_ALL, Application.class);
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Error getting all application.", e);
+			getLogger().log(Level.WARNING, "Error getting all applications", e);
 		}
 
 		return null;
