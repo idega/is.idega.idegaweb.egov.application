@@ -46,6 +46,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
+import com.idega.presentation.Span;
 import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
@@ -410,7 +411,10 @@ public abstract class ApplicationForm extends Block {
 		layer.add(heading);
 
 		Paragraph paragraph = new Paragraph();
-		paragraph.add(new Text(body));
+		Span bodyText = new Span();
+		bodyText.setStyleClass("application-form-display-text");
+		bodyText.add(new Text(body));
+		paragraph.add(bodyText);
 		layer.add(paragraph);
 
 		return layer;
