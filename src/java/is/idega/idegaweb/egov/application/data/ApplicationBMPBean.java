@@ -79,7 +79,6 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
 	public static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
 	public static final String EGOV_APPLICATION_GROUP = "EGOV_APPLICATION_GROUP";
-	public static final String EGOV_APPLICATION_HANDLER_GROUP = "EGOV_APPLICATION_HANDLER_GROUP";
 	public static final String EGOV_APPLICATION_ID = "EGOV_APPLICATION_ID";
 	public static final String TX_LOCALIZED_TEXT = "TX_LOCALIZED_TEXT";
 	public static final String TX_LOCALIZED_TEXT_ID = "TX_LOCALIZED_TEXT_ID";

@@ -19,7 +19,7 @@ import is.idega.idegaweb.egov.application.data.bean.SignatureProfile;
 public interface ApplicationDAO extends GenericDao, SettingsDAO {
 
 	public static final String BEAN_NAME = "egovApplicationDAO";
-	
+
 	Application findById(Integer primaryKey);
 
 	Application getById(Integer id);
@@ -86,28 +86,28 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 	public void removeDecisionTemplatesByIds(List<Integer> decisionTemplateIds);
 
 	/**
-	 * 
+	 *
 	 * @param groupPrimaryKeys is {@link Collection} of {@link Group#getId()} to get {@link Application}s for, not <code>null</code>
-	 * @return {@link Collection} of {@link Application#getId()} or {@link Collections#emptyList()} on failure;
+	 * @return {@link List} of {@link Application#getId()} or {@link Collections#emptyList()} on failure;
 	 */
-	Collection<Long> getApplicationKeys(Collection<Integer> groupPrimaryKeys);
+	List<Integer> getApplicationKeys(Collection<Integer> groupPrimaryKeys);
 
 	/**
-	 * 
+	 *
 	 * @param groups is {@link Collection} of {@link Group#getId()} to get {@link Application}s for, not <code>null</code>
 	 * @return {@link Collection} of {@link Application#getUrl()} or {@link Collections#emptyList()} on failure;
 	 */
 	Collection<String> getApplicationLinks(Collection<Integer> groupPrimaryKeys);
 
 	/**
-	 * @param group to get {@link Application}s for, not <code>null</code>
+	 * @param {@link List} groupsIds to get {@link Application}s for, not <code>null</code>
 	 * @param applications to be filtered, not <code>null</code>
 	 * @return filtered {@link Application}s or {@link Collections#emptyList()} on failure
 	 */
-	Collection<Application> getFilteredApplications(Integer groupId, Collection<Application> applications);
+	Collection<Application> getFilteredApplications(List<Integer> groupsIds, Collection<Application> applications);
 
 	/**
-	 * 
+	 *
 	 * @param user to get {@link Application}s for, not <code>null</code>
 	 * @param applications to be filtered, not <code>null</code>
 	 * @return filtered {@link Application}s or {@link Collections#emptyList()} on failure
@@ -115,17 +115,17 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 	Collection<Application> getFilteredApplications(User user, Collection<Application> applications);
 
 	/**
-	 * 
+	 *
 	 * @param applications to be filtered, not <code>null</code>
 	 * @return filtered {@link Application}s or {@link Collections#emptyList()} on failure
 	 */
 	Collection<Application> getFilteredApplications(Collection<Application> applications);
 
-	Application insert(Application application, Group group);
+	Application insert(Application application, Group group, Integer level);
 
 	Application remove(Application application, Group group);
 
-	Application insert(Integer applicationId, Integer groupId);
+	Application insert(Integer applicationId, Integer groupId, Integer level);
 
 	Application remove(Integer applicationId, Integer groupId);
 }

@@ -26,16 +26,10 @@ import com.idega.core.accesscontrol.data.bean.ICRole;
 import com.idega.core.file.data.bean.ICFile;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.impl.GenericDaoImpl;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.data.IDOUtil;
-import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.user.dao.GroupDAO;
 import com.idega.user.dao.UserDAO;
-import com.idega.user.data.GroupBMPBean;
-import com.idega.user.data.GroupHome;
 import com.idega.user.data.bean.Group;
 import com.idega.user.data.bean.User;
 import com.idega.util.ArrayUtil;
@@ -46,8 +40,8 @@ import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
-import is.idega.idegaweb.egov.application.data.ApplicationBMPBean;
 import is.idega.idegaweb.egov.application.data.bean.Application;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationAccess;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationReminder;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
@@ -74,16 +68,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return this.groupDAO;
 	}
 
-	private GroupHome getGroupHome() {
-		try {
-			return (GroupHome) IDOLookup.getHome(com.idega.user.data.Group.class);
-		} catch (IDOLookupException e) {
-			getLogger().log(Level.WARNING, "Failed to get GroupHome, cause of:", e);
-		}
-
-		return null;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#findById(java.lang.Integer)
@@ -96,7 +80,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return null;
 	}
-	
+
 	@Override
 	public List<ApplicationCategory> getAllCategoriesOrderedByPriority() {
 		try {
@@ -708,40 +692,18 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#getApplicationKeys(com.idega.user.data.bean.Group)
 	 */
 	@Override
-	public Collection<Long> getApplicationKeys(Collection<Integer> groupPrimaryKeys) {
-		ArrayList<Long> applicationKeys = new ArrayList<>();
-
-		if (!ListUtil.isEmpty(groupPrimaryKeys)) {
-			Collection<Integer> parentGroupKeys = getGroupHome()
-					.findParentGroupsPrimaryKeysRecursively(groupPrimaryKeys);
-			if (parentGroupKeys == null) {
-				parentGroupKeys = new ArrayList<Integer>();
-			}
-
-			parentGroupKeys.addAll(groupPrimaryKeys);
-			
-			StringBuilder builder = new StringBuilder();
-			builder.append("SELECT ").append(ApplicationBMPBean.EGOV_APPLICATION_ID)
-			.append(" FROM ").append(ApplicationBMPBean.EGOV_APPLICATION_HANDLER_GROUP)
-			.append(" WHERE ").append(GroupBMPBean.COLUMN_GROUP_ID).append(" IN (").append(IDOUtil.toString(parentGroupKeys)).append(") ");
-
-			List<Serializable[]> rows = null;
-			try {
-				rows = SimpleQuerier.executeQuery(builder.toString(), 1);
-			} catch (Exception e) {
-				getLogger().log(Level.WARNING, "Failed to execute query: " + builder.toString(), e);
-			}
-
-			if (!ListUtil.isEmpty(rows)) {
-				for (Serializable[] row : rows) {
-					if (row[0] != null) {
-						applicationKeys.add(Long.valueOf(row[0].toString()));
-					}
-				}
-			}
+	public List<Integer> getApplicationKeys(Collection<Integer> groupPrimaryKeys) {
+		if (ListUtil.isEmpty(groupPrimaryKeys)) {
+			return Collections.emptyList();
 		}
 
-		return applicationKeys;
+		try {
+			return getResultList(ApplicationAccess.QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS, Integer.class, new Param("groupsIds", groupPrimaryKeys));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting applications IDs by groups IDs " + groupPrimaryKeys, e);
+		}
+
+		return Collections.emptyList();
 	}
 
 	/*
@@ -750,10 +712,10 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Override
 	public Collection<String> getApplicationLinks(Collection<Integer> groupPrimaryKeys) {
-		ArrayList<String> applicationKeys = new ArrayList<>();
+		List<String> applicationKeys = new ArrayList<>();
 
 		if (!ListUtil.isEmpty(groupPrimaryKeys)) {
-			Collection<Long> applicationPrimaryKeys = getApplicationKeys(groupPrimaryKeys);
+			Collection<Integer> applicationPrimaryKeys = getApplicationKeys(groupPrimaryKeys);
 			if (!ListUtil.isEmpty(applicationPrimaryKeys)) {
 				Map<String, Collection<? extends Serializable>> arguments = new HashMap<>();
 				arguments.put("id", applicationPrimaryKeys);
@@ -770,25 +732,21 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return applicationKeys;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#getFilteredApplications(com.idega.user.data.bean.Group, java.util.Collection)
-	 */
 	@Override
-	public Collection<Application> getFilteredApplications(Integer groupId, Collection<Application> applications) {
+	public Collection<Application> getFilteredApplications(List<Integer> groupsIds, Collection<Application> applications) {
 		Collection<Application> filteredApplications = new ArrayList<>();
-		
-		if (groupId != null && groupId > 0) {
-			Collection<Long> keys = getApplicationKeys(Arrays.asList(groupId));
-			if (!ListUtil.isEmpty(applications) && !ListUtil.isEmpty(keys)) {
-				for (Application application : applications) {
-					if (keys.contains((Long) application.getPrimaryKey())) {
-						filteredApplications.add(application);
-					}
+		if (ListUtil.isEmpty(groupsIds) || ListUtil.isEmpty(applications)) {
+			return filteredApplications;
+		}
+
+		List<Integer> keys = getApplicationKeys(groupsIds);
+		if (!ListUtil.isEmpty(keys)) {
+			for (Application application : applications) {
+				if (keys.contains(application.getPrimaryKey())) {
+					filteredApplications.add(application);
 				}
 			}
 		}
-		
 
 		return filteredApplications;
 	}
@@ -799,17 +757,17 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Override
 	public Collection<Application> getFilteredApplications(User user, Collection<Application> applications) {
-		if (user != null) {
-			Group primaryGroup = user.getPrimaryGroup();
-			if (primaryGroup != null) {
-				return getFilteredApplications(primaryGroup.getID(), applications);
-			}
+		if (user == null || ListUtil.isEmpty(applications)) {
+			return Collections.emptyList();
 		}
 
-		return Collections.emptyList();
-	}
+		List<Integer> groupsIds = getGroupDAO().getAllGroupsIdsForUser(user, CoreUtil.getIWContext());
+		if (ListUtil.isEmpty(groupsIds)) {
+			return Collections.emptyList();
+		}
 
-	
+		return getFilteredApplications(groupsIds, applications);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -817,12 +775,16 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Override
 	public Collection<Application> getFilteredApplications(Collection<Application> applications) {
-		IWContext context = CoreUtil.getIWContext();
-		if (context != null) {
-			return getFilteredApplications(context.getLoggedInUser(), applications);
+		if (ListUtil.isEmpty(applications)) {
+			return Collections.emptyList();
 		}
 
-		return Collections.emptyList();
+		IWContext context = CoreUtil.getIWContext();
+		if (context == null || !context.isLoggedOn()) {
+			return Collections.emptyList();
+		}
+
+		return getFilteredApplications(context.getLoggedInUser(), applications);
 	}
 
 	/*
@@ -831,15 +793,9 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Transactional(readOnly = false)
 	@Override
-	public Application insert(Application application, Group group) {
+	public Application insert(Application application, Group group, Integer level) {
 		if (application != null && group != null) {
-			List<Group> existingGroups = application.getHandlerGroups();
-			if (existingGroups == null) {
-				existingGroups = new ArrayList<>();
-			}
-
-			existingGroups.add(group);
-			return merge(application);
+			return insert(application.getId(), group.getID(), level);
 		}
 
 		return null;
@@ -851,10 +807,42 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Transactional(readOnly = false)
 	@Override
-	public Application insert(Integer applicationId, Integer groupId) {
-		return insert(findById(applicationId), getGroupDAO().findGroup(groupId));
-	}
+	public Application insert(Integer applicationId, Integer groupId, Integer level) {
+		if (applicationId == null || groupId == null) {
+			return null;
+		}
 
+		try {
+			ApplicationAccess aa = getSingleResult(
+					ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID,
+					ApplicationAccess.class,
+					new Param("applicationId", applicationId),
+					new Param("groupId", groupId)
+			);
+			if (aa == null) {
+				aa = new ApplicationAccess();
+			}
+			aa.setApplicationId(applicationId);
+			aa.setGroupId(groupId);
+			aa.setLevel(level);
+
+			if (aa.getId() == null) {
+				persist(aa);
+			} else {
+				merge(aa);
+			}
+
+			if (aa.getId() == null) {
+				return null;
+			}
+
+			return findById(applicationId);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error inserting application access for application " + applicationId + ", group " + groupId + (level == null ? CoreConstants.EMPTY : " and level " + level), e);
+		}
+
+		return null;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -864,13 +852,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Override
 	public Application remove(Application application, Group group) {
 		if (application != null && group != null) {
-			List<Group> existingGroups = application.getHandlerGroups();
-			if (existingGroups == null) {
-				existingGroups = new ArrayList<>();
-			}
-
-			existingGroups.remove(group);
-			return merge(application);
+			return remove(application.getId(), group.getID());
 		}
 
 		return null;
@@ -883,7 +865,29 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Transactional(readOnly = false)
 	@Override
 	public Application remove(Integer applicationId, Integer groupId) {
-		return remove(findById(applicationId), getGroupDAO().findGroup(groupId));
+		if (applicationId == null || groupId == null) {
+			return null;
+		}
+
+		try {
+			ApplicationAccess aa = getSingleResult(
+					ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID,
+					ApplicationAccess.class,
+					new Param("applicationId", applicationId),
+					new Param("groupId", groupId)
+			);
+			if (aa == null) {
+				return null;
+			}
+
+			remove(aa);
+
+			return findById(applicationId);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error removing application access for application " + applicationId + " and group " + groupId, e);
+		}
+
+		return null;
 	}
 
 }
