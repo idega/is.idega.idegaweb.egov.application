@@ -588,3 +588,9 @@ iframe.remote-application-in-iframe {
 textarea.other-information-about-child {
 	max-width: 460px;
 }
+
+div.disabledAppExplanationContainer {
+	padding-top: 20px;
+	font-weight: bold;
+	padding-bottom: 20px;
+}

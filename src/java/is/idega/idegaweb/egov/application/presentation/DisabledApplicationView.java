@@ -6,8 +6,10 @@ import javax.ejb.FinderException;
 
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
+import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Span;
@@ -15,6 +17,7 @@ import com.idega.presentation.text.Heading1;
 import com.idega.presentation.ui.BackButton;
 import com.idega.util.CoreConstants;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PresentationUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 
@@ -47,6 +50,8 @@ public class DisabledApplicationView extends Block {
 		}
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		IWBundle bundle = getBundle(iwc);
+		PresentationUtil.addStyleSheetToHeader(iwc, bundle.getVirtualPathWithFileNameString("style/application.css"));
 
 		Layer container = new Layer();
 		container.setStyleClass("disabledApplicationView questions_and_answers");
@@ -71,6 +76,21 @@ public class DisabledApplicationView extends Block {
 		disabledAppTextContainer.setStyleClass("disabledAppTextContainer");
 		disabledAppTextContainer.add(text);
 		container.add(disabledAppTextContainer);
+
+		String key = "disabled_app_explanation_".concat(appId);
+		String explanationText = iwrb.getLocalizedString(key, key);
+		if (!key.equals(explanationText)) {
+			container.add(new CSSSpacer());
+
+			Layer explanationContainer = new Layer();
+			container.add(explanationContainer);
+			explanationContainer.setStyleClass("disabledAppExplanationContainer");
+
+			Span disabledAppExplanationTextContainer = new Span();
+			disabledAppExplanationTextContainer.setStyleClass("disabledAppExplanationTextContainer");
+			disabledAppExplanationTextContainer.add(explanationText);
+			explanationContainer.add(disabledAppExplanationTextContainer);
+		}
 
 		Layer buttons = new Layer();
 		container.add(buttons);
