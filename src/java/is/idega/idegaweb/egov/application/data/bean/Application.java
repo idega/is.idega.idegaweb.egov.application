@@ -29,6 +29,8 @@ import com.idega.block.text.data.bean.LocalizedText;
 import com.idega.block.text.model.LocalizedTextModel;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.persistence.Param;
+import com.idega.user.data.GroupBMPBean;
+import com.idega.user.data.bean.Group;
 import com.idega.util.CoreConstants;
 import com.idega.util.DBUtil;
 import com.idega.util.ListUtil;
@@ -150,6 +152,13 @@ public class Application implements Serializable, ApplicationModel {
 	@JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID, referencedColumnName = ApplicationSettings.COLUMN_APPLICATION_ID)
 	private ApplicationSettings settings;
 
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = ApplicationBMPBean.EGOV_APPLICATION_HANDLER_GROUP,
+		joinColumns = @JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID),
+		inverseJoinColumns = @JoinColumn(name = GroupBMPBean.COLUMN_GROUP_ID)
+	)
+	private List<Group> handlerGroups;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -427,4 +436,11 @@ public class Application implements Serializable, ApplicationModel {
 		this.settings = settings;
 	}
 
+	public List<Group> getHandlerGroups() {
+		return handlerGroups;
+	}
+
+	public void setHandlerGroups(List<Group> handlerGroups) {
+		this.handlerGroups = handlerGroups;
+	}
 }
