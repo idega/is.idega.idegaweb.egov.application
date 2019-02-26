@@ -75,6 +75,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String COLUMN_LOGIN_PAGE_URL = "login_page_url";
 	public static final String COLUMN_SHOW_IN_IFRAME = "show_in_iframe";
 	private static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
+	private static final String COLUMN_CREATED = "created";
 
 	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
 	public static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
@@ -209,6 +210,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(COLUMN_LOGIN_PAGE_URL, "Login page url", String.class);
 		addAttribute(COLUMN_PAYMENT_REQUIRED, "Is payment required", Boolean.class);
 		addAttribute(COLUMN_SHOW_IN_IFRAME, "Show in Iframe", Boolean.class);
+		addAttribute(COLUMN_CREATED, "Created", Timestamp.class);
 
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_NAME_LOC_TEXT);
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_URL_LOC_TEXT);
@@ -853,6 +855,16 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	@Override
 	public void setShowInIframe(Boolean showInIframe) {
 		setColumn(COLUMN_SHOW_IN_IFRAME, showInIframe);
+	}
+
+	@Override
+	public Timestamp getCreated() {
+		return getTimestampColumnValue(COLUMN_CREATED);
+	}
+
+	@Override
+	public void setCreated(Timestamp created) {
+		setValue(COLUMN_CREATED, created);
 	}
 
 }
