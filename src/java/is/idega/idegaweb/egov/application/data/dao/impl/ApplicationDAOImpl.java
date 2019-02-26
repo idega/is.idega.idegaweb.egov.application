@@ -844,6 +844,43 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
+	@Override
+	@Transactional(readOnly = false)
+	public ApplicationAccess updateApplicationAccess(Long appAccId, Integer applicationId, Integer groupId, Integer level) {
+		if (applicationId == null || groupId == null) {
+			return null;
+		}
+
+		ApplicationAccess access = null;
+		try {
+			if (appAccId != null) {
+				access = getSingleResult(ApplicationAccess.QUERY_GET_BY_ID, ApplicationAccess.class, new Param("id", appAccId));
+			}
+			if (access == null) {
+				access = new ApplicationAccess();
+			}
+			access.setApplicationId(applicationId);
+			access.setGroupId(groupId);
+			access.setLevel(level);
+
+			if (access.getId() == null) {
+				persist(access);
+			} else {
+				merge(access);
+			}
+
+			if (access.getId() == null) {
+				return null;
+			}
+
+			return access;
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error updating application access " + access, e);
+		}
+
+		return null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#remove(is.idega.idegaweb.egov.application.data.bean.Application, com.idega.user.data.bean.Group)
@@ -885,6 +922,38 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			return findById(applicationId);
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Error removing application access for application " + applicationId + " and group " + groupId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeApplicationAccesses(Integer applicationId) {
+		List<ApplicationAccess> accesses = getAllForApplication(applicationId);
+		if (ListUtil.isEmpty(accesses)) {
+			return;
+		}
+
+		for (ApplicationAccess access: accesses) {
+			try {
+				remove(access);
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING, "Error removing application access " + access, e);
+			}
+		}
+	}
+
+	@Override
+	public List<ApplicationAccess> getAllForApplication(Integer applicationId) {
+		if (applicationId == null) {
+			return null;
+		}
+
+		try {
+			return getResultList(ApplicationAccess.QUERY_GET_BY_APPLICATION_ID, ApplicationAccess.class, new Param("applicationId", applicationId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting accesses for application: " + applicationId, e);
 		}
 
 		return null;

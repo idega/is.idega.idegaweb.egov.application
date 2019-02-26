@@ -11,6 +11,7 @@ import com.idega.user.data.bean.Group;
 import com.idega.user.data.bean.User;
 
 import is.idega.idegaweb.egov.application.data.bean.Application;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationAccess;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
 import is.idega.idegaweb.egov.application.data.bean.DecisionTemplate;
@@ -128,4 +129,11 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 	Application insert(Integer applicationId, Integer groupId, Integer level);
 
 	Application remove(Integer applicationId, Integer groupId);
+
+	public ApplicationAccess updateApplicationAccess(Long appAccId, Integer applicationId, Integer groupId, Integer level);
+
+	public void removeApplicationAccesses(Integer applicationId);
+
+	public List<ApplicationAccess> getAllForApplication(Integer applicationId);
+
 }
