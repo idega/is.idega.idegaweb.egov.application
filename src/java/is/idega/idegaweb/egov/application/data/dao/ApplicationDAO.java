@@ -1,12 +1,17 @@
 package is.idega.idegaweb.egov.application.data.dao;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.idega.block.process.data.dao.SettingsDAO;
 import com.idega.core.file.data.bean.ICFile;
 import com.idega.core.persistence.GenericDao;
+import com.idega.user.data.bean.Group;
+import com.idega.user.data.bean.User;
 
 import is.idega.idegaweb.egov.application.data.bean.Application;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationAccess;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
 import is.idega.idegaweb.egov.application.data.bean.DecisionTemplate;
@@ -15,6 +20,8 @@ import is.idega.idegaweb.egov.application.data.bean.SignatureProfile;
 public interface ApplicationDAO extends GenericDao, SettingsDAO {
 
 	public static final String BEAN_NAME = "egovApplicationDAO";
+
+	Application findById(Integer primaryKey);
 
 	Application getById(Integer id);
 
@@ -81,5 +88,54 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 
 	public List<Integer> getAllApplicationsAndCasesThirdPartyUsers();
 
+	/**
+	 *
+	 * @param groupPrimaryKeys is {@link Collection} of {@link Group#getId()} to get {@link Application}s for, not <code>null</code>
+	 * @return {@link List} of {@link Application#getId()} or {@link Collections#emptyList()} on failure;
+	 */
+	List<Integer> getApplicationKeys(Collection<Integer> groupPrimaryKeys);
+
+	/**
+	 *
+	 * @param groups is {@link Collection} of {@link Group#getId()} to get {@link Application}s for, not <code>null</code>
+	 * @return {@link Collection} of {@link Application#getUrl()} or {@link Collections#emptyList()} on failure;
+	 */
+	Collection<String> getApplicationLinks(Collection<Integer> groupPrimaryKeys);
+
+	/**
+	 * @param {@link List} groupsIds to get {@link Application}s for, not <code>null</code>
+	 * @param applications to be filtered, not <code>null</code>
+	 * @return filtered {@link Application}s or {@link Collections#emptyList()} on failure
+	 */
+	Collection<Application> getFilteredApplications(List<Integer> groupsIds, Collection<Application> applications);
+
+	/**
+	 *
+	 * @param user to get {@link Application}s for, not <code>null</code>
+	 * @param applications to be filtered, not <code>null</code>
+	 * @return filtered {@link Application}s or {@link Collections#emptyList()} on failure
+	 */
+	Collection<Application> getFilteredApplications(User user, Collection<Application> applications);
+
+	/**
+	 *
+	 * @param applications to be filtered, not <code>null</code>
+	 * @return filtered {@link Application}s or {@link Collections#emptyList()} on failure
+	 */
+	Collection<Application> getFilteredApplications(Collection<Application> applications);
+
+	Application insert(Application application, Group group, Integer level);
+
+	Application remove(Application application, Group group);
+
+	Application insert(Integer applicationId, Integer groupId, Integer level);
+
+	Application remove(Integer applicationId, Integer groupId);
+
+	public ApplicationAccess updateApplicationAccess(Long appAccId, Integer applicationId, Integer groupId, Integer level);
+
+	public void removeApplicationAccesses(Integer applicationId);
+
+	public List<ApplicationAccess> getAllForApplication(Integer applicationId);
 
 }

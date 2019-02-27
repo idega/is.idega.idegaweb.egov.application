@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -28,7 +30,9 @@ import com.idega.core.persistence.impl.GenericDaoImpl;
 import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
+import com.idega.user.dao.GroupDAO;
 import com.idega.user.dao.UserDAO;
+import com.idega.user.data.bean.Group;
 import com.idega.user.data.bean.User;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
@@ -36,8 +40,10 @@ import com.idega.util.CoreUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
+import com.idega.util.expression.ELUtil;
 
 import is.idega.idegaweb.egov.application.data.bean.Application;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationAccess;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationCategory;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationReminder;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
@@ -52,6 +58,30 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 	@Autowired
 	private UserDAO userDAO;
+
+	@Autowired
+	private GroupDAO groupDAO;
+
+	private GroupDAO getGroupDAO() {
+		if (this.groupDAO == null) {
+			ELUtil.getInstance().autowire(this);
+		}
+
+		return this.groupDAO;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#findById(java.lang.Integer)
+	 */
+	@Override
+	public Application findById(Integer primaryKey) {
+		if (primaryKey != null) {
+			return find(Application.class, primaryKey);
+		}
+
+		return null;
+	}
 
 	@Override
 	public List<ApplicationCategory> getAllCategoriesOrderedByPriority() {
@@ -125,7 +155,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 				uri = uri.substring(0, uri.length() - 1);
 			}
 
-//			uri = CoreConstants.PERCENT.concat(uri).concat(CoreConstants.PERCENT);
 			String query = "select a from ".concat(Application.class.getName()).concat(" a where a.url = :uri");
 			List<Application> applications = getResultListByInlineQuery(query, Application.class, new Param("uri", uri));
 			return ListUtil.isEmpty(applications) ? null : applications.get(0);
@@ -135,7 +164,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return null;
 	}
-
 
 	@Override
 	public List<String> getDistinctApplicationURLByAppType(String appType) {
@@ -152,13 +180,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
-
 	@Override
+	@Transactional(readOnly = true)
 	public List<Application> getAll() {
 		try {
-			return getResultListByInlineQuery(Application.QUERY_GET_ALL, Application.class);
+			return getResultList(Application.QUERY_GET_ALL, Application.class);
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Error getting all application.", e);
+			getLogger().log(Level.WARNING, "Error getting all applications", e);
 		}
 
 		return null;
@@ -646,7 +674,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		}
 	}
 
-
 	@Override
 	@Transactional(readOnly = false)
 	public void removeDecisionTemplatesByIds(List<Integer> decisionTemplateIds) {
@@ -730,6 +757,200 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#getApplicationKeys(com.idega.user.data.bean.Group)
+	 */
+	@Override
+	public List<Integer> getApplicationKeys(Collection<Integer> groupPrimaryKeys) {
+		if (ListUtil.isEmpty(groupPrimaryKeys)) {
+			return Collections.emptyList();
+		}
+
+		try {
+			return getResultList(ApplicationAccess.QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS, Integer.class, new Param("groupsIds", groupPrimaryKeys));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting applications IDs by groups IDs " + groupPrimaryKeys, e);
+		}
+
+		return Collections.emptyList();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#getApplicationLinks(com.idega.user.data.bean.Group)
+	 */
+	@Override
+	public Collection<String> getApplicationLinks(Collection<Integer> groupPrimaryKeys) {
+		List<String> applicationKeys = new ArrayList<>();
+
+		if (!ListUtil.isEmpty(groupPrimaryKeys)) {
+			Collection<Integer> applicationPrimaryKeys = getApplicationKeys(groupPrimaryKeys);
+			if (!ListUtil.isEmpty(applicationPrimaryKeys)) {
+				Map<String, Collection<? extends Serializable>> arguments = new HashMap<>();
+				arguments.put("id", applicationPrimaryKeys);
+
+				List<Application> applications = findAll(Application.class, arguments);
+				for (Application application : applications) {
+					if (!StringUtil.isEmpty(application.getUrl())) {
+						applicationKeys.add(application.getUrl());
+					}
+				}
+			}
+		}
+
+		return applicationKeys;
+	}
+
+	@Override
+	public Collection<Application> getFilteredApplications(List<Integer> groupsIds, Collection<Application> applications) {
+		Collection<Application> filteredApplications = new ArrayList<>();
+		if (ListUtil.isEmpty(groupsIds) || ListUtil.isEmpty(applications)) {
+			return filteredApplications;
+		}
+
+		List<Integer> keys = getApplicationKeys(groupsIds);
+		if (!ListUtil.isEmpty(keys)) {
+			for (Application application : applications) {
+				if (keys.contains(application.getPrimaryKey())) {
+					filteredApplications.add(application);
+				}
+			}
+		}
+
+		return filteredApplications;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#getFilteredApplications(com.idega.user.data.bean.User, java.util.Collection)
+	 */
+	@Override
+	public Collection<Application> getFilteredApplications(User user, Collection<Application> applications) {
+		if (user == null || ListUtil.isEmpty(applications)) {
+			return Collections.emptyList();
+		}
+
+		List<Integer> groupsIds = getGroupDAO().getAllGroupsIdsForUser(user, CoreUtil.getIWContext());
+		if (ListUtil.isEmpty(groupsIds)) {
+			return Collections.emptyList();
+		}
+
+		return getFilteredApplications(groupsIds, applications);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#getFilteredApplications(java.util.Collection)
+	 */
+	@Override
+	public Collection<Application> getFilteredApplications(Collection<Application> applications) {
+		if (ListUtil.isEmpty(applications)) {
+			return Collections.emptyList();
+		}
+
+		IWContext context = CoreUtil.getIWContext();
+		if (context == null || !context.isLoggedOn()) {
+			return Collections.emptyList();
+		}
+
+		return getFilteredApplications(context.getLoggedInUser(), applications);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#insert(is.idega.idegaweb.egov.application.data.bean.Application, com.idega.user.data.bean.Group)
+	 */
+	@Transactional(readOnly = false)
+	@Override
+	public Application insert(Application application, Group group, Integer level) {
+		if (application != null && group != null) {
+			return insert(application.getId(), group.getID(), level);
+		}
+
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#insert(java.lang.Integer, java.lang.Integer)
+	 */
+	@Transactional(readOnly = false)
+	@Override
+	public Application insert(Integer applicationId, Integer groupId, Integer level) {
+		if (applicationId == null || groupId == null) {
+			return null;
+		}
+
+		try {
+			ApplicationAccess aa = getSingleResult(
+					ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID,
+					ApplicationAccess.class,
+					new Param("applicationId", applicationId),
+					new Param("groupId", groupId)
+			);
+			if (aa == null) {
+				aa = new ApplicationAccess();
+			}
+			aa.setApplicationId(applicationId);
+			aa.setGroupId(groupId);
+			aa.setLevel(level);
+
+			if (aa.getId() == null) {
+				persist(aa);
+			} else {
+				merge(aa);
+			}
+
+			if (aa.getId() == null) {
+				return null;
+			}
+
+			return findById(applicationId);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error inserting application access for application " + applicationId + ", group " + groupId + (level == null ? CoreConstants.EMPTY : " and level " + level), e);
+		}
+
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public ApplicationAccess updateApplicationAccess(Long appAccId, Integer applicationId, Integer groupId, Integer level) {
+		if (applicationId == null || groupId == null) {
+			return null;
+		}
+
+		ApplicationAccess access = null;
+		try {
+			if (appAccId != null) {
+				access = getSingleResult(ApplicationAccess.QUERY_GET_BY_ID, ApplicationAccess.class, new Param("id", appAccId));
+			}
+			if (access == null) {
+				access = new ApplicationAccess();
+			}
+			access.setApplicationId(applicationId);
+			access.setGroupId(groupId);
+			access.setLevel(level);
+
+			if (access.getId() == null) {
+				persist(access);
+			} else {
+				merge(access);
+			}
+
+			if (access.getId() == null) {
+				return null;
+			}
+
+			return access;
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error updating application access " + access, e);
+		}
+
+		return null;
+	}
+
 	@Override
 	@Transactional(readOnly = false)
 	public boolean removeReminderById(Integer reminderId) {
@@ -760,5 +981,82 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return false;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#remove(is.idega.idegaweb.egov.application.data.bean.Application, com.idega.user.data.bean.Group)
+	 */
+	@Transactional(readOnly = false)
+	@Override
+	public Application remove(Application application, Group group) {
+		if (application != null && group != null) {
+			return remove(application.getId(), group.getID());
+		}
+
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#remove(java.lang.Integer, java.lang.Integer)
+	 */
+	@Transactional(readOnly = false)
+	@Override
+	public Application remove(Integer applicationId, Integer groupId) {
+		if (applicationId == null || groupId == null) {
+			return null;
+		}
+
+		try {
+			ApplicationAccess aa = getSingleResult(
+					ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID,
+					ApplicationAccess.class,
+					new Param("applicationId", applicationId),
+					new Param("groupId", groupId)
+			);
+			if (aa == null) {
+				return null;
+			}
+
+			remove(aa);
+
+			return findById(applicationId);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error removing application access for application " + applicationId + " and group " + groupId, e);
+		}
+
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void removeApplicationAccesses(Integer applicationId) {
+		List<ApplicationAccess> accesses = getAllForApplication(applicationId);
+		if (ListUtil.isEmpty(accesses)) {
+			return;
+		}
+
+		for (ApplicationAccess access: accesses) {
+			try {
+				remove(access);
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING, "Error removing application access " + access, e);
+			}
+		}
+	}
+
+	@Override
+	public List<ApplicationAccess> getAllForApplication(Integer applicationId) {
+		if (applicationId == null) {
+			return null;
+		}
+
+		try {
+			return getResultList(ApplicationAccess.QUERY_GET_BY_APPLICATION_ID, ApplicationAccess.class, new Param("applicationId", applicationId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting accesses for application: " + applicationId, e);
+		}
+
+		return null;
+	}
 
 }

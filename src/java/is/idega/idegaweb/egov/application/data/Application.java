@@ -58,11 +58,13 @@ public interface Application extends IDOEntity, ApplicationModel {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getTimesClicked
 	 */
+	@Override
 	public int getTimesClicked();
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#setTimesClicked
 	 */
+	@Override
 	public void setTimesClicked(int clicked);
 
 	/**
@@ -127,6 +129,7 @@ public interface Application extends IDOEntity, ApplicationModel {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getLoginPageURL
 	 */
+	@Override
 	public String getLoginPageURL();
 
 	/**
@@ -194,6 +197,7 @@ public interface Application extends IDOEntity, ApplicationModel {
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#getUrlByLocale
 	 */
+	@Override
 	public String getUrlByLocale(Locale locale);
 
 	/**
@@ -276,4 +280,9 @@ public interface Application extends IDOEntity, ApplicationModel {
 	 * @author <a href="mailto:martynas@idega.is">Martynas Stakė</a>
 	 */
 	boolean isPaymentRequired();
+
+	public Timestamp getCreated();
+
+	public void setCreated(Timestamp created);
+
 }

@@ -70,7 +70,6 @@ public class Application implements Serializable, ApplicationModel {
 								QUERY_GET_DISTINCT_APPLICATION_URL_BY_APP_TYPE = "application.getDistinctApplicationURLByAppType",
 								QUERY_GET_ALL = "application.getAll";
 
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = ApplicationBMPBean.EGOV_APPLICATION_ID)
