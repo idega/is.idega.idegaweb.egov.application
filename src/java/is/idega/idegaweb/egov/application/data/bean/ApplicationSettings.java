@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,7 +29,8 @@ import com.idega.util.DBUtil;
 @Cacheable
 @NamedQueries({
 	@NamedQuery(name = ApplicationSettings.FIND_BY_ID, query = "select s from ApplicationSettings s where s.id = :" + ApplicationSettings.PARAM_ID),
-	@NamedQuery(name = ApplicationSettings.FIND_BY_APPLICATION_ID, query = "select s from ApplicationSettings s where s.applicationId = :" + ApplicationSettings.PARAM_APPLICATION_ID)
+	@NamedQuery(name = ApplicationSettings.FIND_BY_APPLICATION_ID, query = "select s from ApplicationSettings s where s.applicationId = :" + ApplicationSettings.PARAM_APPLICATION_ID),
+	@NamedQuery(name = ApplicationSettings.FIND_REMINDERS_BY_APPLICATION_ID, query = "select s.reminders from ApplicationSettings s where s.id = :" + ApplicationSettings.PARAM_ID)
 })
 public class ApplicationSettings implements Serializable, SettingsModel {
 
@@ -43,6 +45,7 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 
 								FIND_BY_ID = "ApplicationSettings.findById",
 								FIND_BY_APPLICATION_ID = "ApplicationSettings.findByApplicationId",
+								FIND_REMINDERS_BY_APPLICATION_ID = "ApplicationSettings.findRemindersByApplicationId",
 
 								PARAM_ID = "applicationSettingId",
 								PARAM_APPLICATION_ID = "applicationId";
@@ -58,7 +61,7 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	@Column(name = "months_of_innactivity")
 	private Integer numberOfMonthsOfInnactivity;
 
-	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ApplicationReminder.class)
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ApplicationReminder.class, cascade = { CascadeType.REMOVE })
 	@JoinTable(name = TABLE_NAME + "_rem", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ApplicationReminder.COLUMN_ID, table = ApplicationReminder.TABLE_NAME) })
 	private List<ReminderModel> reminders;
 

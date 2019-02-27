@@ -79,5 +79,7 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 	public void removeSignatureProfilesByIds(List<Integer> signatureProfileIds);
 	public void removeDecisionTemplatesByIds(List<Integer> decisionTemplateIds);
 
+	public List<Integer> getAllApplicationsAndCasesThirdPartyUsers();
+
 
 }
