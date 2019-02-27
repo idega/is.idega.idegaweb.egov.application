@@ -917,13 +917,17 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Override
 	@Transactional(readOnly = false)
 	public ApplicationAccess updateApplicationAccess(Long appAccId, Integer applicationId, Integer groupId, Integer level) {
-		if (applicationId == null || groupId == null) {
+		if (applicationId == null || groupId == null || groupId < 0) {
 			return null;
 		}
 
 		ApplicationAccess access = null;
 		try {
 			Group group = getGroupDAO().findGroup(groupId);
+			if (group == null) {
+				getLogger().warning("Invalid group ID: " + groupId);
+				return null;
+			}
 
 			if (appAccId != null) {
 				access = getSingleResult(ApplicationAccess.QUERY_GET_BY_ID, ApplicationAccess.class, new Param("id", appAccId));
