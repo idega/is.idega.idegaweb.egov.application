@@ -865,7 +865,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Override
 	public Application insert(Application application, Group group, Integer level) {
 		if (application != null && group != null) {
-			return insert(application.getId(), group.getID(), level);
+			return insert(application.getId(), group, level);
 		}
 
 		return null;
@@ -877,8 +877,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Transactional(readOnly = false)
 	@Override
-	public Application insert(Integer applicationId, Integer groupId, Integer level) {
-		if (applicationId == null || groupId == null) {
+	public Application insert(Integer applicationId, Group group, Integer level) {
+		if (applicationId == null || group == null) {
 			return null;
 		}
 
@@ -887,13 +887,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 					ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID,
 					ApplicationAccess.class,
 					new Param("applicationId", applicationId),
-					new Param("groupId", groupId)
+					new Param("groupId", group.getID())
 			);
 			if (aa == null) {
 				aa = new ApplicationAccess();
 			}
 			aa.setApplicationId(applicationId);
-			aa.setGroupId(groupId);
+			aa.setGroup(group);
 			aa.setLevel(level);
 
 			if (aa.getId() == null) {
@@ -908,7 +908,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 			return findById(applicationId);
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Error inserting application access for application " + applicationId + ", group " + groupId + (level == null ? CoreConstants.EMPTY : " and level " + level), e);
+			getLogger().log(Level.WARNING, "Error inserting application access for application " + applicationId + ", group " + group + (level == null ? CoreConstants.EMPTY : " and level " + level), e);
 		}
 
 		return null;
@@ -923,6 +923,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		ApplicationAccess access = null;
 		try {
+			Group group = getGroupDAO().findGroup(groupId);
+
 			if (appAccId != null) {
 				access = getSingleResult(ApplicationAccess.QUERY_GET_BY_ID, ApplicationAccess.class, new Param("id", appAccId));
 			}
@@ -930,7 +932,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 				access = new ApplicationAccess();
 			}
 			access.setApplicationId(applicationId);
-			access.setGroupId(groupId);
+			access.setGroup(group);
 			access.setLevel(level);
 
 			if (access.getId() == null) {
@@ -989,7 +991,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Override
 	public Application remove(Application application, Group group) {
 		if (application != null && group != null) {
-			return remove(application.getId(), group.getID());
+			return remove(application.getId(), group);
 		}
 
 		return null;
@@ -1001,8 +1003,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Transactional(readOnly = false)
 	@Override
-	public Application remove(Integer applicationId, Integer groupId) {
-		if (applicationId == null || groupId == null) {
+	public Application remove(Integer applicationId, Group group) {
+		if (applicationId == null || group == null) {
 			return null;
 		}
 
@@ -1011,7 +1013,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 					ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID,
 					ApplicationAccess.class,
 					new Param("applicationId", applicationId),
-					new Param("groupId", groupId)
+					new Param("groupId", group.getID())
 			);
 			if (aa == null) {
 				return null;
@@ -1021,7 +1023,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 			return findById(applicationId);
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Error removing application access for application " + applicationId + " and group " + groupId, e);
+			getLogger().log(Level.WARNING, "Error removing application access for application " + applicationId + " and group " + group, e);
 		}
 
 		return null;

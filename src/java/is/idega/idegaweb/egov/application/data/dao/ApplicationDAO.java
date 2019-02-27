@@ -128,9 +128,9 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 
 	Application remove(Application application, Group group);
 
-	Application insert(Integer applicationId, Integer groupId, Integer level);
+	Application insert(Integer applicationId, Group group, Integer level);
 
-	Application remove(Integer applicationId, Integer groupId);
+	Application remove(Integer applicationId, Group group);
 
 	public ApplicationAccess updateApplicationAccess(Long appAccId, Integer applicationId, Integer groupId, Integer level);
 

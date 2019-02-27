@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -24,11 +26,11 @@ import com.idega.user.data.bean.Group;
 	@NamedQuery(name = ApplicationAccess.QUERY_GET_BY_APPLICATION_ID, query = "from is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa where aa.applicationId = :applicationId order by aa.level"),
 	@NamedQuery(
 			name = ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID,
-			query = "from is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa where aa.applicationId = :applicationId and aa.groupId = :groupId"
+			query = "from is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa where aa.applicationId = :applicationId and aa.group.groupID = :groupId"
 	),
 	@NamedQuery(
 			name = ApplicationAccess.QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS,
-			query = "select distinct aa.applicationId from is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa where aa.groupId in (:groupsIds)"
+			query = "select distinct aa.applicationId from is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa where aa.group.groupID in (:groupsIds)"
 	)
 })
 public class ApplicationAccess implements Serializable {
@@ -50,10 +52,8 @@ public class ApplicationAccess implements Serializable {
 	@Column(name = Application.TABLE_NAME + "_ID")
 	private Integer applicationId;
 
-	@Column(name = GroupBMPBean.COLUMN_GROUP_ID)
-	private Integer groupId;
-
-	@Column(name = GroupBMPBean.COLUMN_GROUP_ID, insertable = false, updatable = false)
+	@ManyToOne
+	@JoinColumn(name = GroupBMPBean.COLUMN_GROUP_ID)
 	private Group group;
 
 	@Column(name = "level")
@@ -73,14 +73,6 @@ public class ApplicationAccess implements Serializable {
 
 	public void setApplicationId(Integer applicationId) {
 		this.applicationId = applicationId;
-	}
-
-	public Integer getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(Integer groupId) {
-		this.groupId = groupId;
 	}
 
 	public Integer getLevel() {
