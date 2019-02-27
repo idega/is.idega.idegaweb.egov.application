@@ -16,7 +16,7 @@ import com.idega.user.data.GroupBMPBean;
 import com.idega.user.data.bean.Group;
 
 @Entity
-@Table(name = Application.TABLE_NAME)
+@Table(name = ApplicationAccess.TABLE_NAME)
 @Cacheable
 @NamedQueries({
 	@NamedQuery(name = ApplicationAccess.QUERY_GET_ALL, query = "from is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa"),
@@ -97,6 +97,11 @@ public class ApplicationAccess implements Serializable {
 
 	public void setGroup(Group group) {
 		this.group = group;
+	}
+
+	@Override
+	public String toString() {
+		return "ID: " + getId();
 	}
 
 }

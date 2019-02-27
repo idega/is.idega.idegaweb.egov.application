@@ -936,6 +936,10 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		}
 
 		for (ApplicationAccess access: accesses) {
+			if (access == null || access.getId() == null) {
+				continue;
+			}
+
 			try {
 				remove(access);
 			} catch (Exception e) {
