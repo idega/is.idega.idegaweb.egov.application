@@ -20,12 +20,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.idega.block.process.data.bean.CaseSettings;
 import com.idega.block.process.data.model.ReminderModel;
 import com.idega.block.process.data.model.SettingsModel;
 import com.idega.core.accesscontrol.data.bean.ICRole;
 import com.idega.core.file.data.bean.ICFile;
 import com.idega.core.persistence.Param;
 import com.idega.core.persistence.impl.GenericDaoImpl;
+import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.user.dao.GroupDAO;
@@ -241,7 +243,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 	@Override
 	@Transactional(readOnly = false)
-	public ReminderModel updateReminder(Integer reminderId, List<String> receiversUUIDs, Long timestamp, String message) {
+	public ReminderModel updateReminder(Integer reminderId, List<String> receiversUUIDs, Long timestamp, String message, List<Integer> dashboardRoleIds) {
 		ApplicationReminder reminder = null;
 		if (reminderId == null) {
 			reminder = new ApplicationReminder();
@@ -256,6 +258,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		reminder.setReceivers(getUsers(receiversUUIDs));
 		reminder.setTimestamp(timestamp == null ? null : new Timestamp(timestamp));
 		reminder.setMessage(message);
+		reminder.setDashboardRoles(dashboardRoleIds);
 
 		if (reminder.getId() == null) {
 			persist(reminder);
@@ -687,6 +690,73 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		}
 	}
 
+	@Override
+	public List<Integer> getAllApplicationsAndCasesThirdPartyUsers() {
+		List<Integer> thirdPartyUserIds = new ArrayList<Integer>();
+		List<Serializable[]> allThirdPartyUsersSerializableList = new ArrayList<Serializable[]>();
+		try {
+			//Third party users from all the applications
+			String queryApp = "select distinct ainv.ic_user_id from " + ApplicationSettings.TABLE_NAME + "_inv ainv";
+			List<Serializable[]> appThirdPartyUsers = null;
+			try {
+				appThirdPartyUsers = SimpleQuerier.executeQuery(queryApp, 1);
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING, "Error executing query: " + queryApp, e);
+			}
+			if (!ListUtil.isEmpty(appThirdPartyUsers)) {
+				allThirdPartyUsersSerializableList.addAll(appThirdPartyUsers);
+			}
+
+			//Third party users from all the cases
+			String queryCases = "select distinct cinv.ic_user_id from " + CaseSettings.TABLE_NAME + "_inv cinv";
+			List<Serializable[]> caseThirdPartyUsers = null;
+			try {
+				caseThirdPartyUsers = SimpleQuerier.executeQuery(queryCases, 1);
+			} catch (Exception e) {
+				getLogger().log(Level.WARNING, "Error executing query: " + queryCases, e);
+			}
+			if (!ListUtil.isEmpty(caseThirdPartyUsers)) {
+				allThirdPartyUsersSerializableList.addAll(caseThirdPartyUsers);
+			}
+
+			//Add the unique user ids into the final list
+			if (!ListUtil.isEmpty(allThirdPartyUsersSerializableList)) {
+				for (Serializable[] userId: allThirdPartyUsersSerializableList) {
+					if (ArrayUtil.isEmpty(userId)) {
+						continue;
+					}
+
+					Serializable idSer = userId[0];
+					if (idSer instanceof Number) {
+						Integer userInt = ((Number) idSer).intValue();
+						if (!thirdPartyUserIds.contains(userInt)) {
+							thirdPartyUserIds.add(userInt);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not fetch the all applications and cases third party users.", e);
+		}
+
+		return thirdPartyUserIds;
+	}
+
+	@Override
+	public List<ReminderModel> getRemindersBySettingsId(Integer settingsId) {
+		if (settingsId == null) {
+			return null;
+		}
+
+		try {
+			return getResultList(ApplicationSettings.FIND_REMINDERS_BY_APPLICATION_ID, ReminderModel.class, new Param(ApplicationSettings.PARAM_ID, settingsId));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting reminders by settings ID: " + settingsId, e);
+		}
+
+		return null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see is.idega.idegaweb.egov.application.data.dao.ApplicationDAO#getApplicationKeys(com.idega.user.data.bean.Group)
@@ -879,6 +949,36 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		}
 
 		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public boolean removeReminderById(Integer reminderId) {
+		if (reminderId == null) {
+			return false;
+		}
+
+		try {
+			//Remove reminder users
+			Query qReminderUsers = getEntityManager().createNativeQuery("delete from " + ApplicationReminder.TABLE_NAME + "_rec" + " where " + ApplicationReminder.COLUMN_ID + " = ?");
+			qReminderUsers.setParameter(1, reminderId);
+			qReminderUsers.executeUpdate();
+
+			//Remove reminder dashboard roles
+			Query qReminderDashboardRoles = getEntityManager().createNativeQuery("delete from " + ApplicationReminder.TABLE_NAME + "_dr" + " where " + ApplicationReminder.JOIN_COLUMN_REMINDER_ID + " = ?");
+			qReminderDashboardRoles.setParameter(1, reminderId);
+			qReminderDashboardRoles.executeUpdate();
+
+			//Remove reminder itself
+			Query qReminder = getEntityManager().createNativeQuery("delete from " + ApplicationReminder.TABLE_NAME + " where " + ApplicationReminder.COLUMN_ID + " = ?");
+			qReminder.setParameter(1, reminderId);
+			qReminder.executeUpdate();
+
+			return true;
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error removing the reminder and all it's children: " + reminderId, e);
+		}
+		return false;
 	}
 
 	/*
