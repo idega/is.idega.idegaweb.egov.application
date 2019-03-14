@@ -83,6 +83,7 @@ public class ApplicationCreator extends ApplicationBlock {
 	private static final String AGE_FROM_INPUT = "ageFrom";
 	private static final String AGE_TO_INPUT = "ageTo";
 	private static final String CODE_INPUT = "code";
+	private static final String PARAMETER_CASE_PREFIX = "case_prefix";
 	protected static final String CAT_INPUT = "cat";
 	private static final String NEW_WIN_INPUT = "newin";
 	private static final String HIDDEN_INPUT = "hidden";
@@ -208,6 +209,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		String cat = iwc.isParameterSet(CAT_INPUT) ? iwc.getParameter(CAT_INPUT) : null;
 		String code = iwc.getParameter(CODE_INPUT);
+		String prefix = iwc.getParameter(PARAMETER_CASE_PREFIX);
 		String opensInNew = iwc.getParameter(NEW_WIN_INPUT);
 		String hiddenFromGuests = getBooleanValueInString(iwc.getParameter(HIDDEN_INPUT), this.hiddenFromGuests);
 
@@ -222,6 +224,7 @@ public class ApplicationCreator extends ApplicationBlock {
 			app = getApplicationBusiness(iwc).getApplicationHome().create();
 		}
 		app.setName(name);
+		app.setIdentifierPrefix(prefix);
 		app.setRequiresLogin(CoreConstants.Y.equalsIgnoreCase(requiresLogin));
 		app.setVisible(CoreConstants.Y.equalsIgnoreCase(visible));
 		app.setShowInIframe(CoreConstants.Y.equalsIgnoreCase(showInIframe));
@@ -587,6 +590,7 @@ public class ApplicationCreator extends ApplicationBlock {
 
 		String catValue = iwc.getParameter(CAT_INPUT);
 		String codeValue = iwc.getParameter(CODE_INPUT);
+		String casePrefixValue = iwc.getParameter(PARAMETER_CASE_PREFIX);
 		String opensInNewValue = iwc.getParameter(NEW_WIN_INPUT);
 		String hiddenFromGuestsValue = getBooleanValueInString(iwc.getParameter(HIDDEN_INPUT), this.hiddenFromGuests);
 		boolean isPaymentRequiredValue = getBooleanValue(
@@ -701,6 +705,10 @@ public class ApplicationCreator extends ApplicationBlock {
 		if (!StringUtil.isEmpty(this.caseCode)) {
 			caseCode.setSelectedElement(this.caseCode);
 		}
+		
+		TextInput casePrefix = new TextInput(PARAMETER_CASE_PREFIX);
+		casePrefix.setId(PARAMETER_CASE_PREFIX);
+		casePrefix.setValue(casePrefixValue);
 
 		Application application = null;
 
@@ -719,6 +727,9 @@ public class ApplicationCreator extends ApplicationBlock {
 				}
 				if (application.getCaseCode() != null) {
 					caseCode.setSelectedElement(application.getCaseCode().getPrimaryKey().toString());
+				}
+				if(casePrefixValue == null) {
+					casePrefix.setValue(application.getIdentifierPrefix());
 				}
 				newin.setSelected(application.getOpensInNewWindow());
 				form.add(new HiddenInput(APPLICATION_ID_PARAMETER, Integer.toString(applicationID)));
@@ -799,6 +810,19 @@ public class ApplicationCreator extends ApplicationBlock {
 		errorItem.add(msg);
 		formItem.add(label);
 		formItem.add(caseCode);
+		formItem.add(errorItem);
+		layer.add(formItem);
+		
+		formItem = new Layer(Layer.DIV);
+		formItem.setStyleClass("formItem");
+		errorItem = new Layer(Layer.SPAN);
+		errorItem.setStyleClass("error");
+		label = new Label(this.iwrb.getLocalizedString("case_identifier_prefix", "Prefix"), caseCode);
+		msg = (HtmlMessage)iwc.getApplication().createComponent(HtmlMessage.COMPONENT_TYPE);
+		msg.setFor(casePrefix.getId());
+		errorItem.add(msg);
+		formItem.add(label);
+		formItem.add(casePrefix);
 		formItem.add(errorItem);
 		layer.add(formItem);
 
@@ -948,6 +972,8 @@ public class ApplicationCreator extends ApplicationBlock {
 			}
 		}
 
+		
+		
 		if (addSaveButton || addBackButton) {
 			Layer buttonLayer = new Layer(Layer.DIV);
 			buttonLayer.setStyleClass("buttonLayer");

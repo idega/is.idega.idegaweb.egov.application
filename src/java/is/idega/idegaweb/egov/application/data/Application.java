@@ -242,6 +242,9 @@ public interface Application extends IDOEntity, ApplicationModel {
 
 	@Override
 	public String getAppType();
+	
+	public void setIdentifierPrefix(String prefix);
+	public String getIdentifierPrefix();
 
 	/**
 	 * @see is.idega.idegaweb.egov.application.data.ApplicationBMPBean#removeLocalizedEntries

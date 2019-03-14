@@ -76,6 +76,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String COLUMN_SHOW_IN_IFRAME = "show_in_iframe";
 	private static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
 	private static final String COLUMN_CREATED = "created";
+	public static final String COLUMN_IDENTIFIER_PREFIX = "case_identifier_prefix"; 
 
 	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
 	public static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
@@ -211,6 +212,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(COLUMN_PAYMENT_REQUIRED, "Is payment required", Boolean.class);
 		addAttribute(COLUMN_SHOW_IN_IFRAME, "Show in Iframe", Boolean.class);
 		addAttribute(COLUMN_CREATED, "Created", Timestamp.class);
+		addAttribute(COLUMN_IDENTIFIER_PREFIX, "Prefix", String.class);
 
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_NAME_LOC_TEXT);
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_URL_LOC_TEXT);
@@ -531,6 +533,16 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	@Override
 	public String getAppType() {
 		return getStringColumnValue(APP_TYPE);
+	}
+	
+	@Override
+	public void setIdentifierPrefix(String prefix) {
+		setColumn(COLUMN_IDENTIFIER_PREFIX, prefix);
+	}
+
+	@Override
+	public String getIdentifierPrefix() {
+		return getStringColumnValue(COLUMN_IDENTIFIER_PREFIX);
 	}
 
 	@Override

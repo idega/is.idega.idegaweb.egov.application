@@ -99,6 +99,9 @@ public class Application implements Serializable, ApplicationModel {
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = ApplicationBMPBean.CASE_CODE)
 	private CaseCode caseCode;
+	
+	@Column(name = ApplicationBMPBean.COLUMN_IDENTIFIER_PREFIX)
+	private String identifierPrefix;
 
 	@Column(name = ApplicationBMPBean.AGE_FROM)
 	private Integer ageFrom;
@@ -424,6 +427,14 @@ public class Application implements Serializable, ApplicationModel {
 
 	public void setSettings(ApplicationSettings settings) {
 		this.settings = settings;
+	}
+	
+	public String getIdentifierPrefix() {
+		return identifierPrefix;
+	}
+	
+	public void setIdentifierPrefix(String prefix) {
+		identifierPrefix = prefix;
 	}
 
 }
