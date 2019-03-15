@@ -59,4 +59,7 @@ public interface ApplicationModel {
 	Boolean getShowInIframe();
 	void setShowInIframe(Boolean showInIframe);
 
+	void setIdentifierPrefix(String prefix);
+	String getIdentifierPrefix();
+
 }
