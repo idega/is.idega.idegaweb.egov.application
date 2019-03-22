@@ -1,8 +1,11 @@
 package is.idega.idegaweb.egov.application.presentation;
 
+import java.sql.Timestamp;
 import java.util.Locale;
 
 import javax.ejb.FinderException;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
@@ -20,13 +23,26 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.PresentationUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
+import com.idega.util.expression.ELUtil;
 
 import is.idega.idegaweb.egov.application.ApplicationConstants;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
 import is.idega.idegaweb.egov.application.data.Application;
 import is.idega.idegaweb.egov.application.data.ApplicationHome;
+import is.idega.idegaweb.egov.application.data.dao.ApplicationDAO;
 
 public class DisabledApplicationView extends Block {
+
+	@Autowired
+	private ApplicationDAO applicationDAO;
+
+	private ApplicationDAO getApplicationDAO() {
+		if (applicationDAO == null) {
+			ELUtil.getInstance().autowire(this);
+		}
+
+		return applicationDAO;
+	}
 
 	@Override
 	public void main(IWContext iwc) throws Exception {
@@ -66,18 +82,37 @@ public class DisabledApplicationView extends Block {
 		heading.setStyleClass("header");
 		container.add(heading);
 
-		String text = (app == null || app.getEnabledFrom() == null || app.getEnabledTo() == null) ?
-				iwrb.getLocalizedString("disabled_app_text", "Application currently is disabled.") :
-				iwrb.getLocalizedString("application_is_enabled_from", "Application is enabled from") + CoreConstants.SPACE +
-					new IWTimestamp(app.getEnabledFrom()).getLocaleDateAndTime(locale) + CoreConstants.SPACE + iwrb.getLocalizedString("to", "to") +
-					CoreConstants.SPACE + new IWTimestamp(app.getEnabledTo()).getLocaleDateAndTime(locale);
+		Timestamp from = app == null ? null : app.getEnabledFrom();
+		Timestamp to = app == null ? null : app.getEnabledTo();
+		if ((app == null || (from == null && to == null)) && StringHandler.isNumeric(appId)) {
+			is.idega.idegaweb.egov.application.data.bean.Application application = null;
+			try {
+				application = getApplicationDAO().findById(Integer.valueOf(appId));
+			} catch (Exception e) {
+				getLogger().warning("Failed to get application by ID: " + appId);
+			}
+			if (application != null) {
+				from = from == null ? application.getEnabledFrom() : from;
+				to = to == null ? application.getEnabledTo() : to;
+			}
+		}
+
+		String text = iwrb.getLocalizedString("disabled_app_text", "Application currently is disabled.");
+		if (from != null && to != null) {
+			text = iwrb.getLocalizedString("application_is_enabled_from", "Application is enabled from") + CoreConstants.SPACE +
+					new IWTimestamp(from).getLocaleDateAndTime(locale) + CoreConstants.SPACE + iwrb.getLocalizedString("to", "to") +
+					CoreConstants.SPACE + new IWTimestamp(to).getLocaleDateAndTime(locale);
+		} else if (from != null) {
+			text = iwrb.getLocalizedString("application_is_enabled_from", "Application is enabled from") + CoreConstants.SPACE +
+					new IWTimestamp(from).getLocaleDateAndTime(locale);
+		}
 
 		Span disabledAppTextContainer = new Span();
 		disabledAppTextContainer.setStyleClass("disabledAppTextContainer");
 		disabledAppTextContainer.add(text);
 		container.add(disabledAppTextContainer);
 
-		String key = "disabled_app_explanation_".concat(appId);
+		String key = "disabled_app_explanation_".concat(appId == null ? CoreConstants.EMPTY : appId);
 		String explanationText = iwrb.getLocalizedString(key, key);
 		if (!key.equals(explanationText)) {
 			container.add(new CSSSpacer());
