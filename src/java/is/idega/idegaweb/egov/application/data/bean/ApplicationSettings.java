@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -42,6 +43,7 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 								COLUMN_PRICE = "price",
 								COLUMN_INVOICING_TYPE = "invoicing_type",
 								COLUMN_FIXED_INVOICED_HOURS = "fixed_invoiced_hours",
+								COLUMN_FILE = "file",
 
 								FIND_BY_ID = "ApplicationSettings.findById",
 								FIND_BY_APPLICATION_ID = "ApplicationSettings.findByApplicationId",
@@ -49,6 +51,9 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 
 								PARAM_ID = "applicationSettingId",
 								PARAM_APPLICATION_ID = "applicationId";
+
+	private static final String TABLE_APPLICATION_SETTINGS_FILES = TABLE_NAME + "_files";
+	private static final String JOIN_COLUMN_APPLICATION_SETTINGS_ID = TABLE_NAME + "_id";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -89,6 +94,14 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 
 	@Column(name = COLUMN_FIXED_INVOICED_HOURS)
 	private Integer fixedInvoicedHours;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@JoinTable(
+			name = TABLE_APPLICATION_SETTINGS_FILES,
+			joinColumns=@JoinColumn(name=JOIN_COLUMN_APPLICATION_SETTINGS_ID))
+	@Column(name = COLUMN_FILE)
+    private List<Integer> files;
+
 
 	@Override
 	public Integer getId() {
@@ -190,6 +203,14 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 
 	public void setFixedInvoicedHours(Integer fixedInvoicedHours) {
 		this.fixedInvoicedHours = fixedInvoicedHours;
+	}
+
+	public List<Integer> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<Integer> files) {
+		this.files = files;
 	}
 
 

@@ -290,7 +290,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			List<Integer> decisionTemplateIds,
 			String invoicingType,
 			Double price,
-			Integer fixedInvoicedHours
+			Integer fixedInvoicedHours,
+			List<Integer> settingsFileIds
 
 	) {
 		if (!(id instanceof Integer)) {
@@ -360,6 +361,11 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			settings.setPrice(price);
 
 			settings.setApplicationId(applicationId);
+
+			//Files
+			if (!ListUtil.isEmpty(settingsFileIds)) {
+				settings.setFiles(settingsFileIds);
+			}
 
 			if (settings.getId() == null) {
 				persist(settings);

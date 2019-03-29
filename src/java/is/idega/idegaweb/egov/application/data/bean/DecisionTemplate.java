@@ -88,6 +88,7 @@ public class DecisionTemplate implements Serializable {
 	@Column(name = "edited_by")
 	private Integer editedBy;
 
+
 	public Integer getId() {
 		return id;
 	}
@@ -175,6 +176,8 @@ public class DecisionTemplate implements Serializable {
 	public void setEditedBy(Integer editedBy) {
 		this.editedBy = editedBy;
 	}
+
+
 
 	@Override
 	public String toString() {
