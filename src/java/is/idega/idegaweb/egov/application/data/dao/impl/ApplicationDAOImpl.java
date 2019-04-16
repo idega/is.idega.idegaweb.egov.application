@@ -76,10 +76,20 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Override
 	public Application findById(Integer primaryKey) {
-		if (primaryKey != null) {
-			return find(Application.class, primaryKey);
+		return getById(primaryKey);
+	}
+
+	@Override
+	public Application getById(Integer id) {
+		if (id == null) {
+			return null;
 		}
 
+		try {
+			return getSingleResult(Application.QUERY_GET_BY_ID, Application.class, new Param("id", id));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting application by ID: " + id, e);
+		}
 		return null;
 	}
 
@@ -116,16 +126,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			getLogger().log(Level.WARNING, "Error getting applications by category " + category + ". Query: " + query, e);
 		}
 		return Collections.emptyList();
-	}
-
-	@Override
-	public Application getById(Integer id) {
-		if (id == null) {
-			return null;
-		}
-
-		Application app = find(Application.class, id);
-		return app;
 	}
 
 	@Override
@@ -291,8 +291,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			String invoicingType,
 			Double price,
 			Integer fixedInvoicedHours,
-			List<Integer> settingsFileIds
-
+			List<ICFile> settingsFiles
 	) {
 		if (!(id instanceof Integer)) {
 			return null;
@@ -363,8 +362,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			settings.setApplicationId(applicationId);
 
 			//Files
-			if (!ListUtil.isEmpty(settingsFileIds)) {
-				settings.setFiles(settingsFileIds);
+			if (!ListUtil.isEmpty(settingsFiles)) {
+				settings.setFiles(settingsFiles);
 			}
 
 			if (settings.getId() == null) {
