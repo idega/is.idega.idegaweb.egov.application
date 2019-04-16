@@ -49,8 +49,14 @@ public class ApplicationTypeURL implements ApplicationType {
 
 	@Override
 	public String getLabel(IWContext iwc) {
-		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
-		return iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("app_type.url", "Url");
+		IWMainApplication iwma = null;
+		if (iwc != null) {
+			iwma = iwc.getApplicationContext().getIWMainApplication();
+		}
+		iwma = iwma == null ? IWMainApplication.getDefaultIWMainApplication() : iwma;
+		return iwma == null ?
+			CoreConstants.EMPTY :
+			iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("app_type.url", "Url");
 	}
 
 	@Override
