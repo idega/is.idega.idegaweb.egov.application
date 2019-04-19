@@ -201,6 +201,7 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	}
 
 	public List<ICFile> getFiles() {
+		files = DBUtil.getInstance().lazyLoad(files);
 		return files;
 	}
 
