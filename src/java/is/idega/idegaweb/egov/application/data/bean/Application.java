@@ -8,6 +8,7 @@ import java.util.Locale;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,6 +32,7 @@ import com.idega.block.text.data.bean.LocalizedText;
 import com.idega.block.text.model.LocalizedTextModel;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.persistence.Param;
+import com.idega.data.BooleanConverter;
 import com.idega.util.CoreConstants;
 import com.idega.util.DBUtil;
 import com.idega.util.ListUtil;
@@ -140,6 +142,7 @@ public class Application implements Serializable, ApplicationModel {
 	@Column(name = ApplicationBMPBean.COLUMN_SHOW_IN_IFRAME, length = 1)
 	private Character showInIframe;
 	
+	@Convert(converter = BooleanConverter.class)
 	@Column(name = ApplicationBMPBean.COLUMN_PAYMENT_REQUIRED, length = 1)
 	private Boolean paymentRequired;
 
