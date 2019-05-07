@@ -31,18 +31,26 @@ import com.idega.user.data.bean.Group;
 	@NamedQuery(
 			name = ApplicationAccess.QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS,
 			query = "select distinct aa.applicationId from is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa where aa.group.groupID in (:groupsIds)"
+	),
+	@NamedQuery(
+			name = ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_LEVEL,
+			query = "SELECT aa FROM is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa "
+					+ "WHERE aa.applicationId=:applicationId "
+					+ "AND aa.level=:level"
 	)
 })
 public class ApplicationAccess implements Serializable {
 
 	private static final long serialVersionUID = -6823563722830804602L;
-
-	public static final String	TABLE_NAME = Application.TABLE_NAME + "_ACCESS",
-								QUERY_GET_ALL = "ApplicationAccess.getAll",
-								QUERY_GET_BY_ID = "ApplicationAccess.getById",
-								QUERY_GET_BY_APPLICATION_ID = "ApplicationAccess.getByApplicationId",
-								QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID = "ApplicationAccess.getByApplicationIdAndGroupId",
-								QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS = "ApplicationAccess.getApplicationsIdsByGroupsIds";
+	public static final String	
+			TABLE_NAME = Application.TABLE_NAME + "_ACCESS",
+			QUERY_GET_ALL = "ApplicationAccess.getAll",
+			QUERY_GET_BY_ID = "ApplicationAccess.getById",
+			QUERY_GET_BY_APPLICATION_ID = "ApplicationAccess.getByApplicationId",
+			QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID = "ApplicationAccess.getByApplicationIdAndGroupId",
+			QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS = "ApplicationAccess.getApplicationsIdsByGroupsIds",
+			QUERY_GET_BY_APPLICATION_ID_AND_LEVEL = "ApplicationAccess.getByApplicationIdAndLevel";
+								
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

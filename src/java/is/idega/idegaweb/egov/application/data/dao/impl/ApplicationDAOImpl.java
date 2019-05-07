@@ -780,6 +780,19 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return Collections.emptyList();
 	}
+	
+	@Override
+	public ApplicationAccess getApplicationAccessByApplicationIdAndLevel(
+			Integer applicationId,
+			Integer level
+	){
+		return getSingleResult(
+				ApplicationAccess.QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS,
+				ApplicationAccess.class, 
+				new Param("applicationId", applicationId),
+				new Param("level", level)
+		);
+	}
 
 	/*
 	 * (non-Javadoc)
