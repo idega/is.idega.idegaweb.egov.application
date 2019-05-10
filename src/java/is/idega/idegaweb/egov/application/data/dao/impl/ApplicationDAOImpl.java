@@ -295,19 +295,14 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			String invoicingType,
 			Double price,
 			Integer fixedInvoicedHours,
-<<<<<<< HEAD
-			List<Integer> settingsFileIds,
 			List<Integer> rateIds,
 			List<Integer> mileageReimbursementIds,
 			List<Integer> materialIds,
 			List<Integer> consultantIds,
 			Group referenceUnit,
 			String invoiceReferenceCode,
-			Integer priceRateId
-
-=======
+			Integer priceRateId,
 			List<ICFile> settingsFiles
->>>>>>> d29f4068dd044437800d45fd98a6995a66b753ce
 	) {
 		if (!(id instanceof Integer)) {
 			return null;
@@ -834,7 +829,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return Collections.emptyList();
 	}
-	
+
 	@Override
 	public ApplicationAccess getApplicationAccessByApplicationIdAndLevel(
 			Integer applicationId,
@@ -842,7 +837,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	){
 		return getSingleResult(
 				ApplicationAccess.QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS,
-				ApplicationAccess.class, 
+				ApplicationAccess.class,
 				new Param("applicationId", applicationId),
 				new Param("level", level)
 		);
