@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -22,6 +23,8 @@ import javax.persistence.Table;
 import com.idega.block.process.data.model.ReminderModel;
 import com.idega.block.process.data.model.SettingsModel;
 import com.idega.core.accesscontrol.data.bean.ICRole;
+import com.idega.user.data.GroupBMPBean;
+import com.idega.user.data.bean.Group;
 import com.idega.user.data.bean.User;
 import com.idega.util.DBUtil;
 
@@ -41,9 +44,11 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 								COLUMN_ID = TABLE_NAME + "_id",
 								COLUMN_APPLICATION_ID = "application_id",
 								COLUMN_PRICE = "price",
+								COLUMN_PRICE_RATE_ID = "price_rate_id",
 								COLUMN_INVOICING_TYPE = "invoicing_type",
 								COLUMN_FIXED_INVOICED_HOURS = "fixed_invoiced_hours",
 								COLUMN_FILE = "file",
+								COLUMN_INVOICE_REFERENCE_CODE = "invoice_reference_code",
 
 								FIND_BY_ID = "ApplicationSettings.findById",
 								FIND_BY_APPLICATION_ID = "ApplicationSettings.findByApplicationId",
@@ -92,6 +97,9 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	@Column(name = COLUMN_PRICE)
 	private Double price;
 
+	@Column(name = COLUMN_PRICE_RATE_ID)
+	private Integer priceRateId;
+
 	@Column(name = COLUMN_FIXED_INVOICED_HOURS)
 	private Integer fixedInvoicedHours;
 
@@ -101,6 +109,29 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 			joinColumns=@JoinColumn(name=JOIN_COLUMN_APPLICATION_SETTINGS_ID))
 	@Column(name = COLUMN_FILE)
     private List<Integer> files;
+
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ApplicationRate.class, cascade = { CascadeType.REMOVE })
+	@JoinTable(name = TABLE_NAME + "_rate", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ApplicationRate.COLUMN_ID, table = ApplicationRate.TABLE_NAME) })
+	private List<ApplicationRate> rates;
+
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = MileageReimbursement.class, cascade = { CascadeType.REMOVE })
+	@JoinTable(name = TABLE_NAME + "_mr", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = MileageReimbursement.COLUMN_ID, table = MileageReimbursement.TABLE_NAME) })
+	private List<MileageReimbursement> mileageReimbursements;
+
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ApplicationMaterial.class, cascade = { CascadeType.REMOVE })
+	@JoinTable(name = TABLE_NAME + "_am", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ApplicationMaterial.COLUMN_ID, table = ApplicationMaterial.TABLE_NAME) })
+	private List<ApplicationMaterial> materials;
+
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ApplicationConsultant.class, cascade = { CascadeType.REMOVE })
+	@JoinTable(name = TABLE_NAME + "_ac", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ApplicationConsultant.COLUMN_ID, table = ApplicationConsultant.TABLE_NAME) })
+	private List<ApplicationConsultant> consultants;
+
+	@ManyToOne
+	@JoinColumn(name = GroupBMPBean.COLUMN_GROUP_ID)
+	private Group referenceUnit;
+
+	@Column(name = COLUMN_INVOICE_REFERENCE_CODE)
+	private String invoiceReferenceCode;
 
 
 	@Override
@@ -211,6 +242,91 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 
 	public void setFiles(List<Integer> files) {
 		this.files = files;
+	}
+
+	public List<ApplicationRate> getRates() {
+		rates = DBUtil.getInstance().lazyLoad(rates);
+		return rates;
+	}
+
+	public void setRates(List<ApplicationRate> rates) {
+		this.rates = rates;
+	}
+
+	public Integer getNumberOfMonthsOfInnactivity() {
+		return numberOfMonthsOfInnactivity;
+	}
+
+	public void setNumberOfMonthsOfInnactivity(Integer numberOfMonthsOfInnactivity) {
+		this.numberOfMonthsOfInnactivity = numberOfMonthsOfInnactivity;
+	}
+
+	public List<User> getThirdPartiesToInvite() {
+		thirdPartiesToInvite = DBUtil.getInstance().lazyLoad(thirdPartiesToInvite);
+		return thirdPartiesToInvite;
+	}
+
+	public void setThirdPartiesToInvite(List<User> thirdPartiesToInvite) {
+		this.thirdPartiesToInvite = thirdPartiesToInvite;
+	}
+
+	public List<ICRole> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<ICRole> roles) {
+		this.roles = roles;
+	}
+
+	public List<MileageReimbursement> getMileageReimbursements() {
+		mileageReimbursements = DBUtil.getInstance().lazyLoad(mileageReimbursements);
+		return mileageReimbursements;
+	}
+
+	public void setMileageReimbursements(List<MileageReimbursement> mileageReimbursements) {
+		this.mileageReimbursements = mileageReimbursements;
+	}
+
+	public List<ApplicationMaterial> getMaterials() {
+		materials = DBUtil.getInstance().lazyLoad(materials);
+		return materials;
+	}
+
+	public void setMaterials(List<ApplicationMaterial> materials) {
+		this.materials = materials;
+	}
+
+	public List<ApplicationConsultant> getConsultants() {
+		consultants = DBUtil.getInstance().lazyLoad(consultants);
+		return consultants;
+	}
+
+	public void setConsultants(List<ApplicationConsultant> consultants) {
+		this.consultants = consultants;
+	}
+
+	public Group getReferenceUnit() {
+		return referenceUnit;
+	}
+
+	public void setReferenceUnit(Group referenceUnit) {
+		this.referenceUnit = referenceUnit;
+	}
+
+	public String getInvoiceReferenceCode() {
+		return invoiceReferenceCode;
+	}
+
+	public void setInvoiceReferenceCode(String invoiceReferenceCode) {
+		this.invoiceReferenceCode = invoiceReferenceCode;
+	}
+
+	public Integer getPriceRateId() {
+		return priceRateId;
+	}
+
+	public void setPriceRateId(Integer priceRateId) {
+		this.priceRateId = priceRateId;
 	}
 
 

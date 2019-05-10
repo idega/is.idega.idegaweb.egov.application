@@ -13,5 +13,10 @@
     <entity class="is.idega.idegaweb.egov.application.data.bean.DecisionTemplate" />
     <entity class="is.idega.idegaweb.egov.application.data.bean.MonthlyApplicationsCount" />
     <entity class="is.idega.idegaweb.egov.application.data.bean.ApplicationAccess" />
+    <entity class="is.idega.idegaweb.egov.application.data.bean.ApplicationRate" />
+    <entity class="is.idega.idegaweb.egov.application.data.bean.MileageReimbursement" />
+    <entity class="is.idega.idegaweb.egov.application.data.bean.ApplicationMaterial" />
+    <entity class="is.idega.idegaweb.egov.application.data.bean.ApplicationConsultant" />
+    
 
 </entity-mappings>

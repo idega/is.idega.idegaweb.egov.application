@@ -13,8 +13,12 @@ import com.idega.user.data.bean.User;
 import is.idega.idegaweb.egov.application.data.bean.Application;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationAccess;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationCategory;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationConsultant;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationMaterial;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationRate;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
 import is.idega.idegaweb.egov.application.data.bean.DecisionTemplate;
+import is.idega.idegaweb.egov.application.data.bean.MileageReimbursement;
 import is.idega.idegaweb.egov.application.data.bean.SignatureProfile;
 
 public interface ApplicationDAO extends GenericDao, SettingsDAO {
@@ -138,4 +142,43 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 
 	public List<ApplicationAccess> getAllForApplication(Integer applicationId);
 
+	public ApplicationRate updateApplicationRate(
+			Integer rateId,
+			Integer applicationSettingsId,
+			String name,
+			Double price
+	);
+
+	public List<ApplicationRate> getAllRates();
+
+	public MileageReimbursement updateMileageReimbursement(
+			Integer id,
+			Integer applicationSettingsId,
+			String name,
+			Double price,
+			String type
+	);
+	public List<MileageReimbursement> getAllMileageReimbursements();
+
+	public ApplicationMaterial updateApplicationMaterial(
+			Integer id,
+			Integer applicationSettingsId,
+			String name,
+			Double price,
+			Integer quantity
+	);
+	public List<ApplicationMaterial> getAllApplicationMaterials();
+
+	public ApplicationConsultant updateApplicationConsultant(
+			Integer id,
+			Integer applicationSettingsId,
+			String name,
+			Double price,
+			Integer quantity
+	);
+	public List<ApplicationConsultant> getAllApplicationConsultants();
+
+	public List<ApplicationRate> getRatesByIds(List<Integer> ids);
+
+	public void updateApplicationSettings(ApplicationSettings applicationSettings);
 }

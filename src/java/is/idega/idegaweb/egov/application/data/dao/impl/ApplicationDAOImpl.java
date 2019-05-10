@@ -45,9 +45,13 @@ import com.idega.util.expression.ELUtil;
 import is.idega.idegaweb.egov.application.data.bean.Application;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationAccess;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationCategory;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationConsultant;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationMaterial;
+import is.idega.idegaweb.egov.application.data.bean.ApplicationRate;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationReminder;
 import is.idega.idegaweb.egov.application.data.bean.ApplicationSettings;
 import is.idega.idegaweb.egov.application.data.bean.DecisionTemplate;
+import is.idega.idegaweb.egov.application.data.bean.MileageReimbursement;
 import is.idega.idegaweb.egov.application.data.bean.SignatureProfile;
 import is.idega.idegaweb.egov.application.data.dao.ApplicationDAO;
 
@@ -291,7 +295,14 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			String invoicingType,
 			Double price,
 			Integer fixedInvoicedHours,
-			List<Integer> settingsFileIds
+			List<Integer> settingsFileIds,
+			List<Integer> rateIds,
+			List<Integer> mileageReimbursementIds,
+			List<Integer> materialIds,
+			List<Integer> consultantIds,
+			Group referenceUnit,
+			String invoiceReferenceCode,
+			Integer priceRateId
 
 	) {
 		if (!(id instanceof Integer)) {
@@ -366,6 +377,44 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			if (!ListUtil.isEmpty(settingsFileIds)) {
 				settings.setFiles(settingsFileIds);
 			}
+
+			//Application rates
+			List<ApplicationRate> applicationRates = null;
+			if (!ListUtil.isEmpty(rateIds)) {
+				applicationRates = getResultList(ApplicationRate.FIND_BY_IDS, ApplicationRate.class, new Param(ApplicationRate.PARAM_IDS, rateIds));
+			}
+			settings.setRates(applicationRates);
+
+			//Mileage reimbursements
+			List<MileageReimbursement> mileageReimbursements = null;
+			if (!ListUtil.isEmpty(mileageReimbursementIds)) {
+				mileageReimbursements = getResultList(MileageReimbursement.FIND_BY_IDS, MileageReimbursement.class, new Param(MileageReimbursement.PARAM_IDS, mileageReimbursementIds));
+			}
+			settings.setMileageReimbursements(mileageReimbursements);
+
+			//Materials
+			List<ApplicationMaterial> applicationMaterials = null;
+			if (!ListUtil.isEmpty(materialIds)) {
+				applicationMaterials = getResultList(ApplicationMaterial.FIND_BY_IDS, ApplicationMaterial.class, new Param(ApplicationMaterial.PARAM_IDS, materialIds));
+			}
+			settings.setMaterials(applicationMaterials);
+
+			//Consultants
+			List<ApplicationConsultant> applicationConsultants = null;
+			if (!ListUtil.isEmpty(consultantIds)) {
+				applicationConsultants = getResultList(ApplicationConsultant.FIND_BY_IDS, ApplicationConsultant.class, new Param(ApplicationConsultant.PARAM_IDS, consultantIds));
+			}
+			settings.setConsultants(applicationConsultants);
+
+			//Reference unit
+			settings.setReferenceUnit(referenceUnit);
+
+			//Invoice reference code
+			settings.setInvoiceReferenceCode(invoiceReferenceCode);
+
+			//Price rate id
+			settings.setPriceRateId(priceRateId);
+
 
 			if (settings.getId() == null) {
 				persist(settings);
@@ -1074,5 +1123,208 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return null;
 	}
+
+
+	@Override
+	@Transactional(readOnly = false)
+	public ApplicationRate updateApplicationRate(Integer rateId, Integer appSettingsId, String name, Double price) {
+		ApplicationRate applicationRate = null;
+		if (rateId == null) {
+			applicationRate = new ApplicationRate();
+		} else {
+			List<ApplicationRate> appRates = getResultList(ApplicationRate.FIND_BY_IDS, ApplicationRate.class, new Param(ApplicationRate.PARAM_IDS, Arrays.asList(rateId)));
+			applicationRate = ListUtil.isEmpty(appRates) ? null : appRates.iterator().next();
+		}
+		if (applicationRate == null) {
+			return null;
+		}
+
+		applicationRate.setName(name);
+		applicationRate.setPrice(price);
+
+		if (applicationRate.getId() == null) {
+			persist(applicationRate);
+		} else {
+			merge(applicationRate);
+		}
+
+		return applicationRate.getId() == null ? null : applicationRate;
+	}
+
+	@Override
+	public List<ApplicationRate> getRatesByIds(List<Integer> ids) {
+		try {
+			return getResultList(
+					ApplicationRate.FIND_BY_IDS,
+					ApplicationRate.class,
+					new Param(ApplicationRate.PARAM_IDS, ids));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not get the application rates by ids: " + ids, e);
+		}
+		return null;
+	}
+
+
+	@Override
+	public List<ApplicationRate> getAllRates() {
+		try {
+			return getResultList(
+					ApplicationRate.GET_ALL,
+					ApplicationRate.class);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not get the application rates.", e);
+		}
+		return null;
+	}
+
+
+	@Override
+	@Transactional(readOnly = false)
+	public MileageReimbursement updateMileageReimbursement(
+			Integer id,
+			Integer applicationSettingsId,
+			String name,
+			Double price,
+			String type
+	) {
+		MileageReimbursement mileageReimbursement = null;
+		if (id == null) {
+			mileageReimbursement = new MileageReimbursement();
+		} else {
+			List<MileageReimbursement> mileageReimbursements = getResultList(MileageReimbursement.FIND_BY_IDS, MileageReimbursement.class, new Param(MileageReimbursement.PARAM_IDS, Arrays.asList(id)));
+			mileageReimbursement = ListUtil.isEmpty(mileageReimbursements) ? null : mileageReimbursements.iterator().next();
+		}
+		if (mileageReimbursement == null) {
+			return null;
+		}
+
+		mileageReimbursement.setName(name);
+		mileageReimbursement.setPrice(price);
+		mileageReimbursement.setRateType(type);
+
+		if (mileageReimbursement.getId() == null) {
+			persist(mileageReimbursement);
+		} else {
+			merge(mileageReimbursement);
+		}
+
+		return mileageReimbursement.getId() == null ? null : mileageReimbursement;
+	}
+
+	@Override
+	public List<MileageReimbursement> getAllMileageReimbursements() {
+		try {
+			return getResultList(
+					MileageReimbursement.GET_ALL,
+					MileageReimbursement.class);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not get the mileage reimbursements.", e);
+		}
+		return null;
+	}
+
+
+	@Override
+	@Transactional(readOnly = false)
+	public ApplicationMaterial updateApplicationMaterial(
+			Integer id,
+			Integer applicationSettingsId,
+			String name,
+			Double price,
+			Integer quantity
+	) {
+		ApplicationMaterial applicationMaterial = null;
+		if (id == null) {
+			applicationMaterial = new ApplicationMaterial();
+		} else {
+			List<ApplicationMaterial> applicationMaterials = getResultList(ApplicationMaterial.FIND_BY_IDS, ApplicationMaterial.class, new Param(ApplicationMaterial.PARAM_IDS, Arrays.asList(id)));
+			applicationMaterial = ListUtil.isEmpty(applicationMaterials) ? null : applicationMaterials.iterator().next();
+		}
+		if (applicationMaterial == null) {
+			return null;
+		}
+
+		applicationMaterial.setName(name);
+		applicationMaterial.setPrice(price);
+		applicationMaterial.setQuantity(quantity);
+
+		if (applicationMaterial.getId() == null) {
+			persist(applicationMaterial);
+		} else {
+			merge(applicationMaterial);
+		}
+
+		return applicationMaterial.getId() == null ? null : applicationMaterial;
+	}
+
+	@Override
+	public List<ApplicationMaterial> getAllApplicationMaterials() {
+		try {
+			return getResultList(
+					ApplicationMaterial.GET_ALL,
+					ApplicationMaterial.class);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not get the application materials.", e);
+		}
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public ApplicationConsultant updateApplicationConsultant(
+			Integer id,
+			Integer applicationSettingsId,
+			String name,
+			Double price,
+			Integer quantity
+	) {
+		ApplicationConsultant applicationConsultant = null;
+		if (id == null) {
+			applicationConsultant = new ApplicationConsultant();
+		} else {
+			List<ApplicationConsultant> applicationConsultants = getResultList(ApplicationConsultant.FIND_BY_IDS, ApplicationConsultant.class, new Param(ApplicationConsultant.PARAM_IDS, Arrays.asList(id)));
+			applicationConsultant = ListUtil.isEmpty(applicationConsultants) ? null : applicationConsultants.iterator().next();
+		}
+		if (applicationConsultant == null) {
+			return null;
+		}
+
+		applicationConsultant.setName(name);
+		applicationConsultant.setPrice(price);
+		applicationConsultant.setQuantity(quantity);
+
+		if (applicationConsultant.getId() == null) {
+			persist(applicationConsultant);
+		} else {
+			merge(applicationConsultant);
+		}
+
+		return applicationConsultant.getId() == null ? null : applicationConsultant;
+	}
+
+	@Override
+	public List<ApplicationConsultant> getAllApplicationConsultants() {
+		try {
+			return getResultList(
+					ApplicationConsultant.GET_ALL,
+					ApplicationConsultant.class);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Could not get the application consultants.", e);
+		}
+		return null;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void updateApplicationSettings(
+			ApplicationSettings applicationSettings
+	) {
+		if (applicationSettings == null || applicationSettings.getId() == null) {
+			return;
+		}
+
+		merge(applicationSettings);
+	}
+
 
 }
