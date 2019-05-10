@@ -74,8 +74,8 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String PRIORITY = "app_priority";
 	public static final String COLUMN_LOGIN_PAGE_URL = "login_page_url";
 	public static final String COLUMN_SHOW_IN_IFRAME = "show_in_iframe";
-	private static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
-	private static final String COLUMN_CREATED = "created";
+	public static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
+	public static final String COLUMN_CREATED = "created";
 	public static final String COLUMN_IDENTIFIER_PREFIX = "case_identifier_prefix"; 
 
 	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";

@@ -98,6 +98,11 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 	 * @return {@link List} of {@link Application#getId()} or {@link Collections#emptyList()} on failure;
 	 */
 	List<Integer> getApplicationKeys(Collection<Integer> groupPrimaryKeys);
+	
+	public ApplicationAccess getApplicationAccessByApplicationIdAndLevel(
+			Integer applicationId,
+			Integer level
+	);
 
 	/**
 	 *

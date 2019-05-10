@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,6 +22,7 @@ import javax.persistence.Table;
 import com.idega.block.process.data.model.ReminderModel;
 import com.idega.block.process.data.model.SettingsModel;
 import com.idega.core.accesscontrol.data.bean.ICRole;
+import com.idega.core.file.data.bean.ICFile;
 import com.idega.user.data.GroupBMPBean;
 import com.idega.user.data.bean.Group;
 import com.idega.user.data.bean.User;
@@ -57,8 +57,7 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 								PARAM_ID = "applicationSettingId",
 								PARAM_APPLICATION_ID = "applicationId";
 
-	private static final String TABLE_APPLICATION_SETTINGS_FILES = TABLE_NAME + "_files";
-	private static final String JOIN_COLUMN_APPLICATION_SETTINGS_ID = TABLE_NAME + "_id";
+	private static final String TABLE_APPLICATION_SETTINGS_FILES = TABLE_NAME + "_fl";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -103,13 +102,6 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	@Column(name = COLUMN_FIXED_INVOICED_HOURS)
 	private Integer fixedInvoicedHours;
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	@JoinTable(
-			name = TABLE_APPLICATION_SETTINGS_FILES,
-			joinColumns=@JoinColumn(name=JOIN_COLUMN_APPLICATION_SETTINGS_ID))
-	@Column(name = COLUMN_FILE)
-    private List<Integer> files;
-
 	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ApplicationRate.class, cascade = { CascadeType.REMOVE })
 	@JoinTable(name = TABLE_NAME + "_rate", joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ApplicationRate.COLUMN_ID, table = ApplicationRate.TABLE_NAME) })
 	private List<ApplicationRate> rates;
@@ -133,6 +125,9 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	@Column(name = COLUMN_INVOICE_REFERENCE_CODE)
 	private String invoiceReferenceCode;
 
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ICFile.class)
+	@JoinTable(name = TABLE_APPLICATION_SETTINGS_FILES, joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ICFile.COLUMN_FILE_ID, table = ICFile.ENTITY_NAME) })
+	private List<ICFile> files;
 
 	@Override
 	public Integer getId() {
@@ -236,11 +231,12 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 		this.fixedInvoicedHours = fixedInvoicedHours;
 	}
 
-	public List<Integer> getFiles() {
+	public List<ICFile> getFiles() {
+		files = DBUtil.getInstance().lazyLoad(files);
 		return files;
 	}
 
-	public void setFiles(List<Integer> files) {
+	public void setFiles(List<ICFile> files) {
 		this.files = files;
 	}
 
@@ -328,8 +324,5 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	public void setPriceRateId(Integer priceRateId) {
 		this.priceRateId = priceRateId;
 	}
-
-
-
 
 }

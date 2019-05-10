@@ -8,6 +8,7 @@ import java.util.Locale;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,6 +23,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.idega.block.process.data.bean.CaseCode;
 import com.idega.block.process.data.model.CaseCodeModel;
 import com.idega.block.text.data.LocalizedTextBMPBean;
@@ -29,6 +32,7 @@ import com.idega.block.text.data.bean.LocalizedText;
 import com.idega.block.text.model.LocalizedTextModel;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.persistence.Param;
+import com.idega.data.BooleanConverter;
 import com.idega.util.CoreConstants;
 import com.idega.util.DBUtil;
 import com.idega.util.ListUtil;
@@ -114,6 +118,10 @@ public class Application implements Serializable, ApplicationModel {
 
 	@Column(name = ApplicationBMPBean.ENABLED_TO)
 	private Timestamp enabledTo;
+	
+	@CreationTimestamp
+	@Column(name = ApplicationBMPBean.COLUMN_CREATED)
+	private Timestamp created;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = ApplicationBMPBean.CATEGORY)
@@ -133,6 +141,10 @@ public class Application implements Serializable, ApplicationModel {
 
 	@Column(name = ApplicationBMPBean.COLUMN_SHOW_IN_IFRAME, length = 1)
 	private Character showInIframe;
+	
+	@Convert(converter = BooleanConverter.class)
+	@Column(name = ApplicationBMPBean.COLUMN_PAYMENT_REQUIRED, length = 1)
+	private Boolean paymentRequired;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = ApplicationBMPBean.EGOV_APPLICATION_NAME_LOC_TEXT,
@@ -419,6 +431,16 @@ public class Application implements Serializable, ApplicationModel {
 	public void setShowInIframe(Boolean showInIframe) {
 		this.showInIframe = (showInIframe == null || !showInIframe.booleanValue()) ? CoreConstants.CHAR_N: CoreConstants.CHAR_Y;
 	}
+	
+	
+	public Boolean getPaymentRequired() {
+		return paymentRequired;
+	}
+
+	public void setPaymentRequired(Boolean paymentRequired) {
+		this.paymentRequired = paymentRequired;
+	}
+	
 
 	public ApplicationSettings getSettings() {
 		ApplicationDAO applicationDAO = ELUtil.getInstance().getBean(ApplicationDAO.BEAN_NAME);
@@ -429,12 +451,18 @@ public class Application implements Serializable, ApplicationModel {
 		this.settings = settings;
 	}
 	
+	@Override
 	public String getIdentifierPrefix() {
 		return identifierPrefix;
 	}
 	
+	@Override
 	public void setIdentifierPrefix(String prefix) {
 		identifierPrefix = prefix;
+	}
+
+	public Timestamp getCreated() {
+		return created;
 	}
 
 }

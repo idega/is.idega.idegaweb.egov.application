@@ -80,10 +80,20 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	 */
 	@Override
 	public Application findById(Integer primaryKey) {
-		if (primaryKey != null) {
-			return find(Application.class, primaryKey);
+		return getById(primaryKey);
+	}
+
+	@Override
+	public Application getById(Integer id) {
+		if (id == null) {
+			return null;
 		}
 
+		try {
+			return getSingleResult(Application.QUERY_GET_BY_ID, Application.class, new Param("id", id));
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting application by ID: " + id, e);
+		}
 		return null;
 	}
 
@@ -120,16 +130,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			getLogger().log(Level.WARNING, "Error getting applications by category " + category + ". Query: " + query, e);
 		}
 		return Collections.emptyList();
-	}
-
-	@Override
-	public Application getById(Integer id) {
-		if (id == null) {
-			return null;
-		}
-
-		Application app = find(Application.class, id);
-		return app;
 	}
 
 	@Override
@@ -295,6 +295,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			String invoicingType,
 			Double price,
 			Integer fixedInvoicedHours,
+<<<<<<< HEAD
 			List<Integer> settingsFileIds,
 			List<Integer> rateIds,
 			List<Integer> mileageReimbursementIds,
@@ -304,6 +305,9 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			String invoiceReferenceCode,
 			Integer priceRateId
 
+=======
+			List<ICFile> settingsFiles
+>>>>>>> d29f4068dd044437800d45fd98a6995a66b753ce
 	) {
 		if (!(id instanceof Integer)) {
 			return null;
@@ -374,8 +378,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			settings.setApplicationId(applicationId);
 
 			//Files
-			if (!ListUtil.isEmpty(settingsFileIds)) {
-				settings.setFiles(settingsFileIds);
+			if (!ListUtil.isEmpty(settingsFiles)) {
+				settings.setFiles(settingsFiles);
 			}
 
 			//Application rates
@@ -829,6 +833,19 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		}
 
 		return Collections.emptyList();
+	}
+	
+	@Override
+	public ApplicationAccess getApplicationAccessByApplicationIdAndLevel(
+			Integer applicationId,
+			Integer level
+	){
+		return getSingleResult(
+				ApplicationAccess.QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS,
+				ApplicationAccess.class, 
+				new Param("applicationId", applicationId),
+				new Param("level", level)
+		);
 	}
 
 	/*

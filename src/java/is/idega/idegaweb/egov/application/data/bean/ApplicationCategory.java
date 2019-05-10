@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import com.idega.block.text.data.LocalizedTextBMPBean;
@@ -28,10 +30,20 @@ import is.idega.idegaweb.egov.application.model.ApplicationCategoryModel;
 
 @Entity
 @Table(name = ApplicationCategoryBMPBean.TABLE_NAME)
+@NamedQueries({
+	@NamedQuery(
+			name = ApplicationCategory.QUERY_GET_CATEGORY_ORDERED_BY_PRIORITY_ASC,
+			query = "SELECT ac "
+					+ "FROM ApplicationCategory ac "
+					+ "ORDER BY ac.priority ASC"
+	)
+})
 @Cacheable
 public class ApplicationCategory implements Serializable, ApplicationCategoryModel {
 
 	private static final long serialVersionUID = 5182475755851708707L;
+	
+	public static final String QUERY_GET_CATEGORY_ORDERED_BY_PRIORITY_ASC = "ApplicationCategory.getCategoryOrderedByPriorityAsc";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

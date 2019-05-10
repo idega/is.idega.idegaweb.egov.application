@@ -11,7 +11,9 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import com.idega.core.business.DefaultSpringBean;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.CoreConstants;
@@ -30,7 +32,7 @@ import is.idega.idegaweb.egov.application.presentation.UIApplicationTypeURLHandl
  */
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 @Service(ApplicationTypeURL.beanIdentifier)
-public class ApplicationTypeURL implements ApplicationType {
+public class ApplicationTypeURL extends DefaultSpringBean implements ApplicationType {
 
 	static final String beanIdentifier = "appTypeURL";
 	private static final String appType = "EGOV_URL";
@@ -49,8 +51,17 @@ public class ApplicationTypeURL implements ApplicationType {
 
 	@Override
 	public String getLabel(IWContext iwc) {
-		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
-		return iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("app_type.url", "Url");
+		IWMainApplication iwma = null;
+		if (iwc != null) {
+			iwma = iwc.getApplicationContext().getIWMainApplication();
+		}
+		iwma = iwma == null ? IWMainApplication.getDefaultIWMainApplication() : iwma;
+		if (iwma == null) {
+			return CoreConstants.EMPTY;
+		}
+
+		IWResourceBundle iwrb = getResourceBundle(iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER));
+		return iwrb.getLocalizedString("app_type.url", "Url");
 	}
 
 	@Override
