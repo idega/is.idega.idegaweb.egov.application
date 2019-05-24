@@ -37,6 +37,12 @@ import com.idega.user.data.bean.Group;
 			query = "SELECT aa FROM is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa "
 					+ "WHERE aa.applicationId=:applicationId "
 					+ "AND aa.level=:level"
+	),
+	@NamedQuery(
+			name = ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING,
+			query = "SELECT aa FROM is.idega.idegaweb.egov.application.data.bean.ApplicationAccess aa "
+					+ "WHERE aa.applicationId=:applicationId "
+					+ "ORDER BY aa.level DESC"
 	)
 })
 public class ApplicationAccess implements Serializable {
@@ -49,7 +55,8 @@ public class ApplicationAccess implements Serializable {
 			QUERY_GET_BY_APPLICATION_ID = "ApplicationAccess.getByApplicationId",
 			QUERY_GET_BY_APPLICATION_ID_AND_GROUP_ID = "ApplicationAccess.getByApplicationIdAndGroupId",
 			QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS = "ApplicationAccess.getApplicationsIdsByGroupsIds",
-			QUERY_GET_BY_APPLICATION_ID_AND_LEVEL = "ApplicationAccess.getByApplicationIdAndLevel";
+			QUERY_GET_BY_APPLICATION_ID_AND_LEVEL = "ApplicationAccess.getByApplicationIdAndLevel",
+			QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING = "ApplicationAccess.getByApplicationIdOrderByLevelDescending";
 								
 
 	@Id

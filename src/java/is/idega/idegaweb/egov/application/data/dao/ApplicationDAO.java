@@ -186,4 +186,8 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 	public List<ApplicationRate> getRatesByIds(List<Integer> ids);
 
 	public void updateApplicationSettings(ApplicationSettings applicationSettings);
+	
+	public ApplicationAccess getHighestLevelAccess(Integer applicationId);
+	
+	public List<ApplicationAccess> getApplicationAccessDescendingByLevel(Integer applicationId);
 }

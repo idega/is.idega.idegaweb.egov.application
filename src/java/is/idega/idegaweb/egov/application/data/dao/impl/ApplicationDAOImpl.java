@@ -1135,8 +1135,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return null;
 	}
-
-
+	
+	
 	@Override
 	@Transactional(readOnly = false)
 	public ApplicationRate updateApplicationRate(Integer rateId, Integer appSettingsId, String name, Double price) {
@@ -1338,5 +1338,21 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		merge(applicationSettings);
 	}
 
+	@Override
+	public ApplicationAccess getHighestLevelAccess(Integer applicationId) {
+		return getSingleResult(
+				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING, 
+				ApplicationAccess.class, 
+				new Param("applicationId", applicationId) 
+		); 
+	}
+	
+	public List<ApplicationAccess> getApplicationAccessDescendingByLevel(Integer applicationId){
+		return getResultList(
+				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING, 
+				ApplicationAccess.class, 
+				new Param("applicationId", applicationId) 
+		); 
+	}
 
 }
