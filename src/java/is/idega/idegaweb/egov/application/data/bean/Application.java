@@ -20,6 +20,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -109,6 +110,10 @@ public class Application implements Serializable, ApplicationModel {
 
 	@Column(name = ApplicationBMPBean.AGE_FROM)
 	private Integer ageFrom;
+	
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = Application.TABLE_NAME + "_ID")
+	private List<ApplicationAccess> accesses;
 
 	@Column(name = ApplicationBMPBean.AGE_TO)
 	private Integer ageTo;
