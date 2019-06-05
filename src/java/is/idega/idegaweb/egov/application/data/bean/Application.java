@@ -111,7 +111,11 @@ public class Application implements Serializable, ApplicationModel {
 	@Column(name = ApplicationBMPBean.AGE_FROM)
 	private Integer ageFrom;
 	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(
+			fetch=FetchType.LAZY,
+			cascade = CascadeType.ALL, 
+			orphanRemoval = true
+	)
 	@JoinColumn(name = Application.TABLE_NAME + "_ID")
 	private List<ApplicationAccess> accesses;
 
