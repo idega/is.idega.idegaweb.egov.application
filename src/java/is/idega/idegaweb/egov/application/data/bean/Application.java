@@ -20,7 +20,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -104,20 +103,12 @@ public class Application implements Serializable, ApplicationModel {
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = ApplicationBMPBean.CASE_CODE)
 	private CaseCode caseCode;
-	
+
 	@Column(name = ApplicationBMPBean.COLUMN_IDENTIFIER_PREFIX)
 	private String identifierPrefix;
 
 	@Column(name = ApplicationBMPBean.AGE_FROM)
 	private Integer ageFrom;
-	
-	@OneToMany(
-			fetch=FetchType.LAZY,
-			cascade = CascadeType.ALL, 
-			orphanRemoval = true
-	)
-	@JoinColumn(name = Application.TABLE_NAME + "_ID")
-	private List<ApplicationAccess> accesses;
 
 	@Column(name = ApplicationBMPBean.AGE_TO)
 	private Integer ageTo;
@@ -127,7 +118,7 @@ public class Application implements Serializable, ApplicationModel {
 
 	@Column(name = ApplicationBMPBean.ENABLED_TO)
 	private Timestamp enabledTo;
-	
+
 	@CreationTimestamp
 	@Column(name = ApplicationBMPBean.COLUMN_CREATED)
 	private Timestamp created;
@@ -150,7 +141,7 @@ public class Application implements Serializable, ApplicationModel {
 
 	@Column(name = ApplicationBMPBean.COLUMN_SHOW_IN_IFRAME, length = 1)
 	private Character showInIframe;
-	
+
 	@Convert(converter = BooleanConverter.class)
 	@Column(name = ApplicationBMPBean.COLUMN_PAYMENT_REQUIRED, length = 1)
 	private Boolean paymentRequired;
@@ -440,8 +431,8 @@ public class Application implements Serializable, ApplicationModel {
 	public void setShowInIframe(Boolean showInIframe) {
 		this.showInIframe = (showInIframe == null || !showInIframe.booleanValue()) ? CoreConstants.CHAR_N: CoreConstants.CHAR_Y;
 	}
-	
-	
+
+
 	public Boolean getPaymentRequired() {
 		return paymentRequired;
 	}
@@ -449,7 +440,7 @@ public class Application implements Serializable, ApplicationModel {
 	public void setPaymentRequired(Boolean paymentRequired) {
 		this.paymentRequired = paymentRequired;
 	}
-	
+
 
 	public ApplicationSettings getSettings() {
 		ApplicationDAO applicationDAO = ELUtil.getInstance().getBean(ApplicationDAO.BEAN_NAME);
@@ -459,12 +450,12 @@ public class Application implements Serializable, ApplicationModel {
 	public void setSettings(ApplicationSettings settings) {
 		this.settings = settings;
 	}
-	
+
 	@Override
 	public String getIdentifierPrefix() {
 		return identifierPrefix;
 	}
-	
+
 	@Override
 	public void setIdentifierPrefix(String prefix) {
 		identifierPrefix = prefix;
