@@ -1135,8 +1135,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		return null;
 	}
-	
-	
+
+
 	@Override
 	@Transactional(readOnly = false)
 	public ApplicationRate updateApplicationRate(Integer rateId, Integer appSettingsId, String name, Double price) {
@@ -1158,6 +1158,19 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			persist(applicationRate);
 		} else {
 			merge(applicationRate);
+		}
+
+		//Save application settings
+		if (appSettingsId != null) {
+			ApplicationSettings settings =  getSettingsById(appSettingsId);
+			if (settings != null) {
+				if (ListUtil.isEmpty(settings.getRates())) {
+					settings.setRates(new ArrayList<ApplicationRate>());
+				}
+				List<ApplicationRate> appRates = settings.getRates();
+				appRates.add(applicationRate);
+				merge(settings);
+			}
 		}
 
 		return applicationRate.getId() == null ? null : applicationRate;
@@ -1341,18 +1354,19 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 	@Override
 	public ApplicationAccess getHighestLevelAccess(Integer applicationId) {
 		return getSingleResult(
-				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING, 
-				ApplicationAccess.class, 
-				new Param("applicationId", applicationId) 
-		); 
+				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING,
+				ApplicationAccess.class,
+				new Param("applicationId", applicationId)
+		);
 	}
-	
+
+	@Override
 	public List<ApplicationAccess> getApplicationAccessDescendingByLevel(Integer applicationId){
 		return getResultList(
-				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING, 
-				ApplicationAccess.class, 
-				new Param("applicationId", applicationId) 
-		); 
+				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING,
+				ApplicationAccess.class,
+				new Param("applicationId", applicationId)
+		);
 	}
 
 }
