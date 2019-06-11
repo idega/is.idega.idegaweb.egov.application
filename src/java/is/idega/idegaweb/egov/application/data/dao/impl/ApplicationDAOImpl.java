@@ -1168,8 +1168,19 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 					settings.setRates(new ArrayList<ApplicationRate>());
 				}
 				List<ApplicationRate> appRates = settings.getRates();
-				appRates.add(applicationRate);
-				merge(settings);
+				boolean shouldAdd = true;
+				if (!ListUtil.isEmpty(appRates)) {
+					for (ApplicationRate r : appRates) {
+						if (r != null && r.getId() != null && r.getId().intValue() == applicationRate.getId().intValue()) {
+							shouldAdd = false;
+							break;
+						}
+					}
+				}
+				if (shouldAdd) {
+					appRates.add(applicationRate);
+					merge(settings);
+				}
 			}
 		}
 
