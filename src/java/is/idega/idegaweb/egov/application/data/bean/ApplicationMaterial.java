@@ -40,7 +40,7 @@ public class ApplicationMaterial implements Serializable {
 	@Column(name = COLUMN_ID)
 	private Integer id;
 
-	@Column(name = COLUMN_NAME, nullable = false)
+	@Column(name = COLUMN_NAME)
 	private String name;
 
 	@Column(name = COLUMN_QUANTITY)
