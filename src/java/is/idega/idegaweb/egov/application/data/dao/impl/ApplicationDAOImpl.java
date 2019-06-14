@@ -1151,6 +1151,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			return null;
 		}
 
+		if (StringUtil.isEmpty(name)) {
+			if (price == null) {
+				return null;
+			} else {
+				name = price.toString();
+			}
+		}
 		applicationRate.setName(name);
 		applicationRate.setPrice(price);
 
@@ -1234,6 +1241,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			return null;
 		}
 
+		if (StringUtil.isEmpty(name)) {
+			if (price == null) {
+				return null;
+			} else {
+				name = price.toString();
+			}
+		}
 		mileageReimbursement.setName(name);
 		mileageReimbursement.setPrice(price);
 		mileageReimbursement.setRateType(type);
@@ -1280,6 +1294,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			return null;
 		}
 
+		if (StringUtil.isEmpty(name)) {
+			if (price == null) {
+				return null;
+			} else {
+				name = price.toString();
+			}
+		}
 		applicationMaterial.setName(name);
 		applicationMaterial.setPrice(price);
 		applicationMaterial.setQuantity(quantity);
@@ -1325,6 +1346,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			return null;
 		}
 
+		if (StringUtil.isEmpty(name)) {
+			if (price == null) {
+				return null;
+			} else {
+				name = price.toString();
+			}
+		}
 		applicationConsultant.setName(name);
 		applicationConsultant.setPrice(price);
 		applicationConsultant.setQuantity(quantity);
