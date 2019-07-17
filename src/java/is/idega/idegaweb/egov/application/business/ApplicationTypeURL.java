@@ -79,7 +79,7 @@ public class ApplicationTypeURL extends DefaultSpringBean implements Application
 	}
 
 	@Override
-	public boolean isVisible(ApplicationModel app) {
+	public boolean isVisible(IWContext iwc, ApplicationModel app) {
 		return true;
 	}
 

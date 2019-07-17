@@ -98,7 +98,7 @@ public abstract class ApplicationBlock extends Block {
 
 			boolean isVisibile = app.getVisible() &&
 						(app.getAppType() == null ||
-						(app.getAppType() != null && getApplicationTypesManager().getApplicationType(app.getAppType()).isVisible(app)));
+						(app.getAppType() != null && getApplicationTypesManager().getApplicationType(app.getAppType()).isVisible(iwc, app)));
 
 			if (!app.isEnabled()) {
 				isVisibile = isVisibile || showDisabled;
@@ -199,8 +199,9 @@ public abstract class ApplicationBlock extends Block {
 
 	public ApplicationTypesManager getApplicationTypesManager() {
 
-		if(applicationTypesManager == null)
+		if(applicationTypesManager == null) {
 			ELUtil.getInstance().autowire(this);
+		}
 
 		return applicationTypesManager;
 	}

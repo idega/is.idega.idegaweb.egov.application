@@ -47,7 +47,7 @@ public interface ApplicationType {
 
 	public abstract String getUrl(IWContext iwc, ApplicationModel app);
 
-	public abstract boolean isVisible(ApplicationModel app);
+	public abstract boolean isVisible(IWContext iwc, ApplicationModel app);
 
 	public abstract String getBeanIdentifier();
 
