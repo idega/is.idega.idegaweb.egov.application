@@ -12,6 +12,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import is.idega.idegaweb.egov.application.ApplicationConstants;
+
 @Entity
 @Table(
 		name = MonthlyApplicationsCount.TABLE_NAME
@@ -19,8 +21,10 @@ import javax.persistence.Table;
 @Cacheable
 @NamedQueries({
 	@NamedQuery(name = MonthlyApplicationsCount.FIND_BY_ID, query = "select ma from MonthlyApplicationsCount ma where ma.id = :" + MonthlyApplicationsCount.PARAM_ID),
-	@NamedQuery(name = MonthlyApplicationsCount.FIND_BY_YEAR_AND_MONTH, query = "select ma from MonthlyApplicationsCount ma where ma.year = :" + MonthlyApplicationsCount.PARAM_YEAR + " AND ma.month = :" + MonthlyApplicationsCount.PARAM_MONTH),
-	@NamedQuery(name = MonthlyApplicationsCount.FIND_ALL, query = "select ma from MonthlyApplicationsCount ma")
+	@NamedQuery(name = MonthlyApplicationsCount.FIND_BY_YEAR_AND_MONTH, query = "select ma from MonthlyApplicationsCount ma where ma.year = :" + MonthlyApplicationsCount.PARAM_YEAR
+				+ " AND ma.month = :" + MonthlyApplicationsCount.PARAM_MONTH
+				+ " and ma.appName != '" + ApplicationConstants.SUPPORT_ISSUE_PROCESS_NAME  + "'"),
+	@NamedQuery(name = MonthlyApplicationsCount.FIND_ALL, query = "select ma from MonthlyApplicationsCount ma WHERE ma.appName != '" + ApplicationConstants.SUPPORT_ISSUE_PROCESS_NAME  + "'")
 })
 public class MonthlyApplicationsCount implements Serializable {
 

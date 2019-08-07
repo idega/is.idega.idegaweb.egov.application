@@ -14,6 +14,7 @@ public class ApplicationConstants {
 
 	public static final String	IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.egov.application",
 								PROPERTY_SHOW_SIBLING_INFORMATION = "egov.application.sibling.info",
-								PARAM_APP_ID = "appId";
+								PARAM_APP_ID = "appId",
+								SUPPORT_ISSUE_PROCESS_NAME = "Support issue";
 
 }
