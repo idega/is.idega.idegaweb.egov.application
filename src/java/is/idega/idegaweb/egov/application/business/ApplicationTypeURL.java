@@ -60,7 +60,7 @@ public class ApplicationTypeURL extends DefaultSpringBean implements Application
 			return CoreConstants.EMPTY;
 		}
 
-		IWResourceBundle iwrb = getResourceBundle(iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER));
+		IWResourceBundle iwrb = getResourceBundle(iwma.getBundle(IWBundleStarter.IW_BUNDLE_IDENTIFIER), iwc);
 		return iwrb.getLocalizedString("app_type.url", "Url");
 	}
 
