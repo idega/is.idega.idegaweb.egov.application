@@ -29,5 +29,18 @@ public class ApplicationCategoryDAOImpl extends GenericDaoImpl implements Applic
 		}
 		return results.get(0);
 	}
+	
+	public List<ApplicationCategory> getAll(
+			int page,
+			int pageSize
+	) {
+		return getResultList(
+				ApplicationCategory.QUERY_GET_CATEGORY_ORDERED_BY_PRIORITY_ASC, 
+				ApplicationCategory.class,
+				page*pageSize,
+				pageSize,
+				null
+		);
+	}
 
 }
