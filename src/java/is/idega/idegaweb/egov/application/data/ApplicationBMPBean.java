@@ -76,7 +76,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String COLUMN_SHOW_IN_IFRAME = "show_in_iframe";
 	public static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
 	public static final String COLUMN_CREATED = "created";
-	public static final String COLUMN_IDENTIFIER_PREFIX = "case_identifier_prefix"; 
+	public static final String COLUMN_IDENTIFIER_PREFIX = "case_identifier_prefix";
 
 	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
 	public static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
@@ -534,7 +534,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public String getAppType() {
 		return getStringColumnValue(APP_TYPE);
 	}
-	
+
 	@Override
 	public void setIdentifierPrefix(String prefix) {
 		setColumn(COLUMN_IDENTIFIER_PREFIX, prefix);
@@ -877,6 +877,15 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	@Override
 	public void setCreated(Timestamp created) {
 		setValue(COLUMN_CREATED, created);
+	}
+
+	@Override
+	public void store() throws IDOStoreException {
+		if (getCreated() == null) {
+			setCreated(new Timestamp(System.currentTimeMillis()));
+		}
+
+		super.store();
 	}
 
 }

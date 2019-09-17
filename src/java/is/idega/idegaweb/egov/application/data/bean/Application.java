@@ -21,6 +21,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -432,7 +434,6 @@ public class Application implements Serializable, ApplicationModel {
 		this.showInIframe = (showInIframe == null || !showInIframe.booleanValue()) ? CoreConstants.CHAR_N: CoreConstants.CHAR_Y;
 	}
 
-
 	public Boolean getPaymentRequired() {
 		return paymentRequired;
 	}
@@ -440,7 +441,6 @@ public class Application implements Serializable, ApplicationModel {
 	public void setPaymentRequired(Boolean paymentRequired) {
 		this.paymentRequired = paymentRequired;
 	}
-
 
 	public ApplicationSettings getSettings() {
 		ApplicationDAO applicationDAO = ELUtil.getInstance().getBean(ApplicationDAO.BEAN_NAME);
@@ -463,6 +463,14 @@ public class Application implements Serializable, ApplicationModel {
 
 	public Timestamp getCreated() {
 		return created;
+	}
+
+	@PrePersist
+	@PreUpdate
+	public void prePersist() {
+		if (created == null) {
+			created = new Timestamp(System.currentTimeMillis());
+		}
 	}
 
 }
