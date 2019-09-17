@@ -58,7 +58,7 @@ public class ApplicationReminder implements Serializable, ReminderModel {
 	@Column(name = "timestamp")
 	private Timestamp timestamp;
 
-	@Column(name = "message", length = 65000)
+	@Column(name = "message", length = 21000)
 	private String message;
 
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -67,7 +67,6 @@ public class ApplicationReminder implements Serializable, ReminderModel {
 			joinColumns=@JoinColumn(name=JOIN_COLUMN_REMINDER_ID))
 	@Column(name = COLUMN_DASHBOARD_ROLE_ID)
 	private List<Integer> dashboardRoles;
-
 
 	@Override
 	public Integer getId() {
