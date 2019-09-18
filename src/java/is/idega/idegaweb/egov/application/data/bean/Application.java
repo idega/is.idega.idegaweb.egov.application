@@ -62,7 +62,15 @@ import is.idega.idegaweb.egov.application.model.ApplicationModel;
 	@NamedQuery(
 			name = Application.QUERY_GET_DISTINCT_APPLICATION_URL_BY_APP_TYPE,
 			query = "select distinct a.url from is.idega.idegaweb.egov.application.data.bean.Application a  where a.appType = :appType"
+	),
+	@NamedQuery(
+			name = Application.QUERY_GET_BY_PROCESS_DEFINITION_ID,
+			query = "SELECT a"
+					+ " FROM Application a, DeploymentHistory h"
+					+ " WHERE a.url = h.name "
+					+ " AND h.processDefinitionId = :processDefinitionId"
 	)
+	
 })
 public class Application implements Serializable, ApplicationModel {
 
@@ -74,7 +82,8 @@ public class Application implements Serializable, ApplicationModel {
 								QUERY_GET_LOCALIZED_HEADLINE = "application.getLocalizedHeadline",
 								QUERY_GET_LOCALIZED_BODY = "application.getLocalizedBody",
 								QUERY_GET_DISTINCT_APPLICATION_URL_BY_APP_TYPE = "application.getDistinctApplicationURLByAppType",
-								QUERY_GET_ALL = "application.getAll";
+								QUERY_GET_ALL = "application.getAll",
+								QUERY_GET_BY_PROCESS_DEFINITION_ID = "application.getByProcessDefinitionId";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
