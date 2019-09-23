@@ -191,5 +191,4 @@ public interface ApplicationDAO extends GenericDao, SettingsDAO {
 	
 	public List<ApplicationAccess> getApplicationAccessDescendingByLevel(Integer applicationId);
 	
-	public Application getByProcessDefinitionId(String processDefinitionId);
 }

@@ -1407,14 +1407,4 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 				new Param("applicationId", applicationId)
 		);
 	}
-
-	@Override
-	public Application getByProcessDefinitionId(String processDefinitionId) {
-		return getSingleResult(
-				Application.QUERY_GET_BY_PROCESS_DEFINITION_ID,
-				Application.class,
-				new Param("processDefinitionId", processDefinitionId)
-		);
-	}
-
 }
