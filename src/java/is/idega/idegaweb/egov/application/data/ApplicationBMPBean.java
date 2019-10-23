@@ -8,6 +8,7 @@ package is.idega.idegaweb.egov.application.data;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -17,6 +18,8 @@ import java.util.logging.Level;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
+import com.idega.block.process.business.ProcessConstants;
+import com.idega.block.process.data.CaseBMPBean;
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextBMPBean;
@@ -665,6 +668,32 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new Column(table, getIDColumnName()));
 		query.addCriteria(new MatchCriteria(table.getColumn(CASE_CODE), MatchCriteria.EQUALS, caseCode));
+		return this.idoFindPKsByQuery(query);
+	}
+
+	public Collection<?> ejbFindAllByCasesIds(Collection<Integer> casesIds) throws FinderException {
+		Table table = new Table(this);
+		Table casesTable = new Table(CaseBMPBean.TABLE_NAME);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new Column(table, getIDColumnName()));
+		query.addJoin(table, CaseBMPBean.COLUMN_CASE_CODE, casesTable, CaseBMPBean.COLUMN_CASE_CODE);
+
+		query.addCriteria(new InCriteria(
+				casesTable.getColumn(CaseBMPBean.COLUMN_CASE_CODE),
+				Arrays.asList(
+						ProcessConstants.GENERAL_CASE_CODE_KEY,
+						ProcessConstants.GENERAL_SUPPORT_CASE_CODE,
+						ProcessConstants.SYSTEM_MESSAGE_CASE_CODE,
+						ProcessConstants.NOTE_CASE_CODE
+				),
+				true
+		));
+		query.addCriteria(new MatchCriteria(casesTable.getColumn(CaseBMPBean.COLUMN_CASE_IDENTIFIER), true));
+		query.addCriteria(new InCriteria(casesTable.getColumn(CaseBMPBean.PK_COLUMN), casesIds));
+
+		query.addGroupByColumn(table, URL);
+
 		return this.idoFindPKsByQuery(query);
 	}
 
