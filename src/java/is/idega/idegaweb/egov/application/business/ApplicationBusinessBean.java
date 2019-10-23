@@ -232,7 +232,7 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 
 	@Override
 	public boolean displayApplicationForAges(ApplicationModel application, Age[] ages) {
-		if (ages == null) {
+		if (application == null || ages == null) {
 			return false;
 		}
 
@@ -312,11 +312,13 @@ public class ApplicationBusinessBean extends CaseBusinessBean implements CaseBus
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
-		if (ListUtil.isEmpty(applications))
+		if (ListUtil.isEmpty(applications)) {
 			return null;
+		}
 
-		if (iwc != null && iwc.isSuperAdmin())
+		if (iwc != null && iwc.isSuperAdmin()) {
 			return applications;
+		}
 
 		List<Application> availableApplications = new ArrayList<Application>();
 		User currentUser = null;
