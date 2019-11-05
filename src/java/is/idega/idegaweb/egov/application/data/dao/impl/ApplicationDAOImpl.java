@@ -259,7 +259,9 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			return null;
 		}
 
-		reminder.setReceivers(getUsers(receiversUUIDs));
+		if (reminderId == null) {
+			reminder.setReceivers(getUsers(receiversUUIDs));
+		}
 		reminder.setTimestamp(timestamp == null ? null : new Timestamp(timestamp));
 		reminder.setMessage(message);
 		reminder.setDashboardRoles(dashboardRoleIds);
