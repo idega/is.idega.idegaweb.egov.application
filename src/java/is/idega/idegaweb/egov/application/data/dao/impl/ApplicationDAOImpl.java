@@ -838,7 +838,7 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			Integer level
 	){
 		return getSingleResult(
-				ApplicationAccess.QUERY_GET_APPLICATIONS_IDS_BY_GROUPS_IDS,
+				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_AND_LEVEL,
 				ApplicationAccess.class,
 				new Param("applicationId", applicationId),
 				new Param("level", level)
