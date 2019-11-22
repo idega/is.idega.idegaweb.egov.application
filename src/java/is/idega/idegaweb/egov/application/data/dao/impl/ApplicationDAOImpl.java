@@ -244,7 +244,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
-
 	@Override
 	@Transactional(readOnly = false)
 	public ReminderModel updateReminder(Integer reminderId, List<String> receiversUUIDs, Long timestamp, String message, List<Integer> dashboardRoleIds) {
@@ -273,6 +272,20 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		}
 
 		return reminder.getId() == null ? null : reminder;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public void updateReminder(ReminderModel reminder) {
+		if (reminder == null) {
+			return;
+		}
+
+		if (reminder.getId() == null) {
+			persist(reminder);
+		} else {
+			merge(reminder);
+		}
 	}
 
 	@Override

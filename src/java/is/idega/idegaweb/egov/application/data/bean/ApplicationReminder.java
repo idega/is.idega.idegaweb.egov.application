@@ -68,6 +68,9 @@ public class ApplicationReminder implements Serializable, ReminderModel {
 	@Column(name = COLUMN_DASHBOARD_ROLE_ID)
 	private List<Integer> dashboardRoles;
 
+	@Column(name = "reminder_sent")
+	private Boolean reminderSent;
+
 	@Override
 	public Integer getId() {
 		return id;
@@ -108,7 +111,6 @@ public class ApplicationReminder implements Serializable, ReminderModel {
 		return message;
 	}
 
-
 	@Override
 	public List<Integer> getDashboardRoles() {
 		return dashboardRoles;
@@ -117,6 +119,20 @@ public class ApplicationReminder implements Serializable, ReminderModel {
 	@Override
 	public void setDashboardRoles(List<Integer> dashboardRoles) {
 		this.dashboardRoles = dashboardRoles;
+	}
+
+	public Boolean getReminderSent() {
+		return reminderSent;
+	}
+
+	@Override
+	public boolean isReminderSent() {
+		return reminderSent == null ? Boolean.FALSE : reminderSent;
+	}
+
+	@Override
+	public void setReminderSent(Boolean reminderSent) {
+		this.reminderSent = reminderSent;
 	}
 
 	/*
