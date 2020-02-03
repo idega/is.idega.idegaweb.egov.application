@@ -49,6 +49,7 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 								COLUMN_FIXED_INVOICED_HOURS = "fixed_invoiced_hours",
 								COLUMN_FILE = "file",
 								COLUMN_INVOICE_REFERENCE_CODE = "invoice_reference_code",
+								COLUMN_ICON = "icon",
 
 								FIND_BY_ID = "ApplicationSettings.findById",
 								FIND_BY_APPLICATION_ID = "ApplicationSettings.findByApplicationId",
@@ -128,6 +129,10 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	@ManyToMany(fetch = FetchType.LAZY, targetEntity = ICFile.class)
 	@JoinTable(name = TABLE_APPLICATION_SETTINGS_FILES, joinColumns = { @JoinColumn(name = COLUMN_ID) }, inverseJoinColumns = { @JoinColumn(name = ICFile.COLUMN_FILE_ID, table = ICFile.ENTITY_NAME) })
 	private List<ICFile> files;
+
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = ICFile.COLUMN_FILE_ID)
+	private ICFile icon;
 
 	@Override
 	public Integer getId() {
@@ -324,5 +329,15 @@ public class ApplicationSettings implements Serializable, SettingsModel {
 	public void setPriceRateId(Integer priceRateId) {
 		this.priceRateId = priceRateId;
 	}
+
+	public ICFile getIcon() {
+		return icon;
+	}
+
+	public void setIcon(ICFile icon) {
+		this.icon = icon;
+	}
+
+
 
 }

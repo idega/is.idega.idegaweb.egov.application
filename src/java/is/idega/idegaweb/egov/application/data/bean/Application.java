@@ -32,6 +32,7 @@ import com.idega.block.process.data.model.CaseCodeModel;
 import com.idega.block.text.data.LocalizedTextBMPBean;
 import com.idega.block.text.data.bean.LocalizedText;
 import com.idega.block.text.model.LocalizedTextModel;
+import com.idega.core.file.data.bean.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.persistence.Param;
 import com.idega.data.BooleanConverter;
@@ -75,6 +76,7 @@ public class Application implements Serializable, ApplicationModel {
 								QUERY_GET_LOCALIZED_BODY = "application.getLocalizedBody",
 								QUERY_GET_DISTINCT_APPLICATION_URL_BY_APP_TYPE = "application.getDistinctApplicationURLByAppType",
 								QUERY_GET_ALL = "application.getAll";
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -165,6 +167,11 @@ public class Application implements Serializable, ApplicationModel {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID, referencedColumnName = ApplicationSettings.COLUMN_APPLICATION_ID)
 	private ApplicationSettings settings;
+
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = ICFile.COLUMN_FILE_ID)
+	private ICFile icon;
+
 
 	public Integer getId() {
 		return id;
@@ -463,6 +470,16 @@ public class Application implements Serializable, ApplicationModel {
 
 	public Timestamp getCreated() {
 		return created;
+	}
+
+
+
+	public ICFile getIcon() {
+		return icon;
+	}
+
+	public void setIcon(ICFile icon) {
+		this.icon = icon;
 	}
 
 	@PrePersist

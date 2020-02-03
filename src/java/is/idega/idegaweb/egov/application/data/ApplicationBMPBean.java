@@ -24,6 +24,7 @@ import com.idega.block.process.data.CaseCode;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextBMPBean;
 import com.idega.block.text.data.LocalizedTextHome;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.GenericEntity;
@@ -80,6 +81,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String COLUMN_PAYMENT_REQUIRED = "is_payment_required";
 	public static final String COLUMN_CREATED = "created";
 	public static final String COLUMN_IDENTIFIER_PREFIX = "case_identifier_prefix";
+	public static final String COLUMN_ICON = "ic_file_id";
 
 	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
 	public static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
@@ -220,6 +222,8 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_NAME_LOC_TEXT);
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_URL_LOC_TEXT);
 		addManyToManyRelationShip(Group.class, EGOV_APPLICATION_GROUP);
+		addManyToOneRelationship(COLUMN_ICON, ICFile.class);
+
 	}
 
 	@Override
@@ -344,6 +348,17 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	@Override
 	public boolean isPaymentRequired() {
 		return getBooleanColumnValue(COLUMN_PAYMENT_REQUIRED, Boolean.FALSE);
+	}
+
+
+	@Override
+	public ICFile getIcon() {
+		return (ICFile) getColumnValue(COLUMN_ICON);
+	}
+
+	@Override
+	public void setIcon(ICFile icon) {
+		setColumn(COLUMN_ICON, icon);
 	}
 
 	private void saveAllLocalizedEntries(Map localizedEntries, boolean settingNames){

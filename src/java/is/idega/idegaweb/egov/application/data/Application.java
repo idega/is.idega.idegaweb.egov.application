@@ -9,6 +9,7 @@ import java.util.Map;
 import com.idega.block.process.data.CaseCode;
 import com.idega.block.process.data.model.CaseCodeModel;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDORemoveRelationshipException;
@@ -242,8 +243,10 @@ public interface Application extends IDOEntity, ApplicationModel {
 
 	@Override
 	public String getAppType();
-	
+
+	@Override
 	public void setIdentifierPrefix(String prefix);
+	@Override
 	public String getIdentifierPrefix();
 
 	/**
@@ -287,5 +290,9 @@ public interface Application extends IDOEntity, ApplicationModel {
 	public Timestamp getCreated();
 
 	public void setCreated(Timestamp created);
+
+	public ICFile getIcon();
+	public void setIcon(ICFile icon);
+
 
 }

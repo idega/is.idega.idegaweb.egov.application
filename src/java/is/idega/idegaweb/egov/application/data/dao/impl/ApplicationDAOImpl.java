@@ -317,7 +317,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			Group referenceUnit,
 			String invoiceReferenceCode,
 			Integer priceRateId,
-			List<ICFile> settingsFiles
+			List<ICFile> settingsFiles,
+			ICFile icon
 	) {
 		if (!(id instanceof Integer)) {
 			return null;
@@ -428,6 +429,9 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 			//Price rate id
 			settings.setPriceRateId(priceRateId);
+
+			//Icon
+			settings.setIcon(icon);
 
 
 			if (settings.getId() == null) {
