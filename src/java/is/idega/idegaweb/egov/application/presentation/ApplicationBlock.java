@@ -39,6 +39,7 @@ import com.idega.util.expression.ELUtil;
 import is.idega.idegaweb.egov.accounting.business.CitizenBusiness;
 import is.idega.idegaweb.egov.application.ApplicationConstants;
 import is.idega.idegaweb.egov.application.business.ApplicationBusiness;
+import is.idega.idegaweb.egov.application.business.ApplicationType;
 import is.idega.idegaweb.egov.application.business.ApplicationTypesManager;
 import is.idega.idegaweb.egov.application.model.ApplicationModel;
 
@@ -96,9 +97,19 @@ public abstract class ApplicationBlock extends Block {
 				throw new IBORuntimeException(re);
 			}
 
-			boolean isVisibile = app.getVisible() &&
-						(app.getAppType() == null ||
-						(app.getAppType() != null && getApplicationTypesManager().getApplicationType(app.getAppType()).isVisible(iwc, app)));
+			boolean appVisible = app.getVisible();
+			boolean appTypeVisible = true;
+			if (appVisible) {
+				String appType = app.getAppType();
+				if (appType != null) {
+					ApplicationTypesManager appTypesManager = getApplicationTypesManager();
+					if (appTypesManager != null) {
+						ApplicationType type = appTypesManager.getApplicationType(app.getAppType());
+						appTypeVisible = type == null ? appTypeVisible : type.isVisible(iwc, app);
+					}
+				}
+			}
+			boolean isVisibile = appVisible && appTypeVisible;
 
 			if (!app.isEnabled()) {
 				isVisibile = isVisibile || showDisabled;
