@@ -251,7 +251,11 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		if (reminderId == null) {
 			reminder = new ApplicationReminder();
 		} else {
-			List<ApplicationReminder> reminders = getResultList(ApplicationReminder.FIND_BY_IDS, ApplicationReminder.class, new Param(ApplicationReminder.PARAM_IDS, Arrays.asList(reminderId)));
+			List<ApplicationReminder> reminders = getResultList(
+					ApplicationReminder.FIND_BY_IDS,
+					ApplicationReminder.class,
+					new Param(ApplicationReminder.PARAM_IDS, Arrays.asList(reminderId))
+			);
 			reminder = ListUtil.isEmpty(reminders) ? null : reminders.iterator().next();
 		}
 		if (reminder == null) {
@@ -442,7 +446,11 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 			return settings == null || settings.getId() == null ? null : settings;
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Error updating settings " + (settingsId == null ? CoreConstants.EMPTY : "(ID: " + settingsId + ") ") + "for application with ID " + applicationId, e);
+			getLogger().log(
+					Level.WARNING,
+					"Error updating settings " + (settingsId == null ? CoreConstants.EMPTY : "(ID: " + settingsId + ") ") + "for application with ID " + applicationId,
+					e
+			);
 		}
 
 		return null;
@@ -765,8 +773,8 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 	@Override
 	public List<Integer> getAllApplicationsAndCasesThirdPartyUsers() {
-		List<Integer> thirdPartyUserIds = new ArrayList<Integer>();
-		List<Serializable[]> allThirdPartyUsersSerializableList = new ArrayList<Serializable[]>();
+		List<Integer> thirdPartyUserIds = new ArrayList<>();
+		List<Serializable[]> allThirdPartyUsersSerializableList = new ArrayList<>();
 		try {
 			//Third party users from all the applications
 			String queryApp = "select distinct ainv.ic_user_id from " + ApplicationSettings.TABLE_NAME + "_inv ainv";
@@ -994,7 +1002,11 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 			return findById(applicationId);
 		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Error inserting application access for application " + applicationId + ", group " + group + (level == null ? CoreConstants.EMPTY : " and level " + level), e);
+			getLogger().log(
+					Level.WARNING,
+					"Error inserting application access for application " + applicationId + ", group " + group + (level == null ? CoreConstants.EMPTY : " and level " + level),
+					e
+			);
 		}
 
 		return null;
@@ -1057,7 +1069,9 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 			qReminderUsers.executeUpdate();
 
 			//Remove reminder dashboard roles
-			Query qReminderDashboardRoles = getEntityManager().createNativeQuery("delete from " + ApplicationReminder.TABLE_NAME + "_dr" + " where " + ApplicationReminder.JOIN_COLUMN_REMINDER_ID + " = ?");
+			Query qReminderDashboardRoles = getEntityManager().createNativeQuery(
+					"delete from " + ApplicationReminder.TABLE_NAME + "_dr" + " where " + ApplicationReminder.JOIN_COLUMN_REMINDER_ID + " = ?"
+			);
 			qReminderDashboardRoles.setParameter(1, reminderId);
 			qReminderDashboardRoles.executeUpdate();
 
@@ -1155,7 +1169,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
-
 	@Override
 	@Transactional(readOnly = false)
 	public ApplicationRate updateApplicationRate(Integer rateId, Integer appSettingsId, String name, Double price) {
@@ -1226,7 +1239,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
-
 	@Override
 	public List<ApplicationRate> getAllRates() {
 		try {
@@ -1238,7 +1250,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		}
 		return null;
 	}
-
 
 	@Override
 	@Transactional(readOnly = false)
@@ -1253,7 +1264,11 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		if (id == null) {
 			mileageReimbursement = new MileageReimbursement();
 		} else {
-			List<MileageReimbursement> mileageReimbursements = getResultList(MileageReimbursement.FIND_BY_IDS, MileageReimbursement.class, new Param(MileageReimbursement.PARAM_IDS, Arrays.asList(id)));
+			List<MileageReimbursement> mileageReimbursements = getResultList(
+					MileageReimbursement.FIND_BY_IDS,
+					MileageReimbursement.class,
+					new Param(MileageReimbursement.PARAM_IDS, Arrays.asList(id))
+			);
 			mileageReimbursement = ListUtil.isEmpty(mileageReimbursements) ? null : mileageReimbursements.iterator().next();
 		}
 		if (mileageReimbursement == null) {
@@ -1292,7 +1307,6 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		return null;
 	}
 
-
 	@Override
 	@Transactional(readOnly = false)
 	public ApplicationMaterial updateApplicationMaterial(
@@ -1306,7 +1320,11 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		if (id == null) {
 			applicationMaterial = new ApplicationMaterial();
 		} else {
-			List<ApplicationMaterial> applicationMaterials = getResultList(ApplicationMaterial.FIND_BY_IDS, ApplicationMaterial.class, new Param(ApplicationMaterial.PARAM_IDS, Arrays.asList(id)));
+			List<ApplicationMaterial> applicationMaterials = getResultList(
+					ApplicationMaterial.FIND_BY_IDS,
+					ApplicationMaterial.class,
+					new Param(ApplicationMaterial.PARAM_IDS, Arrays.asList(id))
+			);
 			applicationMaterial = ListUtil.isEmpty(applicationMaterials) ? null : applicationMaterials.iterator().next();
 		}
 		if (applicationMaterial == null) {
@@ -1358,7 +1376,11 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		if (id == null) {
 			applicationConsultant = new ApplicationConsultant();
 		} else {
-			List<ApplicationConsultant> applicationConsultants = getResultList(ApplicationConsultant.FIND_BY_IDS, ApplicationConsultant.class, new Param(ApplicationConsultant.PARAM_IDS, Arrays.asList(id)));
+			List<ApplicationConsultant> applicationConsultants = getResultList(
+					ApplicationConsultant.FIND_BY_IDS,
+					ApplicationConsultant.class,
+					new Param(ApplicationConsultant.PARAM_IDS, Arrays.asList(id))
+			);
 			applicationConsultant = ListUtil.isEmpty(applicationConsultants) ? null : applicationConsultants.iterator().next();
 		}
 		if (applicationConsultant == null) {
@@ -1411,19 +1433,38 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 	@Override
 	public ApplicationAccess getHighestLevelAccess(Integer applicationId) {
-		return getSingleResult(
-				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING,
-				ApplicationAccess.class,
-				new Param("applicationId", applicationId)
-		);
+		if (applicationId == null) {
+			return null;
+		}
+
+		try {
+			return getSingleResult(
+					ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING,
+					ApplicationAccess.class,
+					new Param("applicationId", applicationId)
+			);
+		} catch (Throwable e) {
+			getLogger().log(Level.WARNING, "Error getting the highest level of access for application " + applicationId, e);
+		}
+		return null;
 	}
 
 	@Override
-	public List<ApplicationAccess> getApplicationAccessDescendingByLevel(Integer applicationId){
-		return getResultList(
-				ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING,
-				ApplicationAccess.class,
-				new Param("applicationId", applicationId)
-		);
+	public List<ApplicationAccess> getApplicationAccessDescendingByLevel(Integer applicationId) {
+		if (applicationId == null) {
+			return null;
+		}
+
+		try {
+			return getResultList(
+					ApplicationAccess.QUERY_GET_BY_APPLICATION_ID_ORDER_BY_LEVEL_DESCENDING,
+					ApplicationAccess.class,
+					new Param("applicationId", applicationId)
+			);
+		} catch (Throwable e) {
+			getLogger().log(Level.WARNING, "Error getting accesses for application " + applicationId, e);
+		}
+		return null;
 	}
+
 }
