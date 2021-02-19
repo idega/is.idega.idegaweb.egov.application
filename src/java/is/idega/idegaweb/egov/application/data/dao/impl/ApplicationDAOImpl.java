@@ -155,12 +155,17 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 		}
 
 		try {
-			if (uri.endsWith(CoreConstants.SLASH)) {
-				uri = uri.substring(0, uri.length() - 1);
+			String query = "select a from ".concat(Application.class.getName()).concat(" a where a.url = :uri");
+
+			List<Application> applications = getResultListByInlineQuery(query, Application.class, new Param("uri", uri));
+
+			if (ListUtil.isEmpty(applications)) {
+				if (uri.endsWith(CoreConstants.SLASH)) {
+					uri = uri.substring(0, uri.length() - 1);
+					applications = getResultListByInlineQuery(query, Application.class, new Param("uri", uri));
+				}
 			}
 
-			String query = "select a from ".concat(Application.class.getName()).concat(" a where a.url = :uri");
-			List<Application> applications = getResultListByInlineQuery(query, Application.class, new Param("uri", uri));
 			return ListUtil.isEmpty(applications) ? null : applications.get(0);
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Error getting application by uri: " + uri, e);
