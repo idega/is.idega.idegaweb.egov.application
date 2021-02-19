@@ -63,6 +63,7 @@ import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.CreditCardChecker;
 import com.idega.util.CreditCardType;
 import com.idega.util.IWTimestamp;
@@ -112,6 +113,16 @@ public abstract class ApplicationForm extends Block {
 	protected is.idega.idegaweb.egov.application.data.bean.Application getApplication(IWContext iwc) {
 		String uri = iwc.getRequestURI();
 		is.idega.idegaweb.egov.application.data.bean.Application app = getApplicationDAO().findByUri(uri);
+		if (app == null) {
+			String server = CoreUtil.getServerURL(iwc.getRequest());
+			if (!StringUtil.isEmpty(server)) {
+				if (server.endsWith(CoreConstants.SLASH) && uri.startsWith(CoreConstants.SLASH)) {
+					server = server.substring(0, server.length() - 1);
+				}
+				uri = server.concat(uri);
+				app = getApplicationDAO().findByUri(uri);
+			}
+		}
 		if (app != null) {
 			return app;
 		}
@@ -284,13 +295,13 @@ public abstract class ApplicationForm extends Block {
 
 	protected void setError(int phase, String parameter, String error) {
 		if (this.iErrors == null) {
-			this.iErrors = new LinkedHashMap<String, String>();
+			this.iErrors = new LinkedHashMap<>();
 		}
 
 		this.iHasErrors = true;
 		if (phase > 0) {
 			if (iPhaseErrors == null) {
-				iPhaseErrors = new HashMap<Integer, Boolean>();
+				iPhaseErrors = new HashMap<>();
 			}
 			iPhaseErrors.put(new Integer(phase), Boolean.TRUE);
 		}
@@ -509,7 +520,7 @@ public abstract class ApplicationForm extends Block {
 
 	protected DropdownMenu getUserChooser(IWContext iwc, Object applicationPK, User parentOrCustodian, User chosenUser, String parameterName, IWResourceBundle iwrb) throws RemoteException {
 		Collection<User> children = getChildren(iwc, parentOrCustodian);
-		children = ListUtil.isEmpty(children) ? new ArrayList<User>() : new ArrayList<User>(children);
+		children = ListUtil.isEmpty(children) ? new ArrayList<>() : new ArrayList<>(children);
 		if (parentOrCustodian != null) {
 			children.add(parentOrCustodian);
 		}
@@ -811,7 +822,7 @@ public abstract class ApplicationForm extends Block {
 	}
 
 	public static List<CreditCardType> getAllowedCardTypes() {
-		List<CreditCardType> types = new ArrayList<CreditCardType>();
+		List<CreditCardType> types = new ArrayList<>();
 
 		String allowedTypes = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty(ATTRIBUTE_CARD_TYPES, DEFAULT_CARD_TYPES);
 		StringTokenizer tokens = new StringTokenizer(allowedTypes, CoreConstants.COMMA);
