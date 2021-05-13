@@ -1,7 +1,5 @@
 package is.idega.idegaweb.egov.application.component;
 
-import is.idega.idegaweb.egov.application.ApplicationConstants;
-
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 
@@ -9,17 +7,20 @@ import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.Span;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.util.CoreConstants;
+
+import is.idega.idegaweb.egov.application.ApplicationConstants;
 
 public class Button extends IWBaseComponent {
 
 	private String action;
-	private String value = "undefined";
+	private String value = CoreConstants.UNDEFINED;
 	private String parameter;
 	private String formId;
 	private String styleClass;
 	private String url;
 	private String clickConfirmMessage;
-	
+
 	public static final String ACTION_PROPERTY = "action";
 	public static final String VALUE_PROPERTY = "value";
 	public static final String PARAMETER_PROPERTY = "parameter";
@@ -77,43 +78,43 @@ public class Button extends IWBaseComponent {
     	if (ve != null) {
 	    	String action = (String) ve.getValue(context.getELContext());
 	    	setAction(action);
-    	}    	
+    	}
 
 		ve = getValueExpression(VALUE_PROPERTY);
     	if (ve != null) {
 	    	String value = (String) ve.getValue(context.getELContext());
 	    	setValue(value);
-    	}    	
+    	}
 
 		ve = getValueExpression(PARAMETER_PROPERTY);
     	if (ve != null) {
 	    	String parameter = (String) ve.getValue(context.getELContext());
 	    	setParameter(parameter);
-    	}    	
+    	}
 
 		ve = getValueExpression(FORM_ID_PROPERTY);
     	if (ve != null) {
 	    	String formId = (String) ve.getValue(context.getELContext());
 	    	setFormId(formId);
-    	}    	
+    	}
 
 		ve = getValueExpression(STYLE_CLASS_PROPERTY);
     	if (ve != null) {
 	    	String styleClass = (String) ve.getValue(context.getELContext());
 	    	setStyleClass(styleClass);
-    	}    	
+    	}
 
 		ve = getValueExpression(URL_PROPERTY);
     	if (ve != null) {
 	    	String url = (String) ve.getValue(context.getELContext());
 	    	setURL(url);
-    	}    	
+    	}
 
 		ve = getValueExpression(CLICK_CONFIRM_PROPERTY);
     	if (ve != null) {
 	    	String message = (String) ve.getValue(context.getELContext());
 	    	setClickConfirmMessage(message);
-    	}    	
+    	}
 	}
 
 	public String getAction() {
