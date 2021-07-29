@@ -885,6 +885,13 @@ public class ApplicationDAOImpl extends GenericDaoImpl implements ApplicationDAO
 
 		if (!ListUtil.isEmpty(groupPrimaryKeys)) {
 			Collection<Integer> applicationPrimaryKeys = getApplicationKeys(groupPrimaryKeys);
+			if (ListUtil.isEmpty(applicationPrimaryKeys) && IWMainApplication.getDefaultIWMainApplication().getSettings().getBoolean("app_acc.get_by_parent_groups", false)) {
+				Collection<Integer> parentGroupsIds = getGroupDAO().getParentGroupsIds(new ArrayList<>(groupPrimaryKeys));
+				if (!ListUtil.isEmpty(parentGroupsIds)) {
+					applicationPrimaryKeys = getApplicationKeys(parentGroupsIds);
+				}
+			}
+
 			if (!ListUtil.isEmpty(applicationPrimaryKeys)) {
 				Map<String, Collection<? extends Serializable>> arguments = new HashMap<>();
 				arguments.put("id", applicationPrimaryKeys);
