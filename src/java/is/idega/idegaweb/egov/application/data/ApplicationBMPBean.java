@@ -82,6 +82,7 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 	public static final String COLUMN_CREATED = "created";
 	public static final String COLUMN_IDENTIFIER_PREFIX = "case_identifier_prefix";
 	public static final String COLUMN_ICON = "ic_file_id";
+	public static final String COLUMN_ALLOW_TO_SUBMIT_SAVED_BEFORE_DEADLINE = "submit_saved_before_deadline";
 
 	public static final String EGOV_APPLICATION_NAME_LOC_TEXT = "EGOV_APPLICATION_NAME";
 	public static final String EGOV_APPLICATION_URL_LOC_TEXT = "EGOV_APPLICATION_URL_LOC_TEXT";
@@ -218,12 +219,12 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		addAttribute(COLUMN_SHOW_IN_IFRAME, "Show in Iframe", Boolean.class);
 		addAttribute(COLUMN_CREATED, "Created", Timestamp.class);
 		addAttribute(COLUMN_IDENTIFIER_PREFIX, "Prefix", String.class);
+		addAttribute(COLUMN_ALLOW_TO_SUBMIT_SAVED_BEFORE_DEADLINE, "Submit saved before deadline", Boolean.class);
 
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_NAME_LOC_TEXT);
 		addManyToManyRelationShip(LocalizedText.class, EGOV_APPLICATION_URL_LOC_TEXT);
 		addManyToManyRelationShip(Group.class, EGOV_APPLICATION_GROUP);
 		addManyToOneRelationship(COLUMN_ICON, ICFile.class);
-
 	}
 
 	@Override
@@ -930,6 +931,16 @@ public class ApplicationBMPBean extends GenericEntity implements Application {
 		}
 
 		super.store();
+	}
+
+	@Override
+	public boolean isAllowedToSubmitSavedFormBeforeDeadline() {
+		return getBooleanColumnValue(COLUMN_ALLOW_TO_SUBMIT_SAVED_BEFORE_DEADLINE, false);
+	}
+
+	@Override
+	public void setAllowedToSubmitSavedFormBeforeDeadline(boolean allowedToSubmitSavedFormBeforeDeadline) {
+		setColumn(COLUMN_ALLOW_TO_SUBMIT_SAVED_BEFORE_DEADLINE, allowedToSubmitSavedFormBeforeDeadline);
 	}
 
 }

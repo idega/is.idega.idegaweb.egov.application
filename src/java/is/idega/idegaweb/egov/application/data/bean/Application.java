@@ -150,6 +150,10 @@ public class Application implements Serializable, ApplicationModel {
 	@Column(name = ApplicationBMPBean.COLUMN_PAYMENT_REQUIRED, length = 1)
 	private Boolean paymentRequired;
 
+	@Convert(converter = BooleanConverter.class)
+	@Column(name = ApplicationBMPBean.COLUMN_ALLOW_TO_SUBMIT_SAVED_BEFORE_DEADLINE, length = 1)
+	private Boolean allowedToSubmitSavedFormBeforeDeadline;
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = ApplicationBMPBean.EGOV_APPLICATION_NAME_LOC_TEXT,
 		joinColumns = @JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID),
@@ -472,7 +476,13 @@ public class Application implements Serializable, ApplicationModel {
 		return created;
 	}
 
+	public Boolean getAllowedToSubmitSavedFormBeforeDeadline() {
+		return allowedToSubmitSavedFormBeforeDeadline;
+	}
 
+	public void setAllowedToSubmitSavedFormBeforeDeadline(Boolean allowedToSubmitSavedFormBeforeDeadline) {
+		this.allowedToSubmitSavedFormBeforeDeadline = allowedToSubmitSavedFormBeforeDeadline;
+	}
 
 	public ICFile getIcon() {
 		return icon;

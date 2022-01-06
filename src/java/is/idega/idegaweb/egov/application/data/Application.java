@@ -294,5 +294,7 @@ public interface Application extends IDOEntity, ApplicationModel {
 	public ICFile getIcon();
 	public void setIcon(ICFile icon);
 
+	public boolean isAllowedToSubmitSavedFormBeforeDeadline();
+	public void setAllowedToSubmitSavedFormBeforeDeadline(boolean allowedToSubmitSavedFormBeforeDeadline);
 
 }
