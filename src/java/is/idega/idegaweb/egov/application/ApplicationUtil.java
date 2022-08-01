@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.faces.component.UIComponent;
 import javax.servlet.http.HttpServletRequest;
 
+import com.idega.block.text.TextUtil;
 import com.idega.block.text.model.LocalizedTextModel;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.builder.data.ICPage;
@@ -292,15 +293,7 @@ public class ApplicationUtil implements Singleton {
 	}
 
 	private static <T extends LocalizedTextModel> T getLocalizedText(Collection<T> texts, int icLocaleId) {
-		if (texts != null) {
-			for (Iterator<T> it = texts.iterator(); it.hasNext();) {
-				T temp = it.next();
-				if (temp.getLocaleId() == icLocaleId) {
-					return temp;
-				}
-			}
-		}
-		return null;
+		return TextUtil.getLocalizedText(texts, icLocaleId);
 	}
 
 	public static boolean isHibernateTurnedOn(IWMainApplicationSettings settings) {
