@@ -30,7 +30,6 @@ import com.idega.servlet.filter.IWAuthenticator;
 import com.idega.util.ArrayUtil;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
-import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.URIUtil;
@@ -249,14 +248,16 @@ public class ApplicationUtil implements Singleton {
 			return true;
 		}
 
-		IWTimestamp now = IWTimestamp.RightNow();
+		long now = System.currentTimeMillis();
 		boolean enabled = false;
 		if (enabledFrom != null && enabledTo != null) {
-			enabled = now.isLaterThanOrEquals(new IWTimestamp(enabledFrom)) && now.isEarlierThan(new IWTimestamp(enabledTo));
+			enabled = now >= enabledFrom.getTime() && now <= enabledTo.getTime();
+
 		} else if (enabledFrom != null) {
-			enabled = now.isLaterThanOrEquals(new IWTimestamp(enabledFrom));
+			enabled = now >= enabledFrom.getTime();
+
 		} else if (enabledTo != null) {
-			enabled = now.isEarlierThan(new IWTimestamp(enabledTo));
+			enabled = now <= enabledTo.getTime();
 		}
 
 		return enabled;
