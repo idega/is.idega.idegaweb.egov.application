@@ -297,4 +297,7 @@ public interface Application extends IDOEntity, ApplicationModel {
 	public boolean isAllowedToSubmitSavedFormBeforeDeadline();
 	public void setAllowedToSubmitSavedFormBeforeDeadline(boolean allowedToSubmitSavedFormBeforeDeadline);
 
+	public Integer getAllowedToSubmitSavedFormAfterXDaysOfDeadline();
+	public void setAllowedToSubmitSavedFormAfterXDaysOfDeadline(Integer days);
+
 }

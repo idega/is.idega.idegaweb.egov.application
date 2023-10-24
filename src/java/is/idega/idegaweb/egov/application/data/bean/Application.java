@@ -154,6 +154,9 @@ public class Application implements Serializable, ApplicationModel {
 	@Column(name = ApplicationBMPBean.COLUMN_ALLOW_TO_SUBMIT_SAVED_BEFORE_DEADLINE, length = 1)
 	private Boolean allowedToSubmitSavedFormBeforeDeadline;
 
+	@Column(name = ApplicationBMPBean.COLUMN_ALLOW_TO_SUBMIT_SAVED_FORM_AFTER_X_DAYS_OF_DEADLINE)
+	private Integer allowedToSubmitSavedFormAfterXDaysOfDeadline;
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = ApplicationBMPBean.EGOV_APPLICATION_NAME_LOC_TEXT,
 		joinColumns = @JoinColumn(name = ApplicationBMPBean.EGOV_APPLICATION_ID),
@@ -490,6 +493,14 @@ public class Application implements Serializable, ApplicationModel {
 
 	public void setIcon(ICFile icon) {
 		this.icon = icon;
+	}
+
+	public Integer getAllowedToSubmitSavedFormAfterXDaysOfDeadline() {
+		return allowedToSubmitSavedFormAfterXDaysOfDeadline;
+	}
+
+	public void setAllowedToSubmitSavedFormAfterXDaysOfDeadline(Integer days) {
+		allowedToSubmitSavedFormAfterXDaysOfDeadline = days;
 	}
 
 	@PrePersist
