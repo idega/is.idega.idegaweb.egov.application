@@ -38,6 +38,7 @@ import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
+import com.idega.idegaweb.DefaultIWBundle;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
@@ -399,7 +400,9 @@ public abstract class ApplicationForm extends Block {
 
 				Cookie cookie = new Cookie(COOKIE_NAME + this.iWindowPage.getPrimaryKey().toString(), "true");
 				cookie.setMaxAge(24 * 60 * 60);
-				cookie.setPath("/");
+				cookie.setPath(CoreConstants.SLASH);
+				cookie.setHttpOnly(true);
+				cookie.setSecure(DefaultIWBundle.isProductionEnvironment());
 				iwc.addCookies(cookie);
 			}
 		}
